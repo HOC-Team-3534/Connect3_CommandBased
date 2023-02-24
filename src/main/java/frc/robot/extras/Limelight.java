@@ -12,7 +12,6 @@ import frc.robot.subsystems.SwerveDrive.GridPosition;
 
 import java.util.Arrays;
 import java.util.HashMap;
-import java.util.function.Function;
 
 public class Limelight {
 	final Translation2d shiftAway = new Translation2d(

@@ -21,6 +21,10 @@ public class Intake extends SubsystemBase {
         }, () -> setBothMotors(0));
     }
 
+    public Command runIntakeAuton() {
+        return startEnd(() -> setBothMotors(1.0), () -> setBothMotors(0));
+    }
+
     private void setBothMotors(double percent) {
         topMotor.set(percent);
         botMotor.set(percent);

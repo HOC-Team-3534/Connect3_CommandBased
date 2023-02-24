@@ -30,8 +30,8 @@ public class Elevator extends SubsystemBase {
     }
 
     public Command goToDesiredHeight() {
-        return runOnce(() -> changeHeight(getDesiredHeight())).andThen(Commands.waitSeconds(0.25)).andThen(run(() -> {
-        })).until(() -> isCorrectElevatorHeight());
+        return runOnce(() -> changeHeight(getDesiredHeight()))
+                .andThen(Commands.waitUntil(() -> isCorrectElevatorHeight()));
     }
 
     public Height getDesiredHeight() {

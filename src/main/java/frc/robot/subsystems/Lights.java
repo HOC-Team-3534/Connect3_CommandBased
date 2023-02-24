@@ -12,26 +12,14 @@ public class Lights extends SubsystemBase {
     public Command runLights() {
         return run(() -> {
             if (TGR.ConeLights.bool())
-                yellow();
+                spark.set(0.69); // YELLOW
             else if (TGR.CubeLights.bool())
-                purple();
+                spark.set(0.91); // PURPLE
             else if (TGR.DTM.bool())
-                green();
+                spark.set(0.77); // GREEN
             else
                 neutral();
         });
-    }
-
-    public void green() {
-        spark.set(0.77);
-    }
-
-    public void yellow() {
-        spark.set(0.69);
-    }
-
-    public void purple() {
-        spark.set(0.91);
     }
 
     public void neutral() {

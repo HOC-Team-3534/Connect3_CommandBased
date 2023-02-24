@@ -93,7 +93,7 @@ public class RobotContainer {
 		TGR.Intake.tgr().onTrue(carriage.unclamp()).onFalse(carriage.clampElement());
 		TGR.Extake.tgr().onTrue(carriage.unclamp());
 		TGR.FlipElement.tgr()
-				.onTrue(carriage.flipElement().withInterruptBehavior(InterruptionBehavior.kCancelIncoming));
+				.onTrue(carriage.flipElement());
 
 		TGR.ResetWithLimelight.tgr().and(() -> !TGR.DTM.bool()).onTrue(new ProxyCommand(() -> {
 			return swerveDrive.resetPoseToLimelightPose(limelight.getBotPose());
