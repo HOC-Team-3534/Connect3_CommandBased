@@ -32,7 +32,8 @@ public final class Autos {
   }
 
   private static CommandBase moveElevatorAndPlace(Height height, Elevator elevator, Clamp clamp, Flipper flip) {
-    return elevator.goToDesiredHeight(height).andThen(clamp.unclamp().andThen(flip.flip(false)));
+    return elevator.goToDesiredHeight(height).andThen(clamp.unclamp().andThen(flip.flip(false)))
+        .andThen(elevator.goToDesiredHeight(Height.LOW));
   }
 
   private static CommandBase driveWithIntake(Path path, Intake intake, SwerveDrive swerve, boolean resetToIntial) {

@@ -63,9 +63,7 @@ public class Limelight extends SubsystemBase {
 	@Override
 	public void periodic() {
 		super.periodic();
-		var pose = getBotPose(false);
-		if (pose != null)
-			visionPoseUpdate.accept(pose, getLatency());
+		getBotPose(false);
 	}
 
 	public void getTable() {
@@ -75,20 +73,20 @@ public class Limelight extends SubsystemBase {
 	public Pose2d getBotPose(boolean check) {
 		if (!isValid() && RobotBase.isReal())
 			return null;
-		if (getAprilTag() == 0)
+		if (getAprilTag() <= 0)
 			return null;
 		double[] botPoseArray;
 		switch (DriverStation.getAlliance()) {
 			case Blue:
 				if (check && !Arrays.asList(6, 7, 8).contains(getAprilTag()))
 					return null;
-				botPoseArray = (table.getEntry("botpose_wpiblue").getDoubleArray(new double[6]));
+				botPoseArray = (table.getEntry("botpose_wpiblue").getDoubleArray(new double[7]));
 				break;
 
 			case Red:
 				if (check && !Arrays.asList(1, 2, 3).contains(getAprilTag()))
 					return null;
-				botPoseArray = (table.getEntry("botpose_wpired").getDoubleArray(new double[6]));
+				botPoseArray = (table.getEntry("botpose_wpired").getDoubleArray(new double[7]));
 				break;
 
 			case Invalid:
@@ -102,14 +100,20 @@ public class Limelight extends SubsystemBase {
 		 * right places and that you are negating the values
 		 * 
 		 */
-		return new Pose2d(botPoseArray[0], botPoseArray[1], Rotation2d.fromDegrees(botPoseArray[5]));
+		if (botPoseArray == null || botPoseArray.length < 7) {
+			return null;
+		}
+		var pose = new Pose2d(botPoseArray[0], botPoseArray[1], Rotation2d.fromDegrees(botPoseArray[5]));
+		var latency = botPoseArray[6] / 1000.0;
+		visionPoseUpdate.accept(pose, latency);
+		return pose;
 
 	}
 
 	public Pose2d getGridPose(GridPosition position) {
 		if (!isValid() && RobotBase.isReal())
 			return null;
-		if (getAprilTag() == 0)
+		if (getAprilTag() <= 0)
 			return null;
 		Translation2d aprilTag;
 		switch (DriverStation.getAlliance()) {
@@ -154,17 +158,6 @@ public class Limelight extends SubsystemBase {
 				break;
 		}
 		return new Pose2d(robotCenter, new Rotation2d());
-	}
-
-	/**
-	 * Get value from limelight network tables and added 20 milliseconds for
-	 * correction
-	 * 
-	 * @return Latency in milliseconds
-	 */
-	public double getLatency() {
-		getTable();
-		return table.getEntry("tl").getDouble(0) + 11.0;
 	}
 
 	public int getAprilTag() {

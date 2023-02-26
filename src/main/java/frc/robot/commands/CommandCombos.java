@@ -11,7 +11,8 @@ import frc.robot.subsystems.Intake;
 public final class CommandCombos {
 
     public static CommandBase moveElevatorAndPlace(Elevator elevator, Clamp clamp, Flipper flip) {
-        return elevator.goToDesiredHeight().andThen(clamp.unclamp().andThen(flip.flip(false)));
+        return elevator.goToDesiredHeight()
+                .andThen(clamp.unclamp().andThen(flip.flip(false)).andThen(elevator.goToDesiredHeight(Height.LOW)));
     }
 
     public static CommandBase reorient(Intake intake, Clamp clamp, Flipper flip) {

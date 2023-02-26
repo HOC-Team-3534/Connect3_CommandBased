@@ -21,13 +21,13 @@ public class SwerveHelper {
                 config.canCoderInvert);
         SwerveConstants.fillNecessaryConstantsForFalcon(Drive.Calculated.MAX_FWD_REV_SPEED_MPS_EST,
                 Drive.Calculated.MAX_ROTATE_SPEED_RAD_PER_SEC_EST, 2 * Math.PI, Drive.Calculated.KINEMATICS, newConfig,
-                0.1, 0.293 / 12.0, 2.367 / 12.0, 0.0379 / 12.0, 10.0, 10.0, 1, 1, 0.25, 0.25);
+                0.1, 0.293 / 12.0, 2.367 / 12.0, 0.0379 / 12.0, 1.0, 1.0, 1, 1, 0.25, 0.25);
         SwerveConstants.createSwerveConstants();
         SwerveConstants.modulePoseEstXStdDev = 0.1;
         SwerveConstants.modulePoseEstYStdDev = 0.1;
-        SwerveConstants.modulePoseEstAngleStdDev = Rotation2d.fromDegrees(3.0);
-        SwerveConstants.visionPoseEstXStdDev = 0.01;
-        SwerveConstants.visionPoseEstYStdDev = 0.01;
+        SwerveConstants.modulePoseEstAngleStdDev = Rotation2d.fromDegrees(0.01);
+        SwerveConstants.visionPoseEstXStdDev = 0.15;
+        SwerveConstants.visionPoseEstYStdDev = 0.15;
         SwerveConstants.visionPoseEstAngleStdDev = Rotation2d.fromDegrees(0.25);
         return true;
     }

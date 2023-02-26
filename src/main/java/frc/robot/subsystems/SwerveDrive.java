@@ -61,7 +61,6 @@ public class SwerveDrive extends SwerveSubsystem {
         super.periodic();
         // TODO update POSE using limelight vision
         field.setRobotPose(dt.getPose());
-        dt.updateOdometryWithVision(gridPose, timeCharacterizing);
         SmartDashboard.putNumber("Pitch", getSlope());
     }
 
@@ -80,7 +79,7 @@ public class SwerveDrive extends SwerveSubsystem {
     }
 
     public double getSlope() {
-        return pigeon2.getPitch();
+        return pigeon2.getPitch() + 2.0;
     }
 
     public boolean isFacingForward() {
