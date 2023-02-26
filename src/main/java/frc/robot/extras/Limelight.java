@@ -7,6 +7,8 @@ import edu.wpi.first.math.util.Units;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.RobotBase;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants;
 import frc.robot.subsystems.SwerveDrive.GridPosition;
 
@@ -47,6 +49,7 @@ public class Limelight {
 				108.185).times(0.0254));
 		aprilTagPositions.put(8, new Translation2d(39.88,
 				42.185).times(0.0254));
+		SmartDashboard.putNumber("April Tag Number", 0);
 	}
 
 	public void getTable() {
@@ -146,7 +149,11 @@ public class Limelight {
 
 	public int getAprilTag() {
 		getTable();
-		return (int) table.getEntry("tid").getInteger(0);
+		var tagId = (int) table.getEntry("tid").getInteger(0);
+		if (RobotBase.isSimulation())
+			return (int) SmartDashboard.getNumber("April Tag Number", 0);
+		SmartDashboard.putNumber("April Tag Number", tagId);
+		return tagId;
 	}
 
 	public Rotation2d getHorizontalAngleOffset() {
