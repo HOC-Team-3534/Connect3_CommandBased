@@ -11,24 +11,23 @@ import frc.robot.subsystems.Elevator;
 import frc.robot.subsystems.Flipper;
 import frc.robot.subsystems.Intake;
 import frc.robot.subsystems.SwerveDrive;
-import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.Commands;
 
 public final class Autos {
   /** Example static factory for an autonomous command. */
   public static CommandBase driveForward(SwerveDrive swerve) {
-    return Commands.sequence(swerve.driveOnPath(Path.Drive_Forward_1));
+    return Commands.sequence(swerve.driveOnPath(Path.Drive_Forward_1, true));
   }
 
   public static CommandBase place2(SwerveDrive swerve, Intake intake, Elevator elevator, Clamp clamp,
       Flipper flipper,
       boolean prepPickUp, Path path1, Path path2) {
     var command = moveElevatorAndPlace(Height.HIGH, elevator, clamp, flipper)
-        .andThen(driveWithIntake(path1, intake, swerve))
+        .andThen(driveWithIntake(path1, intake, swerve, true))
         .andThen(moveElevatorAndPlace(Height.HIGH, elevator, clamp, flipper));
     if (path2 != null)
-      command = command.andThen(driveWithIntake(path2, intake, swerve).unless(() -> !prepPickUp));
+      command = command.andThen(driveWithIntake(path2, intake, swerve, false).unless(() -> !prepPickUp));
     return command;
   }
 
@@ -36,8 +35,8 @@ public final class Autos {
     return elevator.goToDesiredHeight(height).andThen(clamp.unclamp().andThen(flip.flip(false)));
   }
 
-  private static CommandBase driveWithIntake(Path path, Intake intake, SwerveDrive swerve) {
-    return Commands.deadline(swerve.driveOnPath(path), intake.runIntakeAuton());
+  private static CommandBase driveWithIntake(Path path, Intake intake, SwerveDrive swerve, boolean resetToIntial) {
+    return Commands.deadline(swerve.driveOnPath(path, resetToIntial), intake.runIntakeAuton());
   }
 
   // TODO figure out how to write them if they need to be parallel or sequence

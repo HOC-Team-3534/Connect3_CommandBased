@@ -7,12 +7,12 @@ import frc.robot.Constants.EnabledDebugModes;
 import frc.robot.Constants.Drive.Config.DriveCharacterization;
 import frc.robot.commands.Autos;
 import frc.robot.commands.CommandCombos;
-import frc.robot.extras.Limelight;
 import frc.robot.subsystems.Clamp;
 import frc.robot.subsystems.Elevator;
 import frc.robot.subsystems.Flipper;
 import frc.robot.subsystems.Intake;
 import frc.robot.subsystems.Lights;
+import frc.robot.subsystems.Limelight;
 import frc.robot.subsystems.SwerveDrive;
 
 import java.util.concurrent.Callable;
@@ -42,7 +42,7 @@ public class RobotContainer {
 	private static final Clamp clamp = new Clamp();
 	private static final Flipper flipper = new Flipper();
 	private static final Lights lights = new Lights();
-	private static final Limelight limelight = new Limelight();
+	private static final Limelight limelight = new Limelight(swerveDrive::getPose, swerveDrive::updatePoseWithVision);
 	// The driver station connected controllers are defined here...
 	private static final CommandXboxController driverController = new CommandXboxController(0);
 	private static final CommandXboxController operatorController = new CommandXboxController(1);
@@ -115,7 +115,7 @@ public class RobotContainer {
 				.onTrue(CommandCombos.reorient(intake, clamp, flipper));
 
 		TGR.ResetWithLimelight.tgr().and(() -> !TGR.DTM.bool()).onTrue(new ProxyCommand(() -> {
-			return swerveDrive.resetPoseToLimelightPose(limelight.getBotPose());
+			return swerveDrive.resetPoseToLimelightPose(limelight.getBotPose(false));
 		}));
 	}
 

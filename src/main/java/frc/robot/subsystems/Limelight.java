@@ -1,4 +1,4 @@
-package frc.robot.extras;
+package frc.robot.subsystems;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -9,13 +9,17 @@ import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 import frc.robot.subsystems.SwerveDrive.GridPosition;
 
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.concurrent.Callable;
+import java.util.function.BiConsumer;
+import java.util.function.Consumer;
 
-public class Limelight {
+public class Limelight extends SubsystemBase {
 	final Translation2d shiftAway = new Translation2d(
 			Units.inchesToMeters(14.0 + 6.0) + Constants.Drive.Known.WHEELBASE_METERS,
 			0);
@@ -34,8 +38,12 @@ public class Limelight {
 	double aprilTagID;
 	long lastTimeTableSet = 0;
 	HashMap<Integer, Translation2d> aprilTagPositions = new HashMap<>();
+	final Callable<Pose2d> robotPose;
+	final BiConsumer<Pose2d, Double> visionPoseUpdate;
 
-	public Limelight() {
+	public Limelight(Callable<Pose2d> robotBose, BiConsumer<Pose2d, Double> visionPoseUpdate) {
+		this.robotPose = robotBose;
+		this.visionPoseUpdate = visionPoseUpdate;
 		getTable();
 		aprilTagPositions.put(1, new Translation2d(39.88,
 				272.776).times(0.0254));
@@ -52,25 +60,33 @@ public class Limelight {
 		SmartDashboard.putNumber("April Tag Number", 0);
 	}
 
+	@Override
+	public void periodic() {
+		super.periodic();
+		var pose = getBotPose(false);
+		if (pose != null)
+			visionPoseUpdate.accept(pose, getLatency());
+	}
+
 	public void getTable() {
 		table = NetworkTableInstance.getDefault().getTable("limelight");
 	}
 
-	public Pose2d getBotPose() {
-		if (!isValid())
+	public Pose2d getBotPose(boolean check) {
+		if (!isValid() && RobotBase.isReal())
 			return null;
 		if (getAprilTag() == 0)
 			return null;
 		double[] botPoseArray;
 		switch (DriverStation.getAlliance()) {
 			case Blue:
-				if (!Arrays.asList(6, 7, 8).contains(getAprilTag()))
+				if (check && !Arrays.asList(6, 7, 8).contains(getAprilTag()))
 					return null;
 				botPoseArray = (table.getEntry("botpose_wpiblue").getDoubleArray(new double[6]));
 				break;
 
 			case Red:
-				if (!Arrays.asList(1, 2, 3).contains(getAprilTag()))
+				if (check && !Arrays.asList(1, 2, 3).contains(getAprilTag()))
 					return null;
 				botPoseArray = (table.getEntry("botpose_wpired").getDoubleArray(new double[6]));
 				break;
@@ -86,12 +102,12 @@ public class Limelight {
 		 * right places and that you are negating the values
 		 * 
 		 */
-		return new Pose2d(botPoseArray[0], botPoseArray[1],
-				Rotation2d.fromDegrees(botPoseArray[5]));
+		return new Pose2d(botPoseArray[0], botPoseArray[1], Rotation2d.fromDegrees(botPoseArray[5]));
+
 	}
 
 	public Pose2d getGridPose(GridPosition position) {
-		if (!isValid())
+		if (!isValid() && RobotBase.isReal())
 			return null;
 		if (getAprilTag() == 0)
 			return null;
@@ -116,8 +132,12 @@ public class Limelight {
 				return null;
 		}
 		var robotCenter = aprilTag.plus(shiftAway);
-		if (getBotPose().getTranslation().getDistance(robotCenter) > 2.5)
-			return null;
+		try {
+			if (robotPose.call().getTranslation().getDistance(robotCenter) > 2.5)
+				return null;
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 		switch (position) {
 			case Center:
 				break;
@@ -144,14 +164,14 @@ public class Limelight {
 	 */
 	public double getLatency() {
 		getTable();
-		return table.getEntry("tl").getDouble(0) + 20.0;
+		return table.getEntry("tl").getDouble(0) + 11.0;
 	}
 
 	public int getAprilTag() {
-		getTable();
-		var tagId = (int) table.getEntry("tid").getInteger(0);
 		if (RobotBase.isSimulation())
 			return (int) SmartDashboard.getNumber("April Tag Number", 0);
+		getTable();
+		var tagId = (int) table.getEntry("tid").getInteger(0);
 		SmartDashboard.putNumber("April Tag Number", tagId);
 		return tagId;
 	}

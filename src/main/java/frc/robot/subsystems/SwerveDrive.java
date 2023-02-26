@@ -61,6 +61,7 @@ public class SwerveDrive extends SwerveSubsystem {
         super.periodic();
         // TODO update POSE using limelight vision
         field.setRobotPose(dt.getPose());
+        dt.updateOdometryWithVision(gridPose, timeCharacterizing);
         SmartDashboard.putNumber("Pitch", getSlope());
     }
 
@@ -74,6 +75,10 @@ public class SwerveDrive extends SwerveSubsystem {
                 .andThen(driveStraightAutonomous(0)).andThen(Commands.print("Yo! I am finished, brother!"));
     }
 
+    public void updatePoseWithVision(Pose2d pose, double latency) {
+        dt.updateOdometryWithVision(pose, latency);
+    }
+
     public double getSlope() {
         return pigeon2.getPitch();
     }
@@ -82,12 +87,12 @@ public class SwerveDrive extends SwerveSubsystem {
         return Math.abs(dt.getGyroHeading().getDegrees() % 360) < 2.0;
     }
 
-    public Command driveOnPath(Path path) {
-        return driveOnPath(path.getPath());
+    public Command driveOnPath(Path path, boolean resetToInitial) {
+        return driveOnPath(path.getPath(), resetToInitial);
     }
 
-    public Command driveOnPath(PathPlannerTrajectory trajectory) {
-        return dt.createCommandForTrajectory(trajectory, this);
+    public Command driveOnPath(PathPlannerTrajectory trajectory, boolean resetToInitial) {
+        return dt.createCommandForTrajectory(trajectory, this, resetToInitial, true);
     }
 
     /**
@@ -153,7 +158,7 @@ public class SwerveDrive extends SwerveSubsystem {
         this.gridPose = gridPose;
         if (gridPose == null)
             return Commands.print("Grid Pose Null");
-        return dt.createOnTheFlyPathCommand(dt.getPose(), dt.getSpeeds(), gridPose,
+        return dt.createOnTheFlyPathCommand(gridPose,
                 gridPose.getTranslation().minus(dt.getPose().getTranslation()).getAngle(), 0.0,
                 AUTO.kMaxSpeedMetersPerSecond, AUTO.kMaxAccelerationMetersPerSecondSquared, this);
     }
@@ -165,6 +170,10 @@ public class SwerveDrive extends SwerveSubsystem {
      */
     public boolean isGridPoseValid() {
         return gridPose != null;
+    }
+
+    public Pose2d getPose() {
+        return dt.getPose();
     }
 
     public Command resetPoseToLimelightPose(Pose2d pose) {

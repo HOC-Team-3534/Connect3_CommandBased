@@ -26,6 +26,8 @@ public class SwerveHelper {
         SwerveConstants.modulePoseEstXStdDev = 0.1;
         SwerveConstants.modulePoseEstYStdDev = 0.1;
         SwerveConstants.modulePoseEstAngleStdDev = Rotation2d.fromDegrees(3.0);
+        SwerveConstants.visionPoseEstXStdDev = 0.01;
+        SwerveConstants.visionPoseEstYStdDev = 0.01;
         SwerveConstants.visionPoseEstAngleStdDev = Rotation2d.fromDegrees(0.25);
         return true;
     }
