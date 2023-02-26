@@ -9,28 +9,43 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.ELEVATOR;
 import frc.robot.Constants.ELEVATOR.Height;
 import frc.robot.RobotContainer.TGR;
+import frc.robot.subsystems.SwerveDrive.GridPosition;
 
 public class Elevator extends SubsystemBase {
-    WPI_TalonFX elevatorMotor = new WPI_TalonFX(14);
+    WPI_TalonFX elevatorMotor;
+    boolean testing = true;
 
     public Elevator() {
-        elevatorMotor
-                .configMotionCruiseVelocity(ELEVATOR.kElevatorCruiseVelocity / ELEVATOR.kElevatorCountsToInches / 10.0);
-        elevatorMotor
-                .configMotionAcceleration(ELEVATOR.kElevatorAcceleration / ELEVATOR.kElevatorCountsToInches / 10.0);
-        elevatorMotor.configMotionSCurveStrength(1);
-        elevatorMotor.config_kP(0, 0);// TODO config and find the values by
-                                      // tuning
-        elevatorMotor.config_kI(0, 0);
-        elevatorMotor.config_kD(0, 0);// TODO config and find the values by
-                                      // tuning
-        elevatorMotor.config_kF(0, 0);// TODO config and find the values by
-                                      // tuning
-        elevatorMotor.setSelectedSensorPosition(0);
+        if (!testing) {
+            elevatorMotor = new WPI_TalonFX(14);
+            elevatorMotor
+                    .configMotionCruiseVelocity(
+                            ELEVATOR.kElevatorCruiseVelocity / ELEVATOR.kElevatorCountsToInches / 10.0);
+            elevatorMotor
+                    .configMotionAcceleration(ELEVATOR.kElevatorAcceleration / ELEVATOR.kElevatorCountsToInches / 10.0);
+            elevatorMotor.configMotionSCurveStrength(1);
+            elevatorMotor.config_kP(0, 0);// TODO config and find the values by
+                                          // tuning
+            elevatorMotor.config_kI(0, 0);
+            elevatorMotor.config_kD(0, 0);// TODO config and find the values by
+                                          // tuning
+            elevatorMotor.config_kF(0, 0);// TODO config and find the values by
+                                          // tuning
+            elevatorMotor.setSelectedSensorPosition(0);
+        }
     }
 
     public Command goToDesiredHeight() {
-        return runOnce(() -> changeHeight(getDesiredHeight()))
+        if (testing)
+            return Commands.none();
+        return goToDesiredHeight(getDesiredHeight());
+    }
+
+    public Command goToDesiredHeight(Height height) {
+        if (testing)
+            return Commands.none();
+
+        return runOnce(() -> changeHeight(height))
                 .andThen(Commands.waitUntil(() -> isCorrectElevatorHeight()));
     }
 

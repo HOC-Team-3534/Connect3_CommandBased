@@ -6,8 +6,9 @@ package frc.robot.commands;
 
 import frc.robot.Constants.ELEVATOR.Height;
 import frc.robot.Path;
-import frc.robot.subsystems.Carriage;
+import frc.robot.subsystems.Clamp;
 import frc.robot.subsystems.Elevator;
+import frc.robot.subsystems.Flipper;
 import frc.robot.subsystems.Intake;
 import frc.robot.subsystems.SwerveDrive;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -20,30 +21,28 @@ public final class Autos {
     return Commands.sequence(swerve.driveOnPath(Path.Drive_Forward_1));
   }
 
-  // public static CommandBase farLeftPlace2(SwerveDrive swerve, Intake intake,
-  // Elevator elevator, Carriage carriage) {
-  // return Commands.sequence(elevator.goToDesiredHeight(Height.HIGH),
-  // (carriage.placeElement()),
-  // (swerve.driveOnPath(Path.Far_Left_Path_Place2)), (intake.runIntakeAuton()),
-  // (elevator.goToDesiredHeight(Height.HIGH)), (carriage.placeElement()));//TODO
-  // Figure out how to have swerve and intake run in parrallel
-  // } This was my first attempt and the one betlow is second attempt
+  public static CommandBase place2(SwerveDrive swerve, Intake intake, Elevator elevator, Clamp clamp,
+      Flipper flipper,
+      boolean prepPickUp, Path path1, Path path2) {
+    var command = moveElevatorAndPlace(Height.HIGH, elevator, clamp, flipper)
+        .andThen(driveWithIntake(path1, intake, swerve))
+        .andThen(moveElevatorAndPlace(Height.HIGH, elevator, clamp, flipper));
+    if (path2 != null)
+      command = command.andThen(driveWithIntake(path2, intake, swerve).unless(() -> !prepPickUp));
+    return command;
+  }
 
-  public static CommandBase farLeftPlace2(SwerveDrive swerve, Intake intake, Elevator elevator, Carriage carriage) {
-    return Commands.parallel(elevator.goToDesiredHeight(Height.HIGH).andThen(carriage.placeElement())
-        .andThen((swerve.driveOnPath(Path.Far_Left_Path_Place2)), (intake.runIntakeAuton()))
-        .andThen((elevator.goToDesiredHeight(Height.HIGH)).andThen((carriage.placeElement()))));
+  private static CommandBase moveElevatorAndPlace(Height height, Elevator elevator, Clamp clamp, Flipper flip) {
+    return elevator.goToDesiredHeight(height).andThen(clamp.unclamp().andThen(flip.flip(false)));
+  }
+
+  private static CommandBase driveWithIntake(Path path, Intake intake, SwerveDrive swerve) {
+    return Commands.deadline(swerve.driveOnPath(path), intake.runIntakeAuton());
   }
 
   // TODO figure out how to write them if they need to be parallel or sequence
   // because the swerve drive and intake need to be run parallel but the rest
   // needs to be sequence. May need to make a new class for each auton
-  public static CommandBase farLeftPlace2PickUp(SwerveDrive swerve, Intake intake, Elevator elevator,
-      Carriage carriage) {
-    return Commands.sequence(elevator.goToDesiredHeight(Height.HIGH).andThen(carriage.placeElement())
-        .andThen(swerve.driveOnPath(Path.Far_Left_Path_Place2), intake.runIntakeAuton())
-        .andThen(elevator.goToDesiredHeight(Height.HIGH).andThen(carriage.placeElement())));
-  }
 
   private Autos() {
     throw new UnsupportedOperationException("This is a utility class!");

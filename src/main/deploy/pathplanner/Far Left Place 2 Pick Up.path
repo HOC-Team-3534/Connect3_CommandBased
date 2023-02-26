@@ -2,13 +2,13 @@
   "waypoints": [
     {
       "anchorPoint": {
-        "x": 1.7152971805943622,
-        "y": 4.88490601981204
+        "x": 1.7013800694268066,
+        "y": 4.369972906612481
       },
       "prevControl": null,
       "nextControl": {
-        "x": 2.7152971805943613,
-        "y": 4.88490601981204
+        "x": 5.59339961537066,
+        "y": 6.06945099604485
       },
       "holonomicAngle": 0,
       "isReversal": false,
@@ -24,62 +24,12 @@
     },
     {
       "anchorPoint": {
-        "x": 7.08730209127085,
-        "y": 4.578729574125815
+        "x": 6.9342138684277375,
+        "y": 3.367940902548473
       },
       "prevControl": {
-        "x": 2.4668211836423684,
-        "y": 4.620480907628482
-      },
-      "nextControl": {
-        "x": 2.4668211836423684,
-        "y": 4.620480907628482
-      },
-      "holonomicAngle": 0,
-      "isReversal": true,
-      "velOverride": null,
-      "isLocked": false,
-      "isStopPoint": false,
-      "stopEvent": {
-        "names": [],
-        "executionBehavior": "parallel",
-        "waitBehavior": "none",
-        "waitTime": 0
-      }
-    },
-    {
-      "anchorPoint": {
-        "x": 1.7152971805943622,
-        "y": 4.425641351282703
-      },
-      "prevControl": {
-        "x": 3.4827702988739317,
-        "y": 4.662232241131149
-      },
-      "nextControl": {
-        "x": 3.4827702988739317,
-        "y": 4.662232241131149
-      },
-      "holonomicAngle": 0,
-      "isReversal": true,
-      "velOverride": null,
-      "isLocked": false,
-      "isStopPoint": true,
-      "stopEvent": {
-        "names": [],
-        "executionBehavior": "parallel",
-        "waitBehavior": "none",
-        "waitTime": 0
-      }
-    },
-    {
-      "anchorPoint": {
-        "x": 7.101219202438405,
-        "y": 3.354023791380917
-      },
-      "prevControl": {
-        "x": 5.291994750656168,
-        "y": 4.787486241639151
+        "x": 5.264160528321057,
+        "y": 3.3496498421568277
       },
       "nextControl": null,
       "holonomicAngle": 0,

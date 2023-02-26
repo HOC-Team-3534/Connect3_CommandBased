@@ -6,9 +6,11 @@ package frc.robot;
 import frc.robot.Constants.EnabledDebugModes;
 import frc.robot.Constants.Drive.Config.DriveCharacterization;
 import frc.robot.commands.Autos;
+import frc.robot.commands.CommandCombos;
 import frc.robot.extras.Limelight;
-import frc.robot.subsystems.Carriage;
+import frc.robot.subsystems.Clamp;
 import frc.robot.subsystems.Elevator;
+import frc.robot.subsystems.Flipper;
 import frc.robot.subsystems.Intake;
 import frc.robot.subsystems.Lights;
 import frc.robot.subsystems.SwerveDrive;
@@ -35,19 +37,20 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
  */
 public class RobotContainer {
 	// The robot's subsystems and commands are defined here...
-	private final SwerveDrive swerveDrive = new SwerveDrive();
-	private final Intake intake = new Intake();
-	private final Elevator elevator = new Elevator();
-	private final Carriage carriage = new Carriage();
-	private final Lights lights = new Lights();
-	private final Limelight limelight = new Limelight();
+	private static final SwerveDrive swerveDrive = new SwerveDrive();
+	private static final Intake intake = new Intake();
+	private static final Elevator elevator = new Elevator();
+	private static final Clamp clamp = new Clamp();
+	private static final Flipper flipper = new Flipper();
+	private static final Lights lights = new Lights();
+	private static final Limelight limelight = new Limelight();
 	// The driver station connected controllers are defined here...
 	private static final CommandXboxController driverController = new CommandXboxController(0);
 	private static final CommandXboxController operatorController = new CommandXboxController(1);
 	static SlewRateLimiter slewRateLimiterX = new SlewRateLimiter(2.5);
 	static SlewRateLimiter slewRateLimiterY = new SlewRateLimiter(2.5);
 	static SlewRateLimiter slewRateLimiterRotation = new SlewRateLimiter(2.5);
-	private final SendableChooser<Command> autonChooser = new SendableChooser<>();
+	private static final SendableChooser<Command> autonChooser = new SendableChooser<>();
 
 	/**
 	 * The container for the robot. Contains subsystems, OI devices, and
@@ -57,12 +60,28 @@ public class RobotContainer {
 		// Configure the trigger bindings
 		configureBindings();
 		swerveDrive.setDefaultCommand(swerveDrive.drive());
-		intake.setDefaultCommand(intake.runIntake());
+		// intake.setDefaultCommand(intake.runIntake());
 		lights.setDefaultCommand(lights.runLights());
 		// Autonomous Command Sendable Chooser
 		autonChooser.setDefaultOption("No Auton", Commands.none());
 		autonChooser.addOption("Drive Forward", Autos.driveForward(swerveDrive));
+		autonChooser.addOption("Far Left Place 2",
+				Autos.place2(swerveDrive, intake, elevator, clamp, flipper, false, Path.Far_Left_Path_Place2, null));
+		autonChooser.addOption("Far Left Place 2 Pick Up",
+				Autos.place2(swerveDrive, intake, elevator, clamp, flipper, true, Path.Far_Left_Path_Place2,
+						Path.Far_Left_Path_Place2_Pick_Up));
+		autonChooser.addOption("Far Right Place 2",
+				Autos.place2(swerveDrive, intake, elevator, clamp, flipper, false, Path.Far_Right_Path_Place2, null));
+		autonChooser.addOption("Far Right Place 2 Pick Up",
+				Autos.place2(swerveDrive, intake, elevator, clamp, flipper, true, Path.Far_Right_Path_Place2,
+						Path.Far_Right_Path_PickUp));
 		SmartDashboard.putData(autonChooser);
+		SmartDashboard.putData(swerveDrive);
+		SmartDashboard.putData(intake);
+		SmartDashboard.putData(lights);
+		SmartDashboard.putData(elevator);
+		SmartDashboard.putData(clamp);
+		SmartDashboard.putData(flipper);
 	}
 
 	/**
@@ -78,22 +97,23 @@ public class RobotContainer {
 	 * joysticks}.
 	 */
 	private void configureBindings() {
-		TGR.DTM.tgr().whileTrue(Commands.parallel(new ProxyCommand(
-				() -> {
-					return swerveDrive
-							.followPathtoGridPose(limelight.getGridPose(swerveDrive.getGridPositionRequest()));
-				}),
-				elevator.goToDesiredHeight().andThen(carriage.placeElement())));
+		TGR.DTM.tgr()
+				.whileTrue(new ProxyCommand(
+						() -> swerveDrive
+								.followPathtoGridPose(limelight.getGridPose(swerveDrive.getGridPositionRequest())))
+						.andThen(CommandCombos.moveElevatorAndPlace(elevator, clamp, flipper)
+								.unless(() -> !swerveDrive.isGridPoseValid())));
 
 		TGR.PrepareBalance.tgr().whileTrue(swerveDrive.driveWithDesiredAngle(new Rotation2d()));
 
 		TGR.Characterize.tgr().whileTrue(swerveDrive.characterizeDrive(DriveCharacterization.QUASIASTIC_VOLTAGE,
 				DriveCharacterization.QUASIASTIC_DURATION));
 
-		TGR.Intake.tgr().onTrue(carriage.unclamp()).onFalse(carriage.clampElement());
-		TGR.Extake.tgr().onTrue(carriage.unclamp());
+		TGR.Intake.tgr().onTrue(clamp.unclamp()).onFalse(clamp.clamp());// TODO see if we need to do a slight wait
+																		// between clamp and unclamp
+		TGR.Extake.tgr().onTrue(clamp.unclamp());
 		TGR.FlipElement.tgr()
-				.onTrue(carriage.flipElement());
+				.onTrue(CommandCombos.reorient(intake, clamp, flipper));
 
 		TGR.ResetWithLimelight.tgr().and(() -> !TGR.DTM.bool()).onTrue(new ProxyCommand(() -> {
 			return swerveDrive.resetPoseToLimelightPose(limelight.getBotPose());
@@ -110,12 +130,13 @@ public class RobotContainer {
 	}
 
 	public enum TGR {
+		DTM(driverController.leftTrigger(0.15)),
 		Creep(driverController.rightTrigger(0.15)),
 		Intake(driverController.rightBumper()),
 		Extake(driverController.leftBumper()), // Subject to Change
 		Characterize(driverController.a().and(() -> EnabledDebugModes.CharacterizeEnabled)),
 		PrepareBalance(driverController.a().and(() -> !EnabledDebugModes.CharacterizeEnabled)),
-		DTM(driverController.leftTrigger(0.15)),
+
 		CubeLights(operatorController.b()), // Sets color
 		// to violet
 		// indicating

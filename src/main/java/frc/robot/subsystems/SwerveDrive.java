@@ -10,6 +10,7 @@ import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.PrintCommand;
 import frc.robot.Constants.Drive.AUTO;
 import frc.robot.Constants.Drive.Config;
 import frc.robot.RobotContainer.AXS;
@@ -45,6 +46,7 @@ public class SwerveDrive extends SwerveSubsystem {
             Rotation2d.fromDegrees(23.90));
     final static WPI_Pigeon2 pigeon2 = new WPI_Pigeon2(Config.PIGEON2_ID);
     final static SwerveDrivetrainModel dt = new SwerveDrivetrainModel(fl, fr, bl, br, pigeon2);
+    Pose2d gridPose;
     double timeCharacterizing;
     boolean resetThetaController;
     final Field2d field = new Field2d();
@@ -57,7 +59,27 @@ public class SwerveDrive extends SwerveSubsystem {
     @Override
     public void periodic() {
         super.periodic();
+        // TODO update POSE using limelight vision
         field.setRobotPose(dt.getPose());
+        SmartDashboard.putNumber("Pitch", getSlope());
+    }
+
+    public Command balance() {
+        return driveStraightAutonomous(0).until(this::isFacingForward)
+                .andThen(driveStraightAutonomous(0.15).until(() -> getSlope() < -2))
+                .andThen(Commands.print("I'm going on a trip in my favorite rocket ship"))
+                .andThen(driveStraightAutonomous(0.15).until(() -> getSlope() > -2))
+                .andThen(Commands.waitSeconds(0.5000))
+                .andThen(driveStraightAutonomous(-0.15).until(() -> getSlope() < 2))
+                .andThen(driveStraightAutonomous(0)).andThen(Commands.print("Yo! I am finished, brother!"));
+    }
+
+    public double getSlope() {
+        return pigeon2.getPitch();
+    }
+
+    public boolean isFacingForward() {
+        return Math.abs(dt.getGyroHeading().getDegrees() % 360) < 2.0;
     }
 
     public Command driveOnPath(Path path) {
@@ -68,6 +90,12 @@ public class SwerveDrive extends SwerveSubsystem {
         return dt.createCommandForTrajectory(trajectory, this);
     }
 
+    /**
+     * Drives the robot using forward backward and left right and rotation inputs.
+     * Has Creep mode to move the robot at a lower speed
+     * 
+     * @return The command that moves the robot
+     */
     public Command drive() {
         return run(() -> {
             dt.setModuleStates(new SwerveInput(AXS.Drive_ForwardBackward.getAxis(),
@@ -76,6 +104,14 @@ public class SwerveDrive extends SwerveSubsystem {
         });
     }
 
+    /**
+     * Drives the robot using forward backward and left right inputs. The robot will
+     * rotate to the desired angle. Has Creep mode to move the robot at a lower
+     * speed
+     *
+     * @param rot Desired angle to rotate the robot to
+     * @return The command that moves the robot with desired angle
+     */
     public Command driveWithDesiredAngle(Rotation2d rot) {
         return Commands.sequence(runOnce(() -> resetThetaController = true), run(() -> {
             dt.setModuleStates(new SwerveInput(AXS.Drive_ForwardBackward.getAxis(),
@@ -85,12 +121,50 @@ public class SwerveDrive extends SwerveSubsystem {
         }));
     }
 
+    /**
+     * Drives the robot in autonomous mode for balancing on the charge station using
+     * a percent output to drive onto it. The rotation of the robot aligns to zero
+     * and drives straight
+     * 
+     * @param percent The percent the robot will drive straight forward
+     * @return The command that moves the robot in a straight path
+     */
+    public Command driveStraightAutonomous(double percent) {
+        return Commands.sequence(runOnce(() -> resetThetaController = true), run(() -> {
+            dt.setModuleStates(new SwerveInput(percent,
+                    0,
+                    0), new Rotation2d(), false, resetThetaController);
+            resetThetaController = false;
+        }));
+    }
+
+    /**
+     * Follows an autonomously generated path to a specific grid position in which
+     * the operator chooses generates a path on the fly and drives the robot in DTM
+     * to the position
+     * 
+     * @param gridPose The grid Position the robot will generate a path to(Left
+     *                 Right or Center)
+     * @return The command that the robot will use to autonomously follow in DTM to
+     *         a grid position
+     */
+
     public Command followPathtoGridPose(Pose2d gridPose) {
+        this.gridPose = gridPose;
         if (gridPose == null)
-            return Commands.none();
+            return Commands.print("Grid Pose Null");
         return dt.createOnTheFlyPathCommand(dt.getPose(), dt.getSpeeds(), gridPose,
                 gridPose.getTranslation().minus(dt.getPose().getTranslation()).getAngle(), 0.0,
                 AUTO.kMaxSpeedMetersPerSecond, AUTO.kMaxAccelerationMetersPerSecondSquared, this);
+    }
+
+    /**
+     * Checks to see if there is a valid grid position that limelight picks up
+     * 
+     * @return Valid grid position
+     */
+    public boolean isGridPoseValid() {
+        return gridPose != null;
     }
 
     public Command resetPoseToLimelightPose(Pose2d pose) {
