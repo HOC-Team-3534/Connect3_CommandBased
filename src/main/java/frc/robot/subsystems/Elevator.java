@@ -16,23 +16,23 @@ public class Elevator extends SubsystemBase {
     boolean testing = true;
 
     public Elevator() {
-        if (!testing) {
-            elevatorMotor = new WPI_TalonFX(14);
-            elevatorMotor
-                    .configMotionCruiseVelocity(
-                            ELEVATOR.kElevatorCruiseVelocity / ELEVATOR.kElevatorCountsToInches / 10.0);
-            elevatorMotor
-                    .configMotionAcceleration(ELEVATOR.kElevatorAcceleration / ELEVATOR.kElevatorCountsToInches / 10.0);
-            elevatorMotor.configMotionSCurveStrength(1);
-            elevatorMotor.config_kP(0, 0);// TODO config and find the values by
-                                          // tuning
-            elevatorMotor.config_kI(0, 0);
-            elevatorMotor.config_kD(0, 0);// TODO config and find the values by
-                                          // tuning
-            elevatorMotor.config_kF(0, 0);// TODO config and find the values by
-                                          // tuning
-            elevatorMotor.setSelectedSensorPosition(0);
-        }
+        // if (!testing) {
+        elevatorMotor = new WPI_TalonFX(14);
+        elevatorMotor
+                .configMotionCruiseVelocity(
+                        ELEVATOR.kElevatorCruiseVelocity / ELEVATOR.kElevatorCountsToInches / 10.0);
+        elevatorMotor
+                .configMotionAcceleration(ELEVATOR.kElevatorAcceleration / ELEVATOR.kElevatorCountsToInches / 10.0);
+        elevatorMotor.configMotionSCurveStrength(1);
+        elevatorMotor.config_kP(0, 0);// TODO config and find the values by
+                                      // tuning
+        elevatorMotor.config_kI(0, 0);
+        elevatorMotor.config_kD(0, 0);// TODO config and find the values by
+                                      // tuning
+        elevatorMotor.config_kF(0, 0);// TODO config and find the values by
+                                      // tuning
+        elevatorMotor.setSelectedSensorPosition(0);
+        // }
     }
 
     public Command goToDesiredHeight() {

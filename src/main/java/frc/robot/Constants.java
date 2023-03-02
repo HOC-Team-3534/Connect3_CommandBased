@@ -18,13 +18,14 @@ import swerve.SDSModuleConfiguration;
  * wherever the constants are needed, to reduce verbosity.
  */
 public final class Constants {
-  public static RobotType ROBOTTYPE = RobotType.CBOT;
+  public static RobotType ROBOTTYPE = RobotType.PBOT;
   public static final int PIGEON_2 = 19; // FIXME Set Pigeon ID
   public static double LOOP_PERIOD_MILLIS = 20;
 
   public enum RobotType {
     CBOT,
-    PBOT
+    PBOT,
+    TBOT
   }
 
   public static final class Drive {
@@ -67,7 +68,7 @@ public final class Constants {
     }
 
     public static final class Config {
-      public static final int PIGEON2_ID = 13;
+      public static final int PIGEON2_ID = 19;
 
       public static final class DriveCharacterization {
         public static final double QUASIASTIC_VOLTAGE = 1.0; // voltage
@@ -134,6 +135,8 @@ public final class Constants {
   }
 
   public static final class EnabledDebugModes {
-    public static final boolean CharacterizeEnabled = false;
+    public static final boolean CharacterizeEnabled = true;
+    public static final boolean DTMEnabled = false;
+    public static final boolean updatePoseWithVisionEnabled = false;
   }
 }

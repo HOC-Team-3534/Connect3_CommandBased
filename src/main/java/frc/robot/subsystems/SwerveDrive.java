@@ -11,10 +11,12 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.PrintCommand;
+import frc.robot.Constants.RobotType;
 import frc.robot.Constants.Drive.AUTO;
 import frc.robot.Constants.Drive.Config;
 import frc.robot.RobotContainer.AXS;
 import frc.robot.RobotContainer.TGR;
+import frc.robot.Constants;
 import frc.robot.Path;
 import frc.robot.SwerveHelper;
 import swerve.SwerveDrivetrainModel;
@@ -23,27 +25,35 @@ import swerve.SwerveModule;
 import swerve.SwerveSubsystem;
 
 public class SwerveDrive extends SwerveSubsystem {
+    final static double fl_degrees = (Constants.ROBOTTYPE == RobotType.TBOT) ? 86.13
+            : (Constants.ROBOTTYPE == RobotType.PBOT) ? 273.07 : 0.0;
+    final static double fr_degrees = (Constants.ROBOTTYPE == RobotType.TBOT) ? 3.86
+            : (Constants.ROBOTTYPE == RobotType.PBOT) ? 304.62 : 0.0;
+    final static double bl_degrees = (Constants.ROBOTTYPE == RobotType.TBOT) ? 274.30
+            : (Constants.ROBOTTYPE == RobotType.PBOT) ? 130.86 : 0.0;
+    final static double br_degrees = (Constants.ROBOTTYPE == RobotType.TBOT) ? 23.90
+            : (Constants.ROBOTTYPE == RobotType.PBOT) ? 20.39 : 0.0;
     final static boolean loadedConstants = SwerveHelper.loadSwerveConstants();
     final static WPI_TalonFX FL_drive = new WPI_TalonFX(1);
     final static WPI_TalonFX FL_steer = new WPI_TalonFX(3);
     final static CANCoder FL_cancoder = new CANCoder(2);
     final static SwerveModule fl = new SwerveModule(FL_drive, FL_steer, FL_cancoder,
-            Rotation2d.fromDegrees(86.13));
+            Rotation2d.fromDegrees(fl_degrees));
     final static WPI_TalonFX FR_drive = new WPI_TalonFX(4);
     final static WPI_TalonFX FR_steer = new WPI_TalonFX(6);
     final static CANCoder FR_cancoder = new CANCoder(5);
     final static SwerveModule fr = new SwerveModule(FR_drive, FR_steer, FR_cancoder,
-            Rotation2d.fromDegrees(3.86));
+            Rotation2d.fromDegrees(fr_degrees));
     final static WPI_TalonFX BL_drive = new WPI_TalonFX(7);
     final static WPI_TalonFX BL_steer = new WPI_TalonFX(9);
     final static CANCoder BL_cancoder = new CANCoder(8);
     final static SwerveModule bl = new SwerveModule(BL_drive, BL_steer, BL_cancoder,
-            Rotation2d.fromDegrees(274.30));
+            Rotation2d.fromDegrees(bl_degrees));
     final static WPI_TalonFX BR_drive = new WPI_TalonFX(10);
     final static WPI_TalonFX BR_steer = new WPI_TalonFX(12);
     final static CANCoder BR_cancoder = new CANCoder(11);
     final static SwerveModule br = new SwerveModule(BR_drive, BR_steer, BR_cancoder,
-            Rotation2d.fromDegrees(23.90));
+            Rotation2d.fromDegrees(br_degrees));
     final static WPI_Pigeon2 pigeon2 = new WPI_Pigeon2(Config.PIGEON2_ID);
     final static SwerveDrivetrainModel dt = new SwerveDrivetrainModel(fl, fr, bl, br, pigeon2);
     Pose2d gridPose;

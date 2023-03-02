@@ -59,7 +59,7 @@ public class RobotContainer {
 		// Configure the trigger bindings
 		configureBindings();
 		swerveDrive.setDefaultCommand(swerveDrive.drive());
-		// intake.setDefaultCommand(intake.runIntake());
+		intake.setDefaultCommand(intake.runIntake());
 		lights.setDefaultCommand(lights.runLights());
 		// Autonomous Command Sendable Chooser
 		autonChooser.setDefaultOption("No Auton", Commands.none());
@@ -129,7 +129,7 @@ public class RobotContainer {
 	}
 
 	public enum TGR {
-		DTM(driverController.leftTrigger(0.15)),
+		DTM(driverController.leftTrigger(0.15).and(() -> EnabledDebugModes.DTMEnabled)),
 		Creep(driverController.rightTrigger(0.15)),
 		Intake(driverController.rightBumper()),
 		Extake(driverController.leftBumper()), // Subject to Change

@@ -105,7 +105,8 @@ public class Limelight extends SubsystemBase {
 		}
 		var pose = new Pose2d(botPoseArray[0], botPoseArray[1], Rotation2d.fromDegrees(botPoseArray[5]));
 		var latency = botPoseArray[6] / 1000.0;
-		visionPoseUpdate.accept(pose, latency);
+		if (Constants.EnabledDebugModes.updatePoseWithVisionEnabled)
+			visionPoseUpdate.accept(pose, latency);
 		return pose;
 
 	}
