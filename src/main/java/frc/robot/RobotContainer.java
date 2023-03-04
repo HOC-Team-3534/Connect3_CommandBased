@@ -19,7 +19,6 @@ import java.util.concurrent.Callable;
 
 import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -75,6 +74,9 @@ public class RobotContainer {
 		autonChooser.addOption("Bump Side Place 2 Pick Up",
 				Autos.place2FromSides(swerveDrive, intake, elevator, clamp, flipper, Path.Far_Right_Path_Place2,
 						Path.Far_Right_Path_PickUp));
+		autonChooser.addOption("Test Auto Balance Forward", swerveDrive.balanceForward(limelight));
+		autonChooser.addOption("Test Auto Balance Backward", swerveDrive.balanceBackward(limelight));
+		autonChooser.addOption("Test Auto Balance Across and Back", swerveDrive.balanceAcrossAndBack(limelight));
 		SmartDashboard.putData(autonChooser);
 		SmartDashboard.putData(swerveDrive);
 		SmartDashboard.putData(intake);
@@ -121,6 +123,8 @@ public class RobotContainer {
 
 		TGR.Flap.tgr().whileTrue(clamp.flap()).onFalse(clamp.unclamp());
 
+		TGR.PlacePiece.tgr().debounce(0.5).whileTrue(CommandCombos.moveElevatorAndPlace(elevator, clamp, flipper));
+
 	}
 
 	/**
@@ -139,7 +143,8 @@ public class RobotContainer {
 		Extake(driverController.rightBumper()), // Subject to Change
 		Characterize(driverController.a().and(() -> EnabledDebugModes.CharacterizeEnabled)),
 		PrepareBalance(driverController.a().and(() -> !EnabledDebugModes.CharacterizeEnabled)),
-		Flap(driverController.y()),
+		Flap(operatorController.rightTrigger(0.15)),
+		PlacePiece(driverController.y().and(() -> !DTM.bool())),
 
 		CubeLights(operatorController.b()), // Sets color
 		// to violet

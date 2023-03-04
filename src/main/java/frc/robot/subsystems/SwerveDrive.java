@@ -10,7 +10,6 @@ import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
-import edu.wpi.first.wpilibj2.command.PrintCommand;
 import frc.robot.Constants.RobotType;
 import frc.robot.Constants.Drive.AUTO;
 import frc.robot.Constants.Drive.Config;
@@ -72,6 +71,7 @@ public class SwerveDrive extends SwerveSubsystem {
         // TODO update POSE using limelight vision
         field.setRobotPose(dt.getPose());
         SmartDashboard.putNumber("Pitch", getSlope());
+
     }
 
     public Command balanceForward(Limelight limelight) {

@@ -17,7 +17,6 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.concurrent.Callable;
 import java.util.function.BiConsumer;
-import java.util.function.Consumer;
 
 public class Limelight extends SubsystemBase {
 	final Translation2d shiftAway = new Translation2d(
@@ -64,6 +63,7 @@ public class Limelight extends SubsystemBase {
 	public void periodic() {
 		super.periodic();
 		getBotPose(false);
+		SmartDashboard.putNumber("Height", getBotHeight());
 	}
 
 	public void getTable() {

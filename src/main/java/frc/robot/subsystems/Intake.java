@@ -9,7 +9,7 @@ import frc.robot.RobotContainer.TGR;
 
 public class Intake extends SubsystemBase {
     WPI_TalonFX topMotor, botMotor;
-    boolean testing = false;
+    boolean testing = true;
 
     public Intake() {
         if (!testing) {

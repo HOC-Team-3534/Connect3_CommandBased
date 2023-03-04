@@ -23,6 +23,9 @@ public class Clamp extends SubsystemBase {
             clamp.config_kI(0, 0);
             clamp.config_kD(0, 0);
             clamp.config_kF(0, 0);
+            clamp.configMotionAcceleration(1.0);
+            clamp.configMotionCruiseVelocity(1.0);
+            clamp.configMotionSCurveStrength(1);
         }
     }
 
