@@ -48,6 +48,26 @@ public final class Autos {
 
   /**
    * 
+   * @param swerve   the swerve drive subsystem
+   * @param intake   the intake subsystem
+   * @param elevator the elevator subsystem
+   * @param clamp    the clamp subsystem
+   * @param flipper  the flipper subsystem
+   * @param path1    the path to follow after placing the first piece, MUST end
+   *                 at the grid side of charge station and have a "place" event
+   * @return autonomous command to place 2 elements and optionally pickup 3rd
+   *         piece from one of the sides
+   */
+  public static Command place2FromSidesAndBalance(SwerveDrive swerve, Intake intake, Elevator elevator, Clamp clamp,
+      Flipper flipper, Limelight limelight, Path path1) {
+    return moveElevatorAndPlace(Height.HIGH, elevator, clamp, flipper)
+        .andThen(driveWithIntakeWithEvent(path1, intake, swerve, true, "place",
+            moveElevatorAndPlace(Height.LOW, elevator, clamp, flipper)))
+        .andThen(swerve.balanceForward(limelight));
+  }
+
+  /**
+   * 
    * @param swerve    the swerve drive subsystem
    * @param intake    the intake subsystem
    * @param elevator  the elevator subsystem
@@ -95,6 +115,22 @@ public final class Autos {
   private static Command moveElevatorAndPlace(Height height, Elevator elevator, Clamp clamp, Flipper flipper) {
     return elevator.goToDesiredHeight(height).andThen(clamp.unclamp(), flipper.flip(false))
         .finallyDo((interrupted) -> elevator.goToDesiredHeight(Height.LOW).initialize());
+  }
+
+  /**
+   * 
+   * @param path          the path to follow
+   * @param intake        the intake subsystem
+   * @param swerve        the swerve drive subsystem
+   * @param resetToIntial should the position be reset to the start of the path
+   * @param eventName     name of the event from path plannner
+   * @param eventCommand  the command to run when the event on the path happens
+   * @return the autonomous combo command to drive along a path while turning on
+   *         the intake
+   */
+  private static Command driveWithIntakeWithEvent(Path path, Intake intake, SwerveDrive swerve, boolean resetToIntial,
+      String eventName, Command eventCommand) {
+    return Commands.deadline(swerve.driveOnPath(path, resetToIntial, eventName, eventCommand), intake.runIntakeAuton());
   }
 
   /**

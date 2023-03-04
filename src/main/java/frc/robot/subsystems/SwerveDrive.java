@@ -1,9 +1,14 @@
 package frc.robot.subsystems;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
 import com.ctre.phoenix.sensors.CANCoder;
 import com.ctre.phoenix.sensors.WPI_Pigeon2;
 import com.pathplanner.lib.PathPlannerTrajectory;
+import com.pathplanner.lib.commands.FollowPathWithEvents;
+
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
@@ -105,6 +110,13 @@ public class SwerveDrive extends SwerveSubsystem {
 
     public boolean isFacingForward() {
         return Math.abs(dt.getGyroHeading().getDegrees() % 360) < 2.0;
+    }
+
+    public Command driveOnPath(Path path, boolean resetToInitial, String eventName, Command eventCommand) {
+        Map<String, Command> commands = new HashMap<>();
+        commands.put(eventName, eventCommand);
+        var eventMarkers = path.getPath().getMarkers();
+        return new FollowPathWithEvents(driveOnPath(path, resetToInitial), eventMarkers, commands);
     }
 
     public Command driveOnPath(Path path, boolean resetToInitial) {
