@@ -13,39 +13,100 @@ import frc.robot.subsystems.Intake;
 import frc.robot.subsystems.Limelight;
 import frc.robot.subsystems.SwerveDrive;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.Commands;
 
 public final class Autos {
   /** Example static factory for an autonomous command. */
-  public static CommandBase driveForward(SwerveDrive swerve) {
+  public static Command driveForward(SwerveDrive swerve) {
     return Commands.sequence(swerve.driveOnPath(Path.Drive_Forward_1, true));
   }
 
-  public static CommandBase place2(SwerveDrive swerve, Intake intake, Elevator elevator, Clamp clamp,
-      Flipper flipper,
-      boolean prepPickUp, Path path1, Path path2) {
+  /**
+   * 
+   * @param swerve   the swerve drive subsystem
+   * @param intake   the intake subsystem
+   * @param elevator the elevator subsystem
+   * @param clamp    the clamp subsystem
+   * @param flipper  the flipper subsystem
+   * @param path1    the path to follow after placing the first piece, MUST end
+   *                 at a grid place location
+   * @param path2    optional path to follow after placing second piece to go and
+   *                 pick up a third piece, MUST start at the same location as
+   *                 path1
+   * @return autonomous command to place 2 elements and optionally pickup 3rd
+   *         piece from one of the sides
+   */
+  public static Command place2FromSides(SwerveDrive swerve, Intake intake, Elevator elevator, Clamp clamp,
+      Flipper flipper, Path path1, Path path2) {
     var command = moveElevatorAndPlace(Height.HIGH, elevator, clamp, flipper)
         .andThen(driveWithIntake(path1, intake, swerve, true))
         .andThen(moveElevatorAndPlace(Height.HIGH, elevator, clamp, flipper));
     if (path2 != null)
-      command = command.andThen(driveWithIntake(path2, intake, swerve, false).unless(() -> !prepPickUp));
+      command = command.andThen(driveWithIntake(path2, intake, swerve, false));
     return command;
   }
 
-  private static Command autonomousBalance(SwerveDrive swerve, Limelight limelight) {
-    return swerve.driveStraightAutonomous(0).until(swerve::isFacingForward)
-        .andThen(
-            swerve.driveStraightAutonomous(0.15).until(() -> limelight.getHeight() > 1 && limelight.getHeight() < 1));
-
+  /**
+   * 
+   * @param swerve    the swerve drive subsystem
+   * @param intake    the intake subsystem
+   * @param elevator  the elevator subsystem
+   * @param clamp     the clamp subsystem
+   * @param flipper   the flipper subsystem
+   * @param limelight the limelight subsystem
+   * @param path1     the path to follow after placing the first piece, MUST end
+   *                  forward of the charge station across from the center grid
+   *                  april tag
+   * @return autonomous command to place 1 elements and balance on the charge
+   *         station from one of the sides
+   */
+  public static Command place1andBalanceFromSides(SwerveDrive swerve, Intake intake, Elevator elevator, Clamp clamp,
+      Flipper flipper, Limelight limelight, Path path1) {
+    return moveElevatorAndPlace(Height.HIGH, elevator, clamp, flipper)
+        .andThen(driveWithIntake(path1, intake, swerve, true), swerve.balanceBackward(limelight));
   }
 
-  private static CommandBase moveElevatorAndPlace(Height height, Elevator elevator, Clamp clamp, Flipper flip) {
-    return elevator.goToDesiredHeight(height).andThen(clamp.unclamp().andThen(flip.flip(false)))
-        .andThen(elevator.goToDesiredHeight(Height.LOW));
+  /**
+   * 
+   * @param swerve    the swerve drive subsystem
+   * @param intake    the intake subsystem
+   * @param elevator  the elevator subsystem
+   * @param clamp     the clamp subsystem
+   * @param flipper   the flipper subsystem
+   * @param limelight the limelight subsystem
+   * @return autonomous command to place 1 elements, cross the charge station, and
+   *         balance on the charge
+   *         station from the center
+   */
+  public static Command place1andBalanceFromCenter(SwerveDrive swerve, Intake intake, Elevator elevator, Clamp clamp,
+      Flipper flipper, Limelight limelight) {
+    return moveElevatorAndPlace(Height.HIGH, elevator, clamp, flipper).andThen(swerve.balanceAcrossAndBack(limelight));
   }
 
-  private static CommandBase driveWithIntake(Path path, Intake intake, SwerveDrive swerve, boolean resetToIntial) {
+  /**
+   * 
+   * @param height   the desired height to place the game element
+   * @param elevator the elevator subsystem
+   * @param clamp    the clamp subsystem
+   * @param flipper  the flipper subsystem
+   * @return the autonomomous combo command to moe the elevator to desired height
+   *         and then place the game element and bring the elevator back down
+   */
+  private static Command moveElevatorAndPlace(Height height, Elevator elevator, Clamp clamp, Flipper flipper) {
+    return elevator.goToDesiredHeight(height).andThen(clamp.unclamp(), flipper.flip(false))
+        .finallyDo((interrupted) -> elevator.goToDesiredHeight(Height.LOW).initialize());
+  }
+
+  /**
+   * 
+   * @param path          the path to follow
+   * @param intake        the intake subsystem
+   * @param swerve        the swerve drive subsystem
+   * @param resetToIntial should the position be reset to the start of the path
+   * @return the autonomous combo command to drive along a path while turning on
+   *         the intake
+   */
+  private static Command driveWithIntake(Path path, Intake intake, SwerveDrive swerve, boolean resetToIntial) {
     return Commands.deadline(swerve.driveOnPath(path, resetToIntial), intake.runIntakeAuton());
   }
 

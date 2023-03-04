@@ -114,14 +114,8 @@ public final class Constants {
   }
 
   public static final class ELEVATOR {
-    public static final double kElevatorCruiseVelocity = 24.0;// Inches per
-                                                              // second
-    public static final double kElevatorAcceleration = 36.0;// Inches per
-                                                            // second per
-                                                            // second
-    public static final double kElevatorCountsToInches = 0;// TODO find the
-                                                           // ratio of this
-                                                           // number
+    public static final double kElevatorCruiseVelocity = 10000.0;// Counts per 100ms
+    public static final double kElevatorAcceleration = 20000.0;// Counts per 100ms per second
 
     public static enum Height {
       HIGH(-200000),

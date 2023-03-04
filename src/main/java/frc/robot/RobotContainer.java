@@ -19,6 +19,7 @@ import java.util.concurrent.Callable;
 
 import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -65,14 +66,14 @@ public class RobotContainer {
 		autonChooser.setDefaultOption("No Auton", Commands.none());
 		autonChooser.addOption("Drive Forward", Autos.driveForward(swerveDrive));
 		autonChooser.addOption("Loading Zone Place 2",
-				Autos.place2(swerveDrive, intake, elevator, clamp, flipper, false, Path.Far_Left_Path_Place2, null));
+				Autos.place2FromSides(swerveDrive, intake, elevator, clamp, flipper, Path.Far_Left_Path_Place2, null));
 		autonChooser.addOption("Loading Zone Place 2 Pick Up",
-				Autos.place2(swerveDrive, intake, elevator, clamp, flipper, true, Path.Far_Left_Path_Place2,
+				Autos.place2FromSides(swerveDrive, intake, elevator, clamp, flipper, Path.Far_Left_Path_Place2,
 						Path.Far_Left_Path_Place2_Pick_Up));
 		autonChooser.addOption("Bump Side Place 2",
-				Autos.place2(swerveDrive, intake, elevator, clamp, flipper, false, Path.Far_Right_Path_Place2, null));
+				Autos.place2FromSides(swerveDrive, intake, elevator, clamp, flipper, Path.Far_Right_Path_Place2, null));
 		autonChooser.addOption("Bump Side Place 2 Pick Up",
-				Autos.place2(swerveDrive, intake, elevator, clamp, flipper, true, Path.Far_Right_Path_Place2,
+				Autos.place2FromSides(swerveDrive, intake, elevator, clamp, flipper, Path.Far_Right_Path_Place2,
 						Path.Far_Right_Path_PickUp));
 		SmartDashboard.putData(autonChooser);
 		SmartDashboard.putData(swerveDrive);
@@ -114,7 +115,7 @@ public class RobotContainer {
 		TGR.FlipElement.tgr()
 				.onTrue(CommandCombos.reorient(intake, clamp, flipper));
 
-		TGR.ResetWithLimelight.tgr().and(() -> !TGR.DTM.bool()).onTrue(new ProxyCommand(() -> {
+		TGR.ResetWithLimelight.tgr().onTrue(new ProxyCommand(() -> {
 			return swerveDrive.resetPoseToLimelightPose(limelight.getBotPose(false));
 		}));
 
@@ -152,7 +153,7 @@ public class RobotContainer {
 		// cone to be
 		// picked up
 		// ResetPoseToZero(driverController.rightStick()),
-		ResetWithLimelight(driverController.leftStick()),
+		ResetWithLimelight(driverController.leftStick().and(() -> !DTM.bool())),
 		GridLeft(operatorController.leftBumper()),
 		GridRight(operatorController.rightBumper()),
 		PlaceMid(operatorController.a()),
@@ -167,7 +168,7 @@ public class RobotContainer {
 		}
 
 		public Trigger tgr() {
-			return trigger;
+			return trigger.and(() -> !Robot.isAutonomous);
 		}
 
 		public boolean bool() {

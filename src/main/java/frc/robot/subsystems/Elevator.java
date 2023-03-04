@@ -9,27 +9,26 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.ELEVATOR;
 import frc.robot.Constants.ELEVATOR.Height;
 import frc.robot.RobotContainer.TGR;
-import frc.robot.subsystems.SwerveDrive.GridPosition;
 
 public class Elevator extends SubsystemBase {
     WPI_TalonFX elevatorMotor;
     boolean testing = true;
 
     public Elevator() {
-        // if (!testing) {
+        // if (testing) {
         elevatorMotor = new WPI_TalonFX(14);
         elevatorMotor.setInverted(true);
         elevatorMotor
                 .configMotionCruiseVelocity(
-                        ELEVATOR.kElevatorCruiseVelocity / ELEVATOR.kElevatorCountsToInches / 10.0);
+                        ELEVATOR.kElevatorCruiseVelocity);
         elevatorMotor
-                .configMotionAcceleration(ELEVATOR.kElevatorAcceleration / ELEVATOR.kElevatorCountsToInches / 10.0);
-        elevatorMotor.configMotionSCurveStrength(1);
-        elevatorMotor.config_kP(0, 0);// TODO config and find the values by
-                                      // tuning
+                .configMotionAcceleration(ELEVATOR.kElevatorAcceleration);
+        elevatorMotor.configMotionSCurveStrength(2);
+        elevatorMotor.config_kP(0, 0.05);// TODO config and find the values by
+                                         // tuning
         elevatorMotor.config_kI(0, 0);
-        elevatorMotor.config_kD(0, 0);// TODO config and find the values by
-                                      // tuning
+        elevatorMotor.config_kD(0, 0.5);// TODO config and find the values by
+                                        // tuning
         elevatorMotor.config_kF(0, 0);// TODO config and find the values by
                                       // tuning
         elevatorMotor.setSelectedSensorPosition(0);
@@ -67,13 +66,10 @@ public class Elevator extends SubsystemBase {
     }
 
     private void changeHeight(ELEVATOR.Height height) {
-        elevatorMotor.set(ControlMode.MotionMagic, height.height / ELEVATOR.kElevatorCountsToInches);
+        elevatorMotor.set(ControlMode.MotionMagic, height.height);
     }
 
     private boolean isCorrectElevatorHeight() {
-        return Math.abs(elevatorMotor.getClosedLoopTarget() - elevatorMotor.getSelectedSensorPosition()) < 20; // TODO
-                                                                                                               // determine
-                                                                                                               // valid
-                                                                                                               // window
+        return Math.abs(elevatorMotor.getClosedLoopTarget() - elevatorMotor.getSelectedSensorPosition()) < 4000;
     }
 }

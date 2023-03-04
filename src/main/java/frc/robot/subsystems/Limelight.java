@@ -189,27 +189,36 @@ public class Limelight extends SubsystemBase {
 		return table.getEntry("tvert").getDouble(0.0);
 	}
 
-	public double getPoseHeight(){
-		if(isValid())
+	public double getBotHeight() {
+		if (!isValid() && RobotBase.isReal())
 			return 0;
+		if (getAprilTag() <= 0)
+			return 0;
+		double[] botPoseArray;
+		switch (DriverStation.getAlliance()) {
 			case Blue:
-				if (check && !Arrays.asList(6, 7, 8).contains(getAprilTag()))
-					return null;
 				botPoseArray = (table.getEntry("botpose_wpiblue").getDoubleArray(new double[7]));
 				break;
 
 			case Red:
-				if (check && !Arrays.asList(1, 2, 3).contains(getAprilTag()))
-					return null;
 				botPoseArray = (table.getEntry("botpose_wpired").getDoubleArray(new double[7]));
 				break;
 
 			case Invalid:
-				return null;
+				return 0;
 
 			default:
-				return null;
-		}return table.getEntry()
+				return 0;
+		}
+		/*
+		 * TODO Make sure you are mapping the right values in the array to the
+		 * right places and that you are negating the values
+		 * 
+		 */
+		if (botPoseArray == null || botPoseArray.length < 7) {
+			return 0;
+		}
+		return botPoseArray[2];
 
 	}
 

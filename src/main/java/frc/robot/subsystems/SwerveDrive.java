@@ -74,14 +74,25 @@ public class SwerveDrive extends SwerveSubsystem {
         SmartDashboard.putNumber("Pitch", getSlope());
     }
 
-    public Command balance() {
+    public Command balanceForward(Limelight limelight) {
+        /* height of charge station 9 1/8 inches or ~0.232 meters off the ground */
         return driveStraightAutonomous(0).until(this::isFacingForward)
-                .andThen(driveStraightAutonomous(0.15).until(() -> getSlope() < -2))
-                .andThen(Commands.print("I'm going on a trip in my favorite rocket ship"))
-                .andThen(driveStraightAutonomous(0.15).until(() -> getSlope() > -2))
-                .andThen(Commands.waitSeconds(0.5000))
-                .andThen(driveStraightAutonomous(-0.15).until(() -> getSlope() < 2))
-                .andThen(driveStraightAutonomous(0)).andThen(Commands.print("Yo! I am finished, brother!"));
+                .andThen(driveStraightAutonomous(0.15).until(() -> limelight.getHeight() >= 0.21))
+                .andThen(runOnce(() -> dt.setVoltageToZero()));
+    }
+
+    public Command balanceBackward(Limelight limelight) {
+        return driveStraightAutonomous(0).until(this::isFacingForward)
+                .andThen(driveStraightAutonomous(-0.15).until(() -> getSlope() < -2))
+                .andThen(balanceForward(limelight));
+    }
+
+    public Command balanceAcrossAndBack(Limelight limelight) {
+        return driveStraightAutonomous(0).until(this::isFacingForward)
+                .andThen(driveStraightAutonomous(0.15).until(() -> limelight.getHeight() >= 0.21))
+                .andThen(driveStraightAutonomous(0.15).until(() -> getSlope() > 2))
+                .andThen(driveStraightAutonomous(0.15).until(() -> getSlope() < 2))
+                .andThen(driveStraightAutonomous(0.15).withTimeout(0.5)).andThen(balanceBackward(limelight));
     }
 
     public void updatePoseWithVision(Pose2d pose, double latency) {
