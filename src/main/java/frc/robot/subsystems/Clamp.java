@@ -1,5 +1,7 @@
 package frc.robot.subsystems;
 
+import com.ctre.phoenix.motorcontrol.ControlMode;
+import com.ctre.phoenix.motorcontrol.FeedbackDevice;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 
 import edu.wpi.first.math.controller.ProfiledPIDController;
@@ -8,20 +10,23 @@ import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.ProfiledPIDCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.Commands;
 
 public class Clamp extends SubsystemBase {
     boolean testing = true;
     WPI_TalonSRX clamp;
-    Encoder clampEncoder;
-    ProfiledPIDController clampPID = new ProfiledPIDController(0, 0, 0, new TrapezoidProfile.Constraints(0, 0));
 
     public Clamp() {
         if (!testing) {
             clamp = new WPI_TalonSRX(18);
-            clampEncoder = new Encoder(2, 3);
-            clampEncoder.reset();
+            clamp.configFactoryDefault();
+            clamp.configSelectedFeedbackSensor(FeedbackDevice.QuadEncoder, 0, 20);
+            clamp.config_kP(0, 0);
+            clamp.config_kI(0, 0);
+            clamp.config_kD(0, 0);
+            clamp.config_kF(0, 0);
         }
     }
 
@@ -34,9 +39,8 @@ public class Clamp extends SubsystemBase {
     private CommandBase changeClamp(ClampPosition position) {
         if (testing)
             return Commands.none();
-        return new ProfiledPIDCommand(clampPID, clampEncoder::getDistance, () -> position.position,
-                (percentOutput, setPoint) -> clamp.set(percentOutput), this)
-                .until(() -> atPosition(position));
+        return runOnce(() -> clamp.set(ControlMode.MotionMagic, position.position))
+                .andThen(Commands.waitUntil(() -> atPosition(position)));
     }
 
     public CommandBase clamp() {
@@ -51,14 +55,18 @@ public class Clamp extends SubsystemBase {
         return changeClamp(ClampPosition.Open);
     }
 
+    public Command flap() {
+        return Commands.repeatingSequence(clamp(), Commands.waitSeconds(0.2), unclamp(), Commands.waitSeconds(0.2));
+    }
+
     private boolean atPosition(ClampPosition position) {
-        return Math.abs(clampEncoder.getDistance() - position.position) <= 0;
+        return Math.abs(getPosition() - position.position) <= 0;
     }
 
     public double getPosition() {
         if (testing)
             return 0;
-        return clampEncoder.getDistance();
+        return clamp.getSelectedSensorPosition();
     }
 
     enum ClampPosition {

@@ -35,13 +35,15 @@ public final class Constants {
        * <p>
        * Should be measured from center to center.
        */
-      public static final double TRACKWIDTH_METERS = 0.578; // FIXME
+      public final static double TRACKWIDTH_METERS = (Constants.ROBOTTYPE == RobotType.TBOT) ? 0.578
+          : (Constants.ROBOTTYPE == RobotType.PBOT) ? 0.508 : 0.508;
       /**
        * The front-to-back distance between the drivetrain wheels.
        * <p>
        * Should be measured from center to center.
        */
-      public static final double WHEELBASE_METERS = 0.578; // FIXME
+      public final static double WHEELBASE_METERS = (Constants.ROBOTTYPE == RobotType.TBOT) ? 0.578
+          : (Constants.ROBOTTYPE == RobotType.PBOT) ? 0.508 : 0.5207;
       public static final SDSModuleConfiguration SDS_MODULE_CONFIGURATION = SDSModuleConfiguration
           .SDSMK4(SDSModuleConfiguration.driveGearRatios.SDSMK4_L2);
       public static final double MAX_DRIVE_MOTOR_RPM = 6380.0; // Falcon500
@@ -122,8 +124,8 @@ public final class Constants {
                                                            // number
 
     public static enum Height {
-      HIGH(0.0),
-      MID(0.0),
+      HIGH(-200000),
+      MID(-120000),
       LOW(0.0);
 
       public double height;

@@ -189,6 +189,30 @@ public class Limelight extends SubsystemBase {
 		return table.getEntry("tvert").getDouble(0.0);
 	}
 
+	public double getPoseHeight(){
+		if(isValid())
+			return 0;
+			case Blue:
+				if (check && !Arrays.asList(6, 7, 8).contains(getAprilTag()))
+					return null;
+				botPoseArray = (table.getEntry("botpose_wpiblue").getDoubleArray(new double[7]));
+				break;
+
+			case Red:
+				if (check && !Arrays.asList(1, 2, 3).contains(getAprilTag()))
+					return null;
+				botPoseArray = (table.getEntry("botpose_wpired").getDoubleArray(new double[7]));
+				break;
+
+			case Invalid:
+				return null;
+
+			default:
+				return null;
+		}return table.getEntry()
+
+	}
+
 	public double getWidth() {
 		return table.getEntry("thor").getDouble(0.0);
 	}

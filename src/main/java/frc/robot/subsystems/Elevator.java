@@ -18,6 +18,7 @@ public class Elevator extends SubsystemBase {
     public Elevator() {
         // if (!testing) {
         elevatorMotor = new WPI_TalonFX(14);
+        elevatorMotor.setInverted(true);
         elevatorMotor
                 .configMotionCruiseVelocity(
                         ELEVATOR.kElevatorCruiseVelocity / ELEVATOR.kElevatorCountsToInches / 10.0);
@@ -44,9 +45,14 @@ public class Elevator extends SubsystemBase {
     public Command goToDesiredHeight(Height height) {
         if (testing)
             return Commands.none();
-
+        if (height == Height.LOW)
+            return runOnce(() -> setPowerZero());
         return runOnce(() -> changeHeight(height))
                 .andThen(Commands.waitUntil(() -> isCorrectElevatorHeight()));
+    }
+
+    private void setPowerZero() {
+        elevatorMotor.set(0);
     }
 
     public Height getDesiredHeight() {

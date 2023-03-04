@@ -64,14 +64,14 @@ public class RobotContainer {
 		// Autonomous Command Sendable Chooser
 		autonChooser.setDefaultOption("No Auton", Commands.none());
 		autonChooser.addOption("Drive Forward", Autos.driveForward(swerveDrive));
-		autonChooser.addOption("Far Left Place 2",
+		autonChooser.addOption("Loading Zone Place 2",
 				Autos.place2(swerveDrive, intake, elevator, clamp, flipper, false, Path.Far_Left_Path_Place2, null));
-		autonChooser.addOption("Far Left Place 2 Pick Up",
+		autonChooser.addOption("Loading Zone Place 2 Pick Up",
 				Autos.place2(swerveDrive, intake, elevator, clamp, flipper, true, Path.Far_Left_Path_Place2,
 						Path.Far_Left_Path_Place2_Pick_Up));
-		autonChooser.addOption("Far Right Place 2",
+		autonChooser.addOption("Bump Side Place 2",
 				Autos.place2(swerveDrive, intake, elevator, clamp, flipper, false, Path.Far_Right_Path_Place2, null));
-		autonChooser.addOption("Far Right Place 2 Pick Up",
+		autonChooser.addOption("Bump Side Place 2 Pick Up",
 				Autos.place2(swerveDrive, intake, elevator, clamp, flipper, true, Path.Far_Right_Path_Place2,
 						Path.Far_Right_Path_PickUp));
 		SmartDashboard.putData(autonChooser);
@@ -117,6 +117,9 @@ public class RobotContainer {
 		TGR.ResetWithLimelight.tgr().and(() -> !TGR.DTM.bool()).onTrue(new ProxyCommand(() -> {
 			return swerveDrive.resetPoseToLimelightPose(limelight.getBotPose(false));
 		}));
+
+		TGR.Flap.tgr().whileTrue(clamp.flap()).onFalse(clamp.unclamp());
+
 	}
 
 	/**
@@ -130,11 +133,12 @@ public class RobotContainer {
 
 	public enum TGR {
 		DTM(driverController.leftTrigger(0.15).and(() -> EnabledDebugModes.DTMEnabled)),
-		Creep(driverController.rightTrigger(0.15)),
-		Intake(driverController.rightBumper()),
-		Extake(driverController.leftBumper()), // Subject to Change
+		Creep(driverController.leftBumper()),
+		Intake(driverController.rightTrigger(0.15)),
+		Extake(driverController.rightBumper()), // Subject to Change
 		Characterize(driverController.a().and(() -> EnabledDebugModes.CharacterizeEnabled)),
 		PrepareBalance(driverController.a().and(() -> !EnabledDebugModes.CharacterizeEnabled)),
+		Flap(driverController.y()),
 
 		CubeLights(operatorController.b()), // Sets color
 		// to violet

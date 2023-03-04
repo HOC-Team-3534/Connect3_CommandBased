@@ -10,7 +10,9 @@ import frc.robot.subsystems.Clamp;
 import frc.robot.subsystems.Elevator;
 import frc.robot.subsystems.Flipper;
 import frc.robot.subsystems.Intake;
+import frc.robot.subsystems.Limelight;
 import frc.robot.subsystems.SwerveDrive;
+import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.Commands;
 
@@ -29,6 +31,13 @@ public final class Autos {
     if (path2 != null)
       command = command.andThen(driveWithIntake(path2, intake, swerve, false).unless(() -> !prepPickUp));
     return command;
+  }
+
+  private static Command autonomousBalance(SwerveDrive swerve, Limelight limelight) {
+    return swerve.driveStraightAutonomous(0).until(swerve::isFacingForward)
+        .andThen(
+            swerve.driveStraightAutonomous(0.15).until(() -> limelight.getHeight() > 1 && limelight.getHeight() < 1));
+
   }
 
   private static CommandBase moveElevatorAndPlace(Height height, Elevator elevator, Clamp clamp, Flipper flip) {
