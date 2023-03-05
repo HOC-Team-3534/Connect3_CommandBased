@@ -3,6 +3,7 @@ package frc.robot.subsystems;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
 import com.ctre.phoenix.sensors.CANCoder;
 import com.ctre.phoenix.sensors.WPI_Pigeon2;
@@ -79,25 +80,49 @@ public class SwerveDrive extends SwerveSubsystem {
 
     }
 
-    public Command balanceForward(Limelight limelight) {
+    public Command balanceForward() {
         /* height of charge station 9 1/8 inches or ~0.232 meters off the ground */
-        return driveStraightAutonomous(0).until(this::isFacingForward)
-                .andThen(driveStraightAutonomous(0.15).until(() -> limelight.getHeight() >= 0.21))
-                .andThen(runOnce(() -> dt.setVoltageToZero()));
+        return (driveStraightAutonomous(0).until(this::isFacingForward))
+                .andThen(Commands.print("To the Sky!!!!!!!!!!!"))
+                .andThen(driveStraightAutonomous(0.15).until(() -> getSlope() < -12.0))
+                .andThen(Commands.print("Not to the Sky!!!"))
+                .andThen(driveStraightAutonomous(0.15)).until(() -> getSlope() > -10.0)
+                .andThen(startEnd(() -> {
+                    dt.setVoltageToZero();
+                    setMotorBrakeMode();
+                }, () -> setMotorCoastMode()));
     }
 
-    public Command balanceBackward(Limelight limelight) {
-        return driveStraightAutonomous(0).until(this::isFacingForward)
-                .andThen(driveStraightAutonomous(-0.15).until(() -> getSlope() < -2))
-                .andThen(balanceForward(limelight));
+    public Command balanceBackward() {
+        return (driveStraightAutonomous(0).until(this::isFacingForward))
+                .andThen(driveStraightAutonomous(-0.15).until(() -> getSlope() > 12.0))
+                .andThen(driveStraightAutonomous(-0.15)).until(() -> getSlope() < 10.0)
+                .andThen(startEnd(() -> {
+                    dt.setVoltageToZero();
+                    setMotorBrakeMode();
+                }, () -> setMotorCoastMode()));
     }
 
-    public Command balanceAcrossAndBack(Limelight limelight) {
+    public Command balanceAcrossAndBack() {
         return driveStraightAutonomous(0).until(this::isFacingForward)
-                .andThen(driveStraightAutonomous(0.15).until(() -> limelight.getHeight() >= 0.21))
-                .andThen(driveStraightAutonomous(0.15).until(() -> getSlope() > 2))
+                .andThen(driveStraightAutonomous(0.15).until(() -> getSlope() < -12.0))
+                .andThen(driveStraightAutonomous(0.15).until(() -> getSlope() > 12.0))
                 .andThen(driveStraightAutonomous(0.15).until(() -> getSlope() < 2))
-                .andThen(driveStraightAutonomous(0.15).withTimeout(0.5)).andThen(balanceBackward(limelight));
+                .andThen(driveStraightAutonomous(0.15).withTimeout(0.5)).andThen(balanceBackward());
+    }
+
+    private void setMotorBrakeMode() {
+        FL_drive.setNeutralMode(NeutralMode.Brake);
+        FR_drive.setNeutralMode(NeutralMode.Brake);
+        BL_drive.setNeutralMode(NeutralMode.Brake);
+        BR_drive.setNeutralMode(NeutralMode.Brake);
+    }
+
+    private void setMotorCoastMode() {
+        FL_drive.setNeutralMode(NeutralMode.Coast);
+        FR_drive.setNeutralMode(NeutralMode.Coast);
+        BL_drive.setNeutralMode(NeutralMode.Coast);
+        BR_drive.setNeutralMode(NeutralMode.Coast);
     }
 
     public void updatePoseWithVision(Pose2d pose, double latency) {
@@ -105,7 +130,7 @@ public class SwerveDrive extends SwerveSubsystem {
     }
 
     public double getSlope() {
-        return pigeon2.getPitch() + 2.0;
+        return pigeon2.getPitch() - 3.0;
     }
 
     public boolean isFacingForward() {
@@ -150,7 +175,7 @@ public class SwerveDrive extends SwerveSubsystem {
      * @return The command that moves the robot with desired angle
      */
     public Command driveWithDesiredAngle(Rotation2d rot) {
-        return Commands.sequence(runOnce(() -> resetThetaController = true), run(() -> {
+        return runOnce(() -> resetThetaController = true).andThen(run(() -> {
             dt.setModuleStates(new SwerveInput(AXS.Drive_ForwardBackward.getAxis(),
                     AXS.Drive_LeftRight.getAxis(),
                     0), rot, TGR.Creep.bool(), resetThetaController);
@@ -167,12 +192,14 @@ public class SwerveDrive extends SwerveSubsystem {
      * @return The command that moves the robot in a straight path
      */
     public Command driveStraightAutonomous(double percent) {
-        return Commands.sequence(runOnce(() -> resetThetaController = true), run(() -> {
-            dt.setModuleStates(new SwerveInput(percent,
-                    0,
-                    0), new Rotation2d(), false, resetThetaController);
-            resetThetaController = false;
-        }));
+        return runOnce(() -> resetThetaController = true).andThen(Commands.print("reset theta controller")).andThen(
+                run(() -> {
+                    System.out.println("YoYoYO\n");
+                    dt.setModuleStates(new SwerveInput(percent,
+                            0,
+                            0), new Rotation2d(), false, resetThetaController);
+                    resetThetaController = false;
+                }));
     }
 
     /**

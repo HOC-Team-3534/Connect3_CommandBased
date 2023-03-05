@@ -9,7 +9,7 @@ import frc.robot.RobotContainer.TGR;
 
 public class Intake extends SubsystemBase {
     WPI_TalonFX topMotor, botMotor;
-    boolean testing = true;
+    boolean testing = false;
 
     public Intake() {
         if (!testing) {
@@ -27,9 +27,9 @@ public class Intake extends SubsystemBase {
             return Commands.none();
         return runEnd(() -> {
             if (TGR.Intake.bool())
-                setBothMotors(0.5);
+                setBothMotors(0.8);
             else if (TGR.Extake.bool())
-                setBothMotors(-0.5);
+                setBothMotors(-0.8);
             else
                 setBothMotors(0);
         }, () -> setBothMotors(0));

@@ -6,7 +6,7 @@ package frc.robot.commands;
 
 import frc.robot.Constants.ELEVATOR.Height;
 import frc.robot.Path;
-import frc.robot.subsystems.Clamp;
+import frc.robot.subsystems.Gripper;
 import frc.robot.subsystems.Elevator;
 import frc.robot.subsystems.Flipper;
 import frc.robot.subsystems.Intake;
@@ -26,7 +26,7 @@ public final class Autos {
    * @param swerve   the swerve drive subsystem
    * @param intake   the intake subsystem
    * @param elevator the elevator subsystem
-   * @param clamp    the clamp subsystem
+   * @param gripper  the gripper subsystem
    * @param flipper  the flipper subsystem
    * @param path1    the path to follow after placing the first piece, MUST end
    *                 at a grid place location
@@ -36,11 +36,11 @@ public final class Autos {
    * @return autonomous command to place 2 elements and optionally pickup 3rd
    *         piece from one of the sides
    */
-  public static Command place2FromSides(SwerveDrive swerve, Intake intake, Elevator elevator, Clamp clamp,
+  public static Command place2FromSides(SwerveDrive swerve, Intake intake, Elevator elevator, Gripper gripper,
       Flipper flipper, Path path1, Path path2) {
-    var command = moveElevatorAndPlace(Height.HIGH, elevator, clamp, flipper)
+    var command = moveElevatorAndPlace(Height.HIGH, elevator, gripper, flipper)
         .andThen(driveWithIntake(path1, intake, swerve, true))
-        .andThen(moveElevatorAndPlace(Height.HIGH, elevator, clamp, flipper));
+        .andThen(moveElevatorAndPlace(Height.HIGH, elevator, gripper, flipper));
     if (path2 != null)
       command = command.andThen(driveWithIntake(path2, intake, swerve, false));
     return command;
@@ -51,69 +51,69 @@ public final class Autos {
    * @param swerve   the swerve drive subsystem
    * @param intake   the intake subsystem
    * @param elevator the elevator subsystem
-   * @param clamp    the clamp subsystem
+   * @param gripper  the gripper subsystem
    * @param flipper  the flipper subsystem
    * @param path1    the path to follow after placing the first piece, MUST end
    *                 at the grid side of charge station and have a "place" event
    * @return autonomous command to place 2 elements and optionally pickup 3rd
    *         piece from one of the sides
    */
-  public static Command place2FromSidesAndBalance(SwerveDrive swerve, Intake intake, Elevator elevator, Clamp clamp,
-      Flipper flipper, Limelight limelight, Path path1) {
-    return moveElevatorAndPlace(Height.HIGH, elevator, clamp, flipper)
+  public static Command place2FromSidesAndBalance(SwerveDrive swerve, Intake intake, Elevator elevator, Gripper gripper,
+      Flipper flipper, Path path1) {
+    return moveElevatorAndPlace(Height.HIGH, elevator, gripper, flipper)
         .andThen(driveWithIntakeWithEvent(path1, intake, swerve, true, "place",
-            moveElevatorAndPlace(Height.LOW, elevator, clamp, flipper)))
-        .andThen(swerve.balanceForward(limelight));
+            moveElevatorAndPlace(Height.LOW, elevator, gripper, flipper)))
+        .andThen(swerve.balanceForward());
   }
 
   /**
    * 
-   * @param swerve    the swerve drive subsystem
-   * @param intake    the intake subsystem
-   * @param elevator  the elevator subsystem
-   * @param clamp     the clamp subsystem
-   * @param flipper   the flipper subsystem
-   * @param limelight the limelight subsystem
-   * @param path1     the path to follow after placing the first piece, MUST end
-   *                  forward of the charge station across from the center grid
-   *                  april tag
+   * @param swerve   the swerve drive subsystem
+   * @param intake   the intake subsystem
+   * @param elevator the elevator subsystem
+   * @param gripper  the gripper subsystem
+   * @param flipper  the flipper subsystem
+   * @param path1    the path to follow after placing the first piece, MUST end
+   *                 forward of the charge station across from the center grid
+   *                 april tag
    * @return autonomous command to place 1 elements and balance on the charge
    *         station from one of the sides
    */
-  public static Command place1andBalanceFromSides(SwerveDrive swerve, Intake intake, Elevator elevator, Clamp clamp,
-      Flipper flipper, Limelight limelight, Path path1) {
-    return moveElevatorAndPlace(Height.HIGH, elevator, clamp, flipper)
-        .andThen(driveWithIntake(path1, intake, swerve, true), swerve.balanceBackward(limelight));
+  public static Command place1andBalanceFromSides(SwerveDrive swerve, Intake intake, Elevator elevator, Gripper gripper,
+      Flipper flipper, Path path1) {
+    return moveElevatorAndPlace(Height.HIGH, elevator, gripper, flipper)
+        .andThen(driveWithIntake(path1, intake, swerve, true), swerve.balanceBackward());
   }
 
   /**
    * 
-   * @param swerve    the swerve drive subsystem
-   * @param intake    the intake subsystem
-   * @param elevator  the elevator subsystem
-   * @param clamp     the clamp subsystem
-   * @param flipper   the flipper subsystem
-   * @param limelight the limelight subsystem
+   * @param swerve   the swerve drive subsystem
+   * @param intake   the intake subsystem
+   * @param elevator the elevator subsystem
+   * @param gripper  the gripper subsystem
+   * @param flipper  the flipper subsystem
    * @return autonomous command to place 1 elements, cross the charge station, and
    *         balance on the charge
    *         station from the center
    */
-  public static Command place1andBalanceFromCenter(SwerveDrive swerve, Intake intake, Elevator elevator, Clamp clamp,
-      Flipper flipper, Limelight limelight) {
-    return moveElevatorAndPlace(Height.HIGH, elevator, clamp, flipper).andThen(swerve.balanceAcrossAndBack(limelight));
+  public static Command place1andBalanceFromCenter(SwerveDrive swerve, Intake intake, Elevator elevator,
+      Gripper gripper,
+      Flipper flipper) {
+    return moveElevatorAndPlace(Height.HIGH, elevator, gripper, flipper)
+        .andThen(swerve.balanceAcrossAndBack());
   }
 
   /**
    * 
    * @param height   the desired height to place the game element
    * @param elevator the elevator subsystem
-   * @param clamp    the clamp subsystem
+   * @param gripper  the gripper subsystem
    * @param flipper  the flipper subsystem
    * @return the autonomomous combo command to moe the elevator to desired height
    *         and then place the game element and bring the elevator back down
    */
-  private static Command moveElevatorAndPlace(Height height, Elevator elevator, Clamp clamp, Flipper flipper) {
-    return elevator.goToDesiredHeight(height).andThen(clamp.unclamp(), flipper.flip(false))
+  private static Command moveElevatorAndPlace(Height height, Elevator elevator, Gripper gripper, Flipper flipper) {
+    return elevator.goToDesiredHeight(height).andThen(gripper.ungrip(), flipper.flip(false))
         .finallyDo((interrupted) -> elevator.goToDesiredHeight(Height.LOW).initialize());
   }
 

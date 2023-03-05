@@ -7,10 +7,12 @@ import frc.robot.Constants.Drive.AUTO;
 
 public enum Path {
     Drive_Forward_1("Drive Forward Path"),
-    Far_Left_Path_Place2("Loading Zone Place 2"),
-    Far_Left_Path_Place2_Pick_Up("Loading Zone Place 2 Pick Up"),
-    Far_Right_Path_Place2("Bump Side Place 2"),
-    Far_Right_Path_PickUp("Bump Side Place 2 Pick Up");
+    Loading_Zone_Place2("Loading Zone Place 2"),
+    Loading_Zone_Place2_Pick_Up("Loading Zone Place 2 Pick Up"),
+    Bump_Side_Place2("Bump Side Place 2"),
+    Bump_Side_Place2_Pick_Up("Bump Side Place 2 Pick Up"),
+    Loading_Zone_Place2_Balance("Loading Zone Place 2 Balance"),
+    Loading_Zone_Place_PickUp_Balance("Loading Zone Place Balance");
 
     String pathName;
     PathPlannerTrajectory path;
