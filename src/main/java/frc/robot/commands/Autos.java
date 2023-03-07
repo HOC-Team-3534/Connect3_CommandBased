@@ -10,7 +10,6 @@ import frc.robot.subsystems.Gripper;
 import frc.robot.subsystems.Elevator;
 import frc.robot.subsystems.Flipper;
 import frc.robot.subsystems.Intake;
-import frc.robot.subsystems.Limelight;
 import frc.robot.subsystems.SwerveDrive;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
@@ -114,7 +113,7 @@ public final class Autos {
    */
   private static Command moveElevatorAndPlace(Height height, Elevator elevator, Gripper gripper, Flipper flipper) {
     return elevator.goToDesiredHeight(height).andThen(gripper.ungrip(), flipper.flip(false))
-        .finallyDo((interrupted) -> elevator.goToDesiredHeight(Height.LOW).initialize());
+        .finallyDo((interrupted) -> elevator.goToDesiredHeight(Height.OFF).initialize());
   }
 
   /**

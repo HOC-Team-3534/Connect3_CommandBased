@@ -12,7 +12,7 @@ public final class CommandCombos {
     public static CommandBase moveElevatorAndPlace(Elevator elevator, Gripper clamp, Flipper flipper) {
         return (elevator.goToDesiredHeight()
                 .andThen(clamp.ungrip(), flipper.flip(false)))
-                .finallyDo((interrupted) -> elevator.goToDesiredHeight(Height.LOW).initialize());
+                .finallyDo((interrupted) -> elevator.goToDesiredHeight(Height.OFF).initialize());
     }
 
     public static CommandBase reorient(Intake intake, Gripper clamp, Flipper flipper) {

@@ -11,7 +11,7 @@ import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.Commands;
 
 public class Gripper extends SubsystemBase {
-    boolean testing = false;
+    boolean testing = true;
     WPI_TalonSRX gripper;
 
     public Gripper() {

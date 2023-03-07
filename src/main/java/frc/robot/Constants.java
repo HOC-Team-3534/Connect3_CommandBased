@@ -114,13 +114,14 @@ public final class Constants {
   }
 
   public static final class ELEVATOR {
-    public static final double kElevatorCruiseVelocity = 10000.0;// Counts per 100ms
-    public static final double kElevatorAcceleration = 20000.0;// Counts per 100ms per second
+    public static final double kElevatorCruiseVelocity = 20000.0;// Counts per 100ms
+    public static final double kElevatorAcceleration = 80000.0;// Counts per 100ms per second
 
     public static enum Height {
-      HIGH(-200000),
-      MID(-120000),
-      LOW(0.0);
+      HIGH(200000),
+      MID(110000),
+      LOW(45000),
+      OFF(0.0);
 
       public double height;
 
@@ -132,8 +133,10 @@ public final class Constants {
 
   public static final class EnabledDebugModes {
     public static final boolean CharacterizeEnabled = false;
-    public static final boolean DTMEnabled = false;
-    public static final boolean updatePoseWithVisionEnabled = false;
+    public static final boolean DTMEnabled = true;
+    public static final boolean updatePoseWithVisionEnabled = true;
     public static final boolean testingVoltageControl = false;
+    public static final boolean testingElevatorPos = false;
+    public static final boolean testingFlipper = false;
   }
 }

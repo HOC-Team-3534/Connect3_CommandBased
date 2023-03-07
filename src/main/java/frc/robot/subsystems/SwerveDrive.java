@@ -85,11 +85,8 @@ public class SwerveDrive extends SwerveSubsystem {
         var command = (driveStraightAutonomous(0).until(this::isFacingForward))
                 .andThen(driveStraightAutonomous(0.15).until(() -> getSlope() < -14.5),
                         driveStraightAutonomous(0.15).until(() -> getSlope() > -14.25),
-                        driveStraightAutonomous(-0.15).withTimeout(0.175),
-                        startEnd(() -> {
-                            dt.setVoltageToZero();
-                            setMotorBrakeMode();
-                        }, () -> setMotorCoastMode()));
+                        fineTuneBalance())
+                .finallyDo((interupt) -> setMotorCoastMode());
 
         command.setName("Balance Forward");
         return command;
@@ -100,13 +97,22 @@ public class SwerveDrive extends SwerveSubsystem {
                 .andThen(driveStraightAutonomous(-0.15).until(() -> getSlope() > 14.5),
                         driveStraightAutonomous(-0.15).until(() -> getSlope() < 14.25),
                         driveStraightAutonomous(0.15).withTimeout(0.15),
-                        startEnd(() -> {
-                            dt.setVoltageToZero();
-                            setMotorBrakeMode();
-                        }, () -> setMotorCoastMode()));
+                        fineTuneBalance())
+                .finallyDo((interupt) -> setMotorCoastMode());
 
         command.setName("Balance Backward");
         return command;
+    }
+
+    private Command fineTuneBalance() {
+        return runOnce(() -> setMotorBrakeMode()).andThen(run(() -> {
+            if (getSlope() > 5)
+                driveStraightWithPower(-0.03);
+            else if (getSlope() < -5)
+                driveStraightWithPower(0.03);
+            else
+                driveStraightWithPower(0.0);
+        }));
     }
 
     public Command balanceAcrossAndBack() {
@@ -204,12 +210,16 @@ public class SwerveDrive extends SwerveSubsystem {
     public Command driveStraightAutonomous(double percent) {
         var command = runOnce(() -> resetThetaController = true)
                 .andThen(run(() -> {
-                    dt.setModuleStates(new SwerveInput(percent, 0, 0), new Rotation2d(), false, resetThetaController);
+                    driveStraightWithPower(percent);
                     resetThetaController = false;
                 }));
 
         command.setName("Auton Drive Straight");
         return command;
+    }
+
+    private void driveStraightWithPower(double percent) {
+        dt.setModuleStates(new SwerveInput(percent, 0, 0), new Rotation2d(), false, resetThetaController);
     }
 
     /**

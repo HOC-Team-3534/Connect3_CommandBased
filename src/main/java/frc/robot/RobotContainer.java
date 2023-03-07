@@ -5,6 +5,7 @@ package frc.robot;
 
 import frc.robot.Constants.EnabledDebugModes;
 import frc.robot.Constants.Drive.Config.DriveCharacterization;
+import frc.robot.Constants.ELEVATOR.Height;
 import frc.robot.commands.Autos;
 import frc.robot.commands.CommandCombos;
 import frc.robot.subsystems.Gripper;
@@ -134,8 +135,11 @@ public class RobotContainer {
 
 		TGR.PlacePiece.tgr().debounce(0.5).whileTrue(CommandCombos.moveElevatorAndPlace(elevator, gripper, flipper));
 
-		TGR.PositiveVoltage.tgr().whileTrue(gripper.gripperVoltage(0.25));
-		TGR.NegativeVoltage.tgr().whileTrue(gripper.gripperVoltage(-0.25));
+		TGR.PositiveVoltage.tgr().whileTrue(elevator.elevatorVoltage(0.1));
+		TGR.NegativeVoltage.tgr().whileTrue(elevator.elevatorVoltage(0.0));
+		TGR.MoveElevator.tgr().onTrue(elevator.goToDesiredHeight(Height.HIGH))
+				.onFalse(elevator.goToDesiredHeight(Height.OFF));
+		TGR.MoveFlipper.tgr().onTrue(flipper.flip(false));
 
 	}
 
@@ -184,7 +188,10 @@ public class RobotContainer {
 		// GripElement(operatorController.rightTrigger(0.15)),
 		FlipElement(operatorController.leftTrigger(0.15)),
 		PositiveVoltage(driverController.povUp().and(() -> EnabledDebugModes.testingVoltageControl)),
-		NegativeVoltage(driverController.povDown().and(() -> EnabledDebugModes.testingVoltageControl));
+		NegativeVoltage(driverController.povDown().and(() -> EnabledDebugModes.testingVoltageControl)),
+		MoveElevator(driverController.povLeft().and(
+				() -> EnabledDebugModes.testingElevatorPos)),
+		MoveFlipper(operatorController.povRight().and(() -> EnabledDebugModes.testingFlipper));
 
 		Trigger trigger;
 

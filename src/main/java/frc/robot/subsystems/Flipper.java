@@ -11,7 +11,7 @@ import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.Commands;
 
 public class Flipper extends SubsystemBase {
-    boolean testing = false;
+    boolean testing = true;
     WPI_TalonSRX flipper;
     double targetPosition = 0;
 
@@ -44,8 +44,10 @@ public class Flipper extends SubsystemBase {
     private CommandBase changeFlipper(FlipperPosition position) {
         if (testing)
             return Commands.none();
-        targetPosition += position.displacement;
-        return runOnce(() -> flipper.set(ControlMode.MotionMagic, targetPosition))
+        return runOnce(() -> {
+            targetPosition += position.displacement;
+            flipper.set(ControlMode.MotionMagic, targetPosition);
+        })
                 .andThen(Commands.waitUntil(() -> atPosition()));
     }
 
@@ -63,7 +65,7 @@ public class Flipper extends SubsystemBase {
     }
 
     private boolean atPosition() {
-        return Math.abs(getPosition() - targetPosition) <= 10;
+        return Math.abs(getPosition() - targetPosition) <= 20;
     }
 
     public double getPosition() {
