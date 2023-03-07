@@ -133,7 +133,8 @@ public class RobotContainer {
 
 		TGR.Flap.tgr().whileTrue(gripper.flap()).onFalse(gripper.ungrip());
 
-		TGR.PlacePiece.tgr().debounce(0.5).whileTrue(CommandCombos.moveElevatorAndPlace(elevator, gripper, flipper));
+		TGR.PlacePiece.tgr().debounce(0.5)
+				.whileTrue(new ProxyCommand(() -> CommandCombos.moveElevatorAndPlace(elevator, gripper, flipper)));
 
 		TGR.PositiveVoltage.tgr().whileTrue(elevator.elevatorVoltage(0.1));
 		TGR.NegativeVoltage.tgr().whileTrue(elevator.elevatorVoltage(0.0));

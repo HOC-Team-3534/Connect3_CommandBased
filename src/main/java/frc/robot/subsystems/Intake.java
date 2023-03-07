@@ -27,9 +27,15 @@ public class Intake extends SubsystemBase {
             return Commands.none();
         return runEnd(() -> {
             if (TGR.Intake.bool())
-                setBothMotors(0.8);
+                if (TGR.CubeLights.bool())
+                    setBothMotors(0.3);
+                else
+                    setBothMotors(0.8);
             else if (TGR.Extake.bool())
-                setBothMotors(-0.8);
+                if (TGR.CubeLights.bool())
+                    setBothMotors(-0.3);
+                else
+                    setBothMotors(-0.8);
             else
                 setBothMotors(0);
         }, () -> setBothMotors(0));

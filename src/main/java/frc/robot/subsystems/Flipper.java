@@ -11,7 +11,7 @@ import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.Commands;
 
 public class Flipper extends SubsystemBase {
-    boolean testing = true;
+    boolean testing = false;
     WPI_TalonSRX flipper;
     double targetPosition = 0;
 
@@ -26,8 +26,8 @@ public class Flipper extends SubsystemBase {
         flipper.config_kI(0, 0);
         flipper.config_kD(0, 150);
         flipper.config_kF(0, 0);
-        flipper.configMotionAcceleration(160.0);
-        flipper.configMotionCruiseVelocity(80.0);
+        flipper.configMotionAcceleration(1600.0);
+        flipper.configMotionCruiseVelocity(400.0);
         flipper.configMotionSCurveStrength(1);
         flipper.setSelectedSensorPosition(0);
 
@@ -54,9 +54,8 @@ public class Flipper extends SubsystemBase {
     public Command flip(boolean checkDown) {
         if (testing)
             return Commands.none();
-        return (changeFlipper(FlipperPosition.Up).until(() -> atPosition())
-                .andThen(changeFlipper(FlipperPosition.Down)
-                        .until(() -> atPosition() || !checkDown)))
+        return (changeFlipper(FlipperPosition.Up).withTimeout(0.25)
+                .andThen(changeFlipper(FlipperPosition.Down).until(() -> !checkDown).withTimeout(0.25)))
                 .withInterruptBehavior(InterruptionBehavior.kCancelIncoming);
     }
 

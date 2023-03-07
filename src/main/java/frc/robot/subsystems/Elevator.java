@@ -13,7 +13,7 @@ import frc.robot.RobotContainer.TGR;
 
 public class Elevator extends SubsystemBase {
     WPI_TalonFX elevatorMotor;
-    boolean testing = true;
+    boolean testing = false;
     Height targetHeight = Height.OFF;
 
     public Elevator() {
@@ -71,7 +71,7 @@ public class Elevator extends SubsystemBase {
     }
 
     public Height getDesiredHeight() {
-        Height desiredHeight = Height.OFF;
+        Height desiredHeight = Height.LOW;
         if (TGR.PlaceHigh.bool() && TGR.PlaceMid.bool()) {
             desiredHeight = Height.LOW;
         } else if (TGR.PlaceHigh.bool())
