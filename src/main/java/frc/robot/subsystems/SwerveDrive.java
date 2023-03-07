@@ -83,8 +83,8 @@ public class SwerveDrive extends SwerveSubsystem {
     public Command balanceForward() {
         /* height of charge station 9 1/8 inches or ~0.232 meters off the ground */
         var command = (driveStraightAutonomous(0).until(this::isFacingForward))
-                .andThen(driveStraightAutonomous(0.15).until(() -> getSlope() < -14.5),
-                        driveStraightAutonomous(0.15).until(() -> getSlope() > -14.25),
+                .andThen(driveStraightAutonomous(0.15).until(() -> getSlope() < -13.25),
+                        driveStraightAutonomous(0.15).until(() -> getSlope() > -13.0),
                         fineTuneBalance())
                 .finallyDo((interupt) -> setMotorCoastMode());
 
@@ -94,9 +94,8 @@ public class SwerveDrive extends SwerveSubsystem {
 
     public Command balanceBackward() {
         var command = (driveStraightAutonomous(0).until(this::isFacingForward))
-                .andThen(driveStraightAutonomous(-0.15).until(() -> getSlope() > 14.5),
-                        driveStraightAutonomous(-0.15).until(() -> getSlope() < 14.25),
-                        driveStraightAutonomous(0.15).withTimeout(0.15),
+                .andThen(driveStraightAutonomous(-0.15).until(() -> getSlope() > 13.25),
+                        driveStraightAutonomous(-0.15).until(() -> getSlope() < 13.0),
                         fineTuneBalance())
                 .finallyDo((interupt) -> setMotorCoastMode());
 
@@ -107,9 +106,9 @@ public class SwerveDrive extends SwerveSubsystem {
     private Command fineTuneBalance() {
         return runOnce(() -> setMotorBrakeMode()).andThen(run(() -> {
             if (getSlope() > 5)
-                driveStraightWithPower(-0.03);
+                driveStraightWithPower(-0.02);
             else if (getSlope() < -5)
-                driveStraightWithPower(0.03);
+                driveStraightWithPower(0.02);
             else
                 driveStraightWithPower(0.0);
         }));
@@ -117,9 +116,9 @@ public class SwerveDrive extends SwerveSubsystem {
 
     public Command balanceAcrossAndBack() {
         return driveStraightAutonomous(0).until(this::isFacingForward)
-                .andThen(driveStraightAutonomous(0.15).until(() -> getSlope() < -14.5),
-                        driveStraightAutonomous(0.15).until(() -> getSlope() > 14.25),
-                        driveStraightAutonomous(0.15).until(() -> getSlope() < 5),
+                .andThen(driveStraightAutonomous(0.35).until(() -> getSlope() < -12.25),
+                        driveStraightAutonomous(0.35).until(() -> getSlope() > 12.0),
+                        driveStraightAutonomous(0.35).until(() -> getSlope() < 5),
                         driveStraightAutonomous(0.15).withTimeout(0.5),
                         balanceBackward());
     }
