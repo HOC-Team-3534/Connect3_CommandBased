@@ -118,7 +118,7 @@ public final class Constants {
     public static final double kElevatorAcceleration = 80000.0;// Counts per 100ms per second
 
     public static enum Height {
-      HIGH(205000),
+      HIGH(210000),
       MID(110000),
       LOW(45000),
       OFF(0.0);
@@ -135,7 +135,7 @@ public final class Constants {
     public static final boolean CharacterizeEnabled = false;
     public static final boolean DTMEnabled = false;
     public static final boolean updatePoseWithVisionEnabled = true;
-    public static final boolean testingVoltageControl = false;
+    public static final boolean testingVoltageControl = true;
     public static final boolean testingElevatorPos = false;
     public static final boolean testingFlipper = false;
   }

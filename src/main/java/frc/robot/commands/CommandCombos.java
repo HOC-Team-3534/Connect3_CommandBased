@@ -11,12 +11,13 @@ public final class CommandCombos {
 
     public static CommandBase moveElevatorAndPlace(Elevator elevator, Gripper clamp, Flipper flipper) {
         return (elevator.goToDesiredHeight()
-                .andThen(clamp.ungrip(), flipper.flip(false)))
+                .andThen(clamp.ungrip(), flipper.flip(true)))
                 .finallyDo((interrupted) -> elevator.goToDesiredHeight(Height.OFF).initialize());
     }
 
     public static CommandBase reorient(Intake intake, Gripper clamp, Flipper flipper) {
-        return clamp.ungrip().andThen(flipper.flip(true)).andThen(intake.runJustBottomMotor().withTimeout(3.0))
+        return clamp.ungrip().andThen(flipper.flip(true))
+                .andThen(intake.runJustBottomMotor().withTimeout(3.0).alongWith(clamp.flap()))
                 .andThen(clamp.grip());
     }
 

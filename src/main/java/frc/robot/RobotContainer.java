@@ -64,27 +64,42 @@ public class RobotContainer {
 		lights.setDefaultCommand(lights.runLights());
 		// Autonomous Command Sendable Chooser
 		autonChooser.setDefaultOption("No Auton", () -> Commands.none());
-		autonChooser.addOption("Drive Forward", () -> Autos.driveForward(swerveDrive));
+		// Autonomous Loading Zone Paths
 		autonChooser.addOption("Loading Zone Place 2",
 				() -> Autos.place2FromSides(swerveDrive, intake, elevator, gripper, flipper, Path.Loading_Zone_Place2,
 						null));
 		autonChooser.addOption("Loading Zone Place 2 Pick Up",
 				() -> Autos.place2FromSides(swerveDrive, intake, elevator, gripper, flipper, Path.Loading_Zone_Place2,
 						Path.Loading_Zone_Place2_Pick_Up));
-		autonChooser.addOption("Bump Side Place 2", () -> Autos.place2FromSides(swerveDrive, intake, elevator, gripper,
-				flipper, Path.Bump_Side_Place2, null));
-		autonChooser.addOption("Bump Side Place 2 Pick Up",
-				() -> Autos.place2FromSides(swerveDrive, intake, elevator, gripper, flipper, Path.Bump_Side_Place2,
-						Path.Bump_Side_Place2_Pick_Up));
-		autonChooser.addOption("Test Auto Balance Forward", () -> swerveDrive.balanceForward());
-		autonChooser.addOption("Test Auto Balance Backward", () -> swerveDrive.balanceBackward());
-		autonChooser.addOption("Test Auto Balance Across and Back", () -> swerveDrive.balanceAcrossAndBack());
 		autonChooser.addOption("Loading Zone Place 2 and Balance",
 				() -> Autos.place1andBalanceFromSides(swerveDrive, intake,
 						elevator, gripper, flipper, Path.Loading_Zone_Place_PickUp_Balance));
 		autonChooser.addOption("Loading Zone Place Pick Up and Balance",
 				() -> Autos.place2FromSidesAndBalance(swerveDrive,
 						intake, elevator, gripper, flipper, Path.Loading_Zone_Place2_Balance));
+
+		// Autonomous Bump Side Paths
+		autonChooser.addOption("Bump Side Place 2", () -> Autos.place2FromSides(swerveDrive, intake, elevator, gripper,
+				flipper, Path.Bump_Side_Place2, null));
+		autonChooser.addOption("Bump Side Place 2 Pick Up",
+				() -> Autos.place2FromSides(swerveDrive, intake, elevator, gripper, flipper, Path.Bump_Side_Place2,
+						Path.Bump_Side_Place2_Pick_Up));
+		autonChooser.addOption("Bump Side Place 2 and Balance",
+				() -> Autos.place1andBalanceFromSides(swerveDrive, intake,
+						elevator, gripper, flipper, Path.Bump_Side_Place_PickUp_Balance));
+		autonChooser.addOption("Bump Side Place Pick Up and Balance",
+				() -> Autos.place2FromSidesAndBalance(swerveDrive,
+						intake, elevator, gripper, flipper, Path.Bump_Side_Place2_Balance));
+
+		// Autonomous Center Paths
+		autonChooser.addOption("Place Piece drive Across and Back",
+				() -> Autos.place1andBalanceFromCenter(swerveDrive, intake, elevator, gripper, flipper));
+
+		// Autonomous Testing Paths
+		autonChooser.addOption("Drive Forward", () -> Autos.driveForward(swerveDrive));
+		autonChooser.addOption("Test Auto Balance Forward", () -> swerveDrive.balanceForward());
+		autonChooser.addOption("Test Auto Balance Backward", () -> swerveDrive.balanceBackward());
+		autonChooser.addOption("Test Auto Balance Across and Back", () -> swerveDrive.balanceAcrossAndBack());
 
 		SmartDashboard.putData(autonChooser);
 		SmartDashboard.putData(swerveDrive);
@@ -136,8 +151,8 @@ public class RobotContainer {
 		TGR.PlacePiece.tgr().debounce(0.5)
 				.whileTrue(new ProxyCommand(() -> CommandCombos.moveElevatorAndPlace(elevator, gripper, flipper)));
 
-		TGR.PositiveVoltage.tgr().whileTrue(elevator.elevatorVoltage(0.1));
-		TGR.NegativeVoltage.tgr().whileTrue(elevator.elevatorVoltage(0.0));
+		TGR.PositiveVoltage.tgr().whileTrue(flipper.flipperVoltage(0.25));
+		TGR.NegativeVoltage.tgr().whileTrue(flipper.flipperVoltage(-0.25));
 		TGR.MoveElevator.tgr().onTrue(elevator.goToDesiredHeight(Height.HIGH))
 				.onFalse(elevator.goToDesiredHeight(Height.OFF));
 		TGR.MoveFlipper.tgr().onTrue(flipper.flip(false));

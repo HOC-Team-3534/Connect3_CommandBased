@@ -12,7 +12,10 @@ public enum Path {
     Bump_Side_Place2("Bump Side Place 2"),
     Bump_Side_Place2_Pick_Up("Bump Side Place 2 Pick Up"),
     Loading_Zone_Place2_Balance("Loading Zone Place 2 Balance"),
-    Loading_Zone_Place_PickUp_Balance("Loading Zone Place Balance");
+    Loading_Zone_Place_PickUp_Balance("Loading Zone Place Balance"),
+    Bump_Side_Place_PickUp_Balance("Bump Side Place Pick Up Balance"),
+    Bump_Side_Place2_Balance("Bump Side Place 2 Balance");
+    ;
 
     String pathName;
     PathPlannerTrajectory path;

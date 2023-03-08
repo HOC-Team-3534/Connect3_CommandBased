@@ -55,7 +55,7 @@ public class Flipper extends SubsystemBase {
         if (testing)
             return Commands.none();
         return (changeFlipper(FlipperPosition.Up).withTimeout(0.25)
-                .andThen(changeFlipper(FlipperPosition.Down).until(() -> !checkDown).withTimeout(0.25)))
+                .andThen(changeFlipper(FlipperPosition.Down).withTimeout(0.25)))
                 .withInterruptBehavior(InterruptionBehavior.kCancelIncoming);
     }
 
@@ -64,7 +64,7 @@ public class Flipper extends SubsystemBase {
     }
 
     private boolean atPosition() {
-        return Math.abs(getPosition() - targetPosition) <= 20;
+        return Math.abs(getPosition() - targetPosition) <= 30;
     }
 
     public double getPosition() {
