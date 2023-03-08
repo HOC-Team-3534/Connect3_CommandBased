@@ -14,6 +14,7 @@ public class Flipper extends SubsystemBase {
     boolean testing = false;
     WPI_TalonSRX flipper;
     double targetPosition = 0;
+    boolean currentControlled = true;
 
     public Flipper() {
         // if (!testing) {
@@ -39,23 +40,33 @@ public class Flipper extends SubsystemBase {
     public void periodic() {
         super.periodic();
         SmartDashboard.putNumber("Encoder Count Flipper", getPosition());
+        SmartDashboard.putNumber("Flipper Output Current", flipper.getSupplyCurrent());
     }
 
-    private CommandBase changeFlipper(FlipperPosition position) {
+    private CommandBase changeFlipper(FlipperPosition position, boolean check) {
         if (testing)
             return Commands.none();
-        return runOnce(() -> {
+        if (currentControlled) {
+            var command = runOnce(() -> flipper.set(position.voltage));
+            if (check)
+                command = command
+                        .andThen(Commands.waitUntil(() -> flipper.getSupplyCurrent() > position.currentShutoff));
+            return command;
+        }
+        var command = runOnce(() -> {
             targetPosition += position.displacement;
             flipper.set(ControlMode.MotionMagic, targetPosition);
-        })
-                .andThen(Commands.waitUntil(() -> atPosition()));
+        });
+        if (check)
+            command = command.andThen(Commands.waitUntil(() -> atPosition()));
+        return command;
     }
 
     public Command flip(boolean checkDown) {
         if (testing)
             return Commands.none();
-        return (changeFlipper(FlipperPosition.Up).withTimeout(0.25)
-                .andThen(changeFlipper(FlipperPosition.Down).withTimeout(0.25)))
+        return (changeFlipper(FlipperPosition.Up, true).withTimeout(0.25)
+                .andThen(changeFlipper(FlipperPosition.Down, checkDown).withTimeout(0.25)))
                 .withInterruptBehavior(InterruptionBehavior.kCancelIncoming);
     }
 
@@ -74,12 +85,14 @@ public class Flipper extends SubsystemBase {
     }
 
     enum FlipperPosition {
-        Down(-462),
-        Up(400);
+        Down(-0.25, 0.0, -462),
+        Up(0.25, 0.0, 400);
 
-        public double displacement;
+        public double voltage, currentShutoff, displacement;
 
-        FlipperPosition(double position) {
+        FlipperPosition(double voltage, double currentShutoff, double position) {
+            this.voltage = voltage;
+            this.currentShutoff = currentShutoff;
             this.displacement = position;
         }
     }
