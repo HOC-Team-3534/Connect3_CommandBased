@@ -11,8 +11,10 @@ import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.Commands;
 
 public class Gripper extends SubsystemBase {
-    boolean testing = true;
+    boolean testing = false;
     WPI_TalonSRX gripper;
+
+    boolean wackyControl = true;
 
     public Gripper() {
         // if (!testing) {
@@ -25,8 +27,8 @@ public class Gripper extends SubsystemBase {
         gripper.config_kI(0, 0);
         gripper.config_kD(0, 120);
         gripper.config_kF(0, 0);
-        gripper.configMotionAcceleration(200.0);
-        gripper.configMotionCruiseVelocity(100.0);
+        gripper.configMotionAcceleration(1000.0);
+        gripper.configMotionCruiseVelocity(400.0);
         gripper.configMotionSCurveStrength(1);
         gripper.setSelectedSensorPosition(0);
         // }
@@ -38,34 +40,58 @@ public class Gripper extends SubsystemBase {
         SmartDashboard.putNumber("Encoder Count gripper", getPosition());
     }
 
-    private CommandBase changeGripper(gripperPosition position) {
+    private CommandBase changeGripper(GripperPosition position, boolean check) {
         if (testing)
             return Commands.none();
-        return runOnce(() -> gripper.set(ControlMode.MotionMagic, position.position))
-                .andThen(Commands.waitUntil(() -> atPosition(position)));
+
+        if (wackyControl) {
+            var command = startEnd(() -> gripper.set(position.percent), () -> gripper.set(0))
+                    .withTimeout(position.time);
+            if (position == GripperPosition.Closed)
+                command = command.until(() -> gripper.getSupplyCurrent() > 2.0);
+            return command;
+        }
+
+        var command = runOnce(() -> gripper.set(ControlMode.MotionMagic, position.position));
+        if (check)
+            command = command.andThen(Commands.waitUntil(() -> atPosition(position)));
+        return command;
     }
 
-    public CommandBase grip() {
-        if (testing)
-            return Commands.none();
-        return changeGripper(gripperPosition.Closed);
+    public void gripManually() {
+        gripper.set(ControlMode.MotionMagic, GripperPosition.Closed.position);
     }
 
-    public CommandBase ungrip() {
+    public CommandBase grip(boolean check) {
         if (testing)
             return Commands.none();
-        return changeGripper(gripperPosition.Open);
+        return changeGripper(GripperPosition.Closed, check);
+    }
+
+    public Command grip() {
+        return grip(true);
+    }
+
+    public CommandBase ungrip(boolean check) {
+        if (testing)
+            return Commands.none();
+        return changeGripper(GripperPosition.Open, check);
+    }
+
+    public Command ungrip() {
+        return ungrip(true);
     }
 
     public Command flap() {
-        return Commands.repeatingSequence(grip(), Commands.waitSeconds(0.2), ungrip(), Commands.waitSeconds(0.2));
+        return Commands.repeatingSequence(grip(false), Commands.waitSeconds(1.0),
+                ungrip(false), Commands.waitSeconds(1.0));
     }
 
     public Command gripperVoltage(double percent) {
         return startEnd(() -> gripper.set(percent), () -> gripper.set(0));
     }
 
-    private boolean atPosition(gripperPosition position) {
+    private boolean atPosition(GripperPosition position) {
         return Math.abs(getPosition() - position.position) <= 5;
     }
 
@@ -75,14 +101,16 @@ public class Gripper extends SubsystemBase {
         return gripper.getSelectedSensorPosition();
     }
 
-    enum gripperPosition {
-        Open(0),
-        Closed(245);
+    enum GripperPosition {
+        Open(0, -0.75, 1.0),
+        Closed(245, 0.75, 1.0);
 
-        public double position;
+        public double position, percent, time;
 
-        gripperPosition(double position) {
+        GripperPosition(double position, double percent, double time) {
             this.position = position;
+            this.percent = percent;
+            this.time = time;
         }
     }
 

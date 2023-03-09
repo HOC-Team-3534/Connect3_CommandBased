@@ -66,7 +66,7 @@ public class Elevator extends SubsystemBase {
                 Commands.waitUntil(() -> isCorrectElevatorHeight()));
     }
 
-    private void setPowerZero() {
+    public void setPowerZero() {
         elevatorMotor.set(0);
     }
 

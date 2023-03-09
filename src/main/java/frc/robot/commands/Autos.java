@@ -112,7 +112,7 @@ public final class Autos {
    *         and then place the game element and bring the elevator back down
    */
   private static Command moveElevatorAndPlace(Height height, Elevator elevator, Gripper gripper, Flipper flipper) {
-    return elevator.goToDesiredHeight(height).andThen(gripper.ungrip(), flipper.flip(false))
+    return elevator.goToDesiredHeight(height).andThen(gripper.ungrip(), flipper.flip())
         .finallyDo((interrupted) -> elevator.goToDesiredHeight(Height.OFF).initialize());
   }
 

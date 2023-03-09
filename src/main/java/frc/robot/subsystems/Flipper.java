@@ -6,8 +6,6 @@ import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import edu.wpi.first.wpilibj2.command.Command.InterruptionBehavior;
-import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.Commands;
 
 public class Flipper extends SubsystemBase {
@@ -15,6 +13,9 @@ public class Flipper extends SubsystemBase {
     WPI_TalonSRX flipper;
     double targetPosition = 0;
     boolean currentControlled = true;
+
+    long lastTimeDownApplied;
+    int counter;
 
     public Flipper() {
         // if (!testing) {
@@ -43,31 +44,49 @@ public class Flipper extends SubsystemBase {
         SmartDashboard.putNumber("Flipper Output Current", flipper.getSupplyCurrent());
     }
 
-    private CommandBase changeFlipper(FlipperPosition position, boolean check) {
+    public Command flip() {
         if (testing)
             return Commands.none();
-        if (currentControlled) {
-            var command = runOnce(() -> flipper.set(position.voltage));
-            if (check)
-                command = command
-                        .andThen(Commands.waitUntil(() -> flipper.getSupplyCurrent() > position.currentShutoff));
-            return command;
-        }
-        var command = runOnce(() -> {
-            targetPosition += position.displacement;
-            flipper.set(ControlMode.MotionMagic, targetPosition);
-        });
-        if (check)
-            command = command.andThen(Commands.waitUntil(() -> atPosition()));
-        return command;
+        return (flipAndCheck(FlipperPosition.Up).andThen(stopFlipper(), Commands.waitSeconds(0.25),
+                flipAndCheck(FlipperPosition.Down)))
+                .finallyDo((interrupt) -> flipper.set(0)).beforeStarting(() -> counter = 3);
     }
 
-    public Command flip(boolean checkDown) {
-        if (testing)
-            return Commands.none();
-        return (changeFlipper(FlipperPosition.Up, true).withTimeout(0.25)
-                .andThen(changeFlipper(FlipperPosition.Down, checkDown).withTimeout(0.25)))
-                .withInterruptBehavior(InterruptionBehavior.kCancelIncoming);
+    private Command flipAndCheck(FlipperPosition position) {
+        Command command;
+        if (currentControlled) {
+            command = runOnce(() -> flipper.set(position.voltage));
+        } else {
+            command = runOnce(() -> {
+                targetPosition += position.displacement;
+                flipper.set(ControlMode.MotionMagic, targetPosition);
+            });
+        }
+        return command.andThen(check(position));
+    }
+
+    private Command check(FlipperPosition position) {
+        if (currentControlled) {
+            return Commands.waitUntil(() -> flipper.getSupplyCurrent() > position.currentShutoff);
+        } else {
+            return Commands.waitUntil(() -> atPosition());
+        }
+    }
+
+    private Command stopFlipper() {
+        return runOnce(() -> flipper.set(0));
+    }
+
+    public Command makeSureDown() {
+        return run(() -> {
+            if (System.currentTimeMillis() - lastTimeDownApplied > 1000 && counter > 0) {
+                flipper.set(FlipperPosition.Down.voltage);
+                lastTimeDownApplied = System.currentTimeMillis();
+                counter--;
+            } else if (flipper.getSupplyCurrent() > FlipperPosition.Down.currentShutoff)
+                flipper.set(0);
+        });
+
     }
 
     public Command flipperVoltage(double percent) {
@@ -85,8 +104,8 @@ public class Flipper extends SubsystemBase {
     }
 
     enum FlipperPosition {
-        Down(-0.25, 0.0, -462),
-        Up(0.25, 0.0, 400);
+        Down(-0.25, 0.6, -462),
+        Up(0.25, 0.6, 400);
 
         public double voltage, currentShutoff, displacement;
 

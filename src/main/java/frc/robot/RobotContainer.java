@@ -62,6 +62,7 @@ public class RobotContainer {
 		swerveDrive.setDefaultCommand(swerveDrive.drive());
 		intake.setDefaultCommand(intake.runIntake());
 		lights.setDefaultCommand(lights.runLights());
+		flipper.setDefaultCommand(flipper.makeSureDown());
 		// Autonomous Command Sendable Chooser
 		autonChooser.setDefaultOption("No Auton", () -> Commands.none());
 		// Autonomous Loading Zone Paths
@@ -135,27 +136,28 @@ public class RobotContainer {
 		TGR.Characterize.tgr().whileTrue(swerveDrive.characterizeDrive(DriveCharacterization.QUASIASTIC_VOLTAGE,
 				DriveCharacterization.QUASIASTIC_DURATION));
 
-		TGR.Intake.tgr().onTrue(gripper.ungrip());// .onFalse(gripper.gripper());// TODO see if we need to do a slight
-													// wait
-													// between gripper and ungripper
+		TGR.Intake.tgr().onTrue(gripper.ungrip());// .onFalse(gripper.gripper());// TODO
+													// see if we need to do a slight
+		// wait
+		// between gripper and ungripper
 		TGR.Extake.tgr().onTrue(gripper.ungrip());
 		TGR.FlipElement.tgr()
-				.onTrue(CommandCombos.reorient(intake, gripper, flipper));
+				.whileTrue(CommandCombos.reorient(intake, gripper, flipper));
 
 		TGR.ResetWithLimelight.tgr().onTrue(new ProxyCommand(() -> {
 			return swerveDrive.resetPoseToLimelightPose(limelight.getBotPose(false));
 		}));
 
-		TGR.Flap.tgr().whileTrue(gripper.flap()).onFalse(gripper.ungrip());
+		TGR.Flap.tgr().whileTrue(CommandCombos.jiggleAround(intake, gripper)).onFalse(gripper.grip(false));
 
 		TGR.PlacePiece.tgr().debounce(0.5)
 				.whileTrue(new ProxyCommand(() -> CommandCombos.moveElevatorAndPlace(elevator, gripper, flipper)));
 
-		TGR.PositiveVoltage.tgr().whileTrue(flipper.flipperVoltage(0.25));
-		TGR.NegativeVoltage.tgr().whileTrue(flipper.flipperVoltage(-0.25));
+		TGR.PositiveVoltage.tgr().whileTrue(flipper.flipperVoltage(0.5));
+		TGR.NegativeVoltage.tgr().whileTrue(flipper.flipperVoltage(-0.5));
 		TGR.MoveElevator.tgr().onTrue(elevator.goToDesiredHeight(Height.HIGH))
 				.onFalse(elevator.goToDesiredHeight(Height.OFF));
-		TGR.MoveFlipper.tgr().onTrue(flipper.flip(false));
+		TGR.MoveFlipper.tgr().onTrue(flipper.flip());
 
 	}
 

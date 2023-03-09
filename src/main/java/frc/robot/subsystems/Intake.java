@@ -2,6 +2,7 @@ package frc.robot.subsystems;
 
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
 
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -20,6 +21,15 @@ public class Intake extends SubsystemBase {
             topMotor.setInverted(true);
             botMotor.setInverted(true);
         }
+    }
+
+    public void periodic() {
+        super.periodic();
+        SmartDashboard.putNumber("Intake Current", botMotor.getSupplyCurrent());
+    }
+
+    public double getAmps() {
+        return botMotor.getSupplyCurrent();
     }
 
     public Command runIntake() {
@@ -53,12 +63,31 @@ public class Intake extends SubsystemBase {
         botMotor.set(percent);
     }
 
-    public Command runJustBottomMotor() {
+    public Command runBothSlow() {
+        if (testing)
+            return Commands.none();
+        return run(() -> {
+            botMotor.set(0.50);
+            topMotor.set(0.25);
+        });
+    }
+
+    public Command runBothFinal() {
         if (testing)
             return Commands.none();
         return run(() -> {
             botMotor.set(1.0);
-            topMotor.set(0);
+            topMotor.set(0.65);
         });
     }
+
+    public Command runBottomDownTopUp() {
+        if (testing)
+            return Commands.none();
+        return run(() -> {
+            botMotor.set(-0.3);
+            topMotor.set(0.25);
+        });
+    }
+
 }
