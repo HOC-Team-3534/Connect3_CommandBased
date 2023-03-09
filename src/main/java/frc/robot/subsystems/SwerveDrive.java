@@ -3,6 +3,8 @@ package frc.robot.subsystems;
 import java.util.HashMap;
 import java.util.Map;
 
+import javax.lang.model.util.ElementScanner14;
+
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
 import com.ctre.phoenix.sensors.CANCoder;
@@ -179,6 +181,19 @@ public class SwerveDrive extends SwerveSubsystem {
 
         command.setName("Drive Manually");
         return command;
+    }
+
+    public Command squareUp() {
+        // put from -180 to 180
+        var ang = dt.getGyroHeading().rotateBy(new Rotation2d()).getDegrees();
+        if (ang < 45 && ang > -45)
+            return driveWithDesiredAngle(new Rotation2d());
+        else if (ang > 135 || ang < -135)
+            return driveWithDesiredAngle(Rotation2d.fromDegrees(180));
+        else if (ang < 135 && ang > 45)
+            return driveWithDesiredAngle(Rotation2d.fromDegrees(90));
+        else
+            return driveWithDesiredAngle(Rotation2d.fromDegrees(270));
     }
 
     /**

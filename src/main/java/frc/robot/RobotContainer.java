@@ -149,7 +149,7 @@ public class RobotContainer {
 		// TODO create DTM that aligns so the front can extake
 
 		// TODO determine if it would be better to rotate to 180 degrees
-		TGR.PrepareBalance.tgr().whileTrue(swerveDrive.driveWithDesiredAngle(new Rotation2d()));
+		TGR.PrepareBalance.tgr().whileTrue(new ProxyCommand(() -> swerveDrive.squareUp()));
 
 		TGR.ResetWithLimelight.tgr().onTrue(new ProxyCommand(() -> {
 			return swerveDrive.resetPoseToLimelightPose(limelight.getBotPose(false));
@@ -190,7 +190,7 @@ public class RobotContainer {
 
 	public enum TGR {
 		DTM(driverController.leftTrigger(0.15).and(() -> EnabledDebugModes.DTMEnabled)),
-		Creep(driverController.leftBumper()),
+		Creep(driverController.leftBumper().or(() -> elevator.getCurrentCommand() != null)),
 		PrepareBalance(driverController.a().and(() -> !EnabledDebugModes.CharacterizeEnabled)),
 		Characterize(driverController.a().and(() -> EnabledDebugModes.CharacterizeEnabled)),
 		ResetWithLimelight(driverController.leftStick().and(() -> !DTM.bool())),
