@@ -2,7 +2,6 @@ package frc.robot.subsystems;
 
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
 
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -23,19 +22,11 @@ public class Intake extends SubsystemBase {
         }
     }
 
-    public void periodic() {
-        super.periodic();
-        SmartDashboard.putNumber("Intake Current", botMotor.getSupplyCurrent());
-    }
-
-    public double getAmps() {
-        return botMotor.getSupplyCurrent();
-    }
-
     public Command runIntake() {
         if (testing)
             return Commands.none();
         return runEnd(() -> {
+            // TODO determine power outputs for intake for best results
             if (TGR.Intake.bool())
                 if (TGR.CubeLights.bool())
                     setBothMotors(0.3);
@@ -58,24 +49,7 @@ public class Intake extends SubsystemBase {
     }
 
     private void setBothMotors(double percent) {
-
         topMotor.set(percent);
         botMotor.set(percent);
     }
-
-    public Command runBothFast() {
-        if (testing)
-            return Commands.none();
-        return run(() -> {
-            botMotor.set(0.7);
-            topMotor.set(0.7);
-        });
-    }
-
-    public Command runBothBackward() {
-        if (testing)
-            return Commands.none();
-        return run(() -> setBothMotors(-0.5)).withTimeout(0.1);
-    }
-
 }
