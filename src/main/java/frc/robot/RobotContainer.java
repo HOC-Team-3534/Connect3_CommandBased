@@ -4,8 +4,6 @@
 package frc.robot;
 
 import frc.robot.Constants.EnabledDebugModes;
-import frc.robot.Constants.Drive.Config.DriveCharacterization;
-import frc.robot.Constants.ELEVATOR.Height;
 import frc.robot.commands.Autos;
 import frc.robot.commands.CommandCombos;
 import frc.robot.subsystems.Gripper;
@@ -146,6 +144,8 @@ public class RobotContainer {
 						.andThen(CommandCombos.moveElevatorAndPlace(elevator, gripper, flipper)
 								.unless(() -> !swerveDrive.isGridPoseValid())));
 
+		// TODO create DTM that aligns so the front can extake
+
 		// TODO determine if it would be better to rotate to 180 degrees
 		TGR.PrepareBalance.tgr().whileTrue(swerveDrive.driveWithDesiredAngle(new Rotation2d()));
 
@@ -159,14 +159,14 @@ public class RobotContainer {
 		TGR.PlacePiece.tgr()
 				.whileTrue(new ProxyCommand(() -> CommandCombos.moveElevatorAndPlace(elevator, gripper, flipper)));
 
-		// The following are for debug purposes only
-		TGR.Characterize.tgr().whileTrue(swerveDrive.characterizeDrive(DriveCharacterization.QUASIASTIC_VOLTAGE,
-				DriveCharacterization.QUASIASTIC_DURATION));
-		TGR.PositiveVoltage.tgr().whileTrue(flipper.flipperVoltage(0.5));
-		TGR.NegativeVoltage.tgr().whileTrue(flipper.flipperVoltage(-0.5));
-		TGR.MoveElevator.tgr().onTrue(elevator.goToDesiredHeight(Height.LOW))
-				.onFalse(elevator.goToDesiredHeight(Height.OFF));
-		TGR.MoveFlipper.tgr().onTrue(flipper.flip());
+		// The following triggered commands are for debug purposes only
+		// TGR.Characterize.tgr().whileTrue(swerveDrive.characterizeDrive(DriveCharacterization.QUASIASTIC_VOLTAGE,
+		// DriveCharacterization.QUASIASTIC_DURATION));
+		// TGR.PositiveVoltage.tgr().whileTrue(flipper.flipperVoltage(0.5));
+		// TGR.NegativeVoltage.tgr().whileTrue(flipper.flipperVoltage(-0.5));
+		// TGR.MoveElevator.tgr().onTrue(elevator.goToDesiredHeight(Height.LOW))
+		// .onFalse(elevator.goToDesiredHeight(Height.OFF));
+		// TGR.MoveFlipper.tgr().onTrue(flipper.flip());
 
 	}
 

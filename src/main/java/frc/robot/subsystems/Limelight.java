@@ -19,6 +19,7 @@ import java.util.concurrent.Callable;
 import java.util.function.BiConsumer;
 
 public class Limelight extends SubsystemBase {
+	// TODO determine why this shift was is a full wheel base, not a half wheel base
 	final Translation2d shiftAway = new Translation2d(
 			Units.inchesToMeters(14.0 + 6.0) + Constants.Drive.Known.WHEELBASE_METERS,
 			0);
@@ -83,6 +84,8 @@ public class Limelight extends SubsystemBase {
 			default:
 				return null;
 		}
+		// TODO validity check using robot in target space distance for only within
+		// certain distance
 		if (botPoseArray == null || botPoseArray.length < 7)
 			return null;
 		var pose = new Pose2d(botPoseArray[0], botPoseArray[1], Rotation2d.fromDegrees(botPoseArray[5]));
