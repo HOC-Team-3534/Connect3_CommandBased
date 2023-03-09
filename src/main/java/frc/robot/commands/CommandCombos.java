@@ -16,10 +16,6 @@ public final class CommandCombos {
                 .finallyDo((interrupted) -> elevator.setPowerZero());
     }
 
-    public static Command repositionWithIntake(Intake intake) {
-        return Commands.repeatingSequence(intake.runBothBackward(), intake.runBothFast().withTimeout(3.0));
-    }
-
     private CommandCombos() {
         throw new UnsupportedOperationException("This is a utility class!");
     }

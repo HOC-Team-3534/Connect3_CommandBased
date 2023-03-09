@@ -17,7 +17,6 @@ public class Elevator extends SubsystemBase {
     Height targetHeight = Height.OFF;
 
     public Elevator() {
-        // if (testing) {
         elevatorMotor = new WPI_TalonFX(14);
         elevatorMotor.setInverted(false);
         elevatorMotor.setSensorPhase(false);
@@ -28,15 +27,11 @@ public class Elevator extends SubsystemBase {
         elevatorMotor
                 .configMotionAcceleration(ELEVATOR.kElevatorAcceleration);
         elevatorMotor.configMotionSCurveStrength(2);
-        elevatorMotor.config_kP(0, 0.05);// TODO config and find the values by
-                                         // tuning
+        elevatorMotor.config_kP(0, 0.05);
         elevatorMotor.config_kI(0, 0);
-        elevatorMotor.config_kD(0, 0.5);// TODO config and find the values by
-                                        // tuning
-        elevatorMotor.config_kF(0, 0);// TODO config and find the values by
-                                      // tuning
+        elevatorMotor.config_kD(0, 0.5);
+        elevatorMotor.config_kF(0, 0);
         elevatorMotor.setSelectedSensorPosition(0);
-        // }
     }
 
     public void periodic() {

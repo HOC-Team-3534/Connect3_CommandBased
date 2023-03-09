@@ -1,7 +1,5 @@
 package frc.robot.subsystems;
 
-import com.ctre.phoenix.motorcontrol.ControlMode;
-import com.ctre.phoenix.motorcontrol.FeedbackDevice;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -11,36 +9,19 @@ import edu.wpi.first.wpilibj2.command.Commands;
 public class Flipper extends SubsystemBase {
     boolean testing = false;
     WPI_TalonSRX flipper;
-    double targetPosition = 0;
-    boolean currentControlled = true;
 
     long lastTimeDownApplied;
     int counter;
 
     public Flipper() {
-        // if (!testing) {
         flipper = new WPI_TalonSRX(19);
         flipper.configFactoryDefault();
-        flipper.configSelectedFeedbackSensor(FeedbackDevice.QuadEncoder, 0, 20);
         flipper.setInverted(true);
-        flipper.setSensorPhase(true);
-        flipper.config_kP(0, 15);
-        flipper.config_kI(0, 0);
-        flipper.config_kD(0, 150);
-        flipper.config_kF(0, 0);
-        flipper.configMotionAcceleration(1600.0);
-        flipper.configMotionCruiseVelocity(400.0);
-        flipper.configMotionSCurveStrength(1);
-        flipper.setSelectedSensorPosition(0);
-
-        // }
-
     }
 
     @Override
     public void periodic() {
         super.periodic();
-        SmartDashboard.putNumber("Encoder Count Flipper", getPosition());
         SmartDashboard.putNumber("Flipper Output Current", flipper.getSupplyCurrent());
     }
 
@@ -53,24 +34,11 @@ public class Flipper extends SubsystemBase {
     }
 
     private Command flipAndCheck(FlipperPosition position) {
-        Command command;
-        if (currentControlled) {
-            command = runOnce(() -> flipper.set(position.voltage));
-        } else {
-            command = runOnce(() -> {
-                targetPosition += position.displacement;
-                flipper.set(ControlMode.MotionMagic, targetPosition);
-            });
-        }
-        return command.andThen(check(position));
+        return runOnce(() -> flipper.set(position.voltage)).andThen(check(position));
     }
 
     private Command check(FlipperPosition position) {
-        if (currentControlled) {
-            return Commands.waitUntil(() -> flipper.getSupplyCurrent() > position.currentShutoff);
-        } else {
-            return Commands.waitUntil(() -> atPosition());
-        }
+        return Commands.waitUntil(() -> flipper.getSupplyCurrent() > position.currentShutoff);
     }
 
     private Command stopFlipper() {
@@ -93,26 +61,15 @@ public class Flipper extends SubsystemBase {
         return startEnd(() -> flipper.set(percent), () -> flipper.set(0));
     }
 
-    private boolean atPosition() {
-        return Math.abs(getPosition() - targetPosition) <= 30;
-    }
-
-    public double getPosition() {
-        // if (testing)
-        // return 0;
-        return flipper.getSelectedSensorPosition();
-    }
-
     enum FlipperPosition {
-        Down(-0.25, 0.6, -462),
-        Up(0.25, 0.6, 400);
+        Down(-0.25, 0.6),
+        Up(0.25, 0.6);
 
-        public double voltage, currentShutoff, displacement;
+        public double voltage, currentShutoff;
 
-        FlipperPosition(double voltage, double currentShutoff, double position) {
+        FlipperPosition(double voltage, double currentShutoff) {
             this.voltage = voltage;
             this.currentShutoff = currentShutoff;
-            this.displacement = position;
         }
     }
 

@@ -148,32 +148,23 @@ public class RobotContainer {
 						.andThen(CommandCombos.moveElevatorAndPlace(elevator, gripper, flipper)
 								.unless(() -> !swerveDrive.isGridPoseValid())));
 
+		// TODO determine if it would be better to rotate to 180 degrees
 		TGR.PrepareBalance.tgr().whileTrue(swerveDrive.driveWithDesiredAngle(new Rotation2d()));
 
 		TGR.Characterize.tgr().whileTrue(swerveDrive.characterizeDrive(DriveCharacterization.QUASIASTIC_VOLTAGE,
 				DriveCharacterization.QUASIASTIC_DURATION));
 
-		TGR.Intake.tgr().onTrue(gripper.ungrip());// .onFalse(gripper.gripper());// TODO
-													// see if we need to do a slight
-		// wait
-		// between gripper and ungripper
+		TGR.Intake.tgr().onTrue(gripper.ungrip());
 		TGR.Extake.tgr().onTrue(gripper.ungrip());
-		/*
-		 * TGR.FlipElement.tgr()
-		 * .whileTrue(CommandCombos.reorient(intake, gripper, flipper));
-		 */
 
 		TGR.ResetWithLimelight.tgr().onTrue(new ProxyCommand(() -> {
 			return swerveDrive.resetPoseToLimelightPose(limelight.getBotPose(false));
 		}));
 
-		TGR.Flap.tgr().whileTrue(CommandCombos.repositionWithIntake(intake));
+		TGR.Ungrip.tgr().whileTrue(gripper.ungrip());
+		TGR.Grip.tgr().whileTrue(gripper.grip());
 
-		// TGR.Flap.tgr().whileTrue(CommandCombos.jiggleAround(intake,
-		// gripper)).onFalse(gripper.grip(false));
-
-		TGR.GripElement.tgr().onTrue(gripper.grip());
-		TGR.PlacePiece.tgr().debounce(0.5)
+		TGR.PlacePiece.tgr()
 				.whileTrue(new ProxyCommand(() -> CommandCombos.moveElevatorAndPlace(elevator, gripper, flipper)));
 
 		TGR.PositiveVoltage.tgr().whileTrue(flipper.flipperVoltage(0.5));
@@ -202,37 +193,28 @@ public class RobotContainer {
 	public enum TGR {
 		DTM(driverController.leftTrigger(0.15).and(() -> EnabledDebugModes.DTMEnabled)),
 		Creep(driverController.leftBumper()),
-		Intake(driverController.rightTrigger(0.15)),
-		Extake(driverController.rightBumper()), // Subject to Change
-		Characterize(driverController.a().and(() -> EnabledDebugModes.CharacterizeEnabled)),
 		PrepareBalance(driverController.a().and(() -> !EnabledDebugModes.CharacterizeEnabled)),
-		Flap(operatorController.rightTrigger(0.15)),
+		Characterize(driverController.a().and(() -> EnabledDebugModes.CharacterizeEnabled)),
+		ResetWithLimelight(driverController.leftStick().and(() -> !DTM.bool())),
+
+		Intake(driverController.rightTrigger(0.15)),
+		Extake(driverController.rightBumper()),
 		PlacePiece(driverController.y().and(() -> !DTM.bool())),
 
-		CubeLights(operatorController.b()), // Sets color
-		// to violet
-		// indicating
-		// cube to be
-		// picked
-		// up
-		ConeLights(operatorController.x()), // Sets color
-		// to yellow
-		// indicating
-		// cone to be
-		// picked up
-		// ResetPoseToZero(driverController.rightStick()),
-		ResetWithLimelight(driverController.leftStick().and(() -> !DTM.bool())),
+		Ungrip(operatorController.leftTrigger(0.15)),
+		Grip(operatorController.rightTrigger(0.15)),
+		CubeLights(operatorController.b()),
+		ConeLights(operatorController.x()),
 		GridLeft(operatorController.leftBumper()),
 		GridRight(operatorController.rightBumper()),
 		PlaceMid(operatorController.a()),
 		PlaceHigh(operatorController.y()),
-		GripElement(operatorController.leftTrigger(0.15)),
-		/// FlipElement(operatorController.leftTrigger(0.15)),
+
 		PositiveVoltage(driverController.povUp().and(() -> EnabledDebugModes.testingVoltageControl)),
 		NegativeVoltage(driverController.povDown().and(() -> EnabledDebugModes.testingVoltageControl)),
 		MoveElevator(driverController.povLeft().and(
 				() -> EnabledDebugModes.testingElevatorPos)),
-		MoveFlipper(operatorController.povRight().and(() -> EnabledDebugModes.testingFlipper));
+		MoveFlipper(driverController.povRight().and(() -> EnabledDebugModes.testingFlipper));
 
 		Trigger trigger;
 
