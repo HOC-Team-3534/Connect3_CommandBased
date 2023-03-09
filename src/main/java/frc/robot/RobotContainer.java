@@ -109,8 +109,6 @@ public class RobotContainer {
 				() -> Autos.place1andBalanceFromCenter(swerveDrive, intake, elevator, gripper, flipper));
 
 		// Autonomous Testing Paths
-		// autonChooser.addOption("Drive Forward", () ->
-		// Autos.driveForward(swerveDrive));
 		// autonChooser.addOption("Test Auto Balance Forward", () ->
 		// swerveDrive.balanceForward());
 		// autonChooser.addOption("Test Auto Balance Backward", () ->
@@ -151,12 +149,6 @@ public class RobotContainer {
 		// TODO determine if it would be better to rotate to 180 degrees
 		TGR.PrepareBalance.tgr().whileTrue(swerveDrive.driveWithDesiredAngle(new Rotation2d()));
 
-		TGR.Characterize.tgr().whileTrue(swerveDrive.characterizeDrive(DriveCharacterization.QUASIASTIC_VOLTAGE,
-				DriveCharacterization.QUASIASTIC_DURATION));
-
-		TGR.Intake.tgr().onTrue(gripper.ungrip());
-		TGR.Extake.tgr().onTrue(gripper.ungrip());
-
 		TGR.ResetWithLimelight.tgr().onTrue(new ProxyCommand(() -> {
 			return swerveDrive.resetPoseToLimelightPose(limelight.getBotPose(false));
 		}));
@@ -167,6 +159,9 @@ public class RobotContainer {
 		TGR.PlacePiece.tgr()
 				.whileTrue(new ProxyCommand(() -> CommandCombos.moveElevatorAndPlace(elevator, gripper, flipper)));
 
+		// The following are for debug purposes only
+		TGR.Characterize.tgr().whileTrue(swerveDrive.characterizeDrive(DriveCharacterization.QUASIASTIC_VOLTAGE,
+				DriveCharacterization.QUASIASTIC_DURATION));
 		TGR.PositiveVoltage.tgr().whileTrue(flipper.flipperVoltage(0.5));
 		TGR.NegativeVoltage.tgr().whileTrue(flipper.flipperVoltage(-0.5));
 		TGR.MoveElevator.tgr().onTrue(elevator.goToDesiredHeight(Height.LOW))

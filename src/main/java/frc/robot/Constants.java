@@ -19,7 +19,6 @@ import swerve.SDSModuleConfiguration;
  */
 public final class Constants {
   public static RobotType ROBOTTYPE = RobotType.PBOT;
-  public static final int PIGEON_2 = 19; // FIXME Set Pigeon ID
   public static double LOOP_PERIOD_MILLIS = 20;
 
   public enum RobotType {
@@ -136,7 +135,7 @@ public final class Constants {
     public static final boolean DTMEnabled = true;
     public static final boolean updatePoseWithVisionEnabled = true;
     public static final boolean testingVoltageControl = false;
-    public static final boolean testingElevatorPos = true;
+    public static final boolean testingElevatorPos = false;
     public static final boolean testingFlipper = false;
   }
 }
