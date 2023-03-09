@@ -59,49 +59,66 @@ public class RobotContainer {
 	public RobotContainer() {
 		// Configure the trigger bindings
 		configureBindings();
+
+		// Set Default Commands for Subsystems
 		swerveDrive.setDefaultCommand(swerveDrive.drive());
 		intake.setDefaultCommand(intake.runIntake());
 		lights.setDefaultCommand(lights.runLights());
 		flipper.setDefaultCommand(flipper.makeSureDown());
+
 		// Autonomous Command Sendable Chooser
 		autonChooser.setDefaultOption("No Auton", () -> Commands.none());
+
 		// Autonomous Loading Zone Paths
 		autonChooser.addOption("Loading Zone Place 2",
-				() -> Autos.place2FromSides(swerveDrive, intake, elevator, gripper, flipper, Path.Loading_Zone_Place2,
+				() -> Autos.place2FromSides(swerveDrive, intake, elevator, gripper, flipper,
+						Path.LoadingZone_PickUp_PlaceSecond,
 						null));
-		autonChooser.addOption("Loading Zone Place 2 Pick Up",
-				() -> Autos.place2FromSides(swerveDrive, intake, elevator, gripper, flipper, Path.Loading_Zone_Place2,
-						Path.Loading_Zone_Place2_Pick_Up));
-		autonChooser.addOption("Loading Zone Place 2 and Balance",
+		autonChooser.addOption("Loading Zone Place 2 And Pick Up Third",
+				() -> Autos.place2FromSides(swerveDrive, intake, elevator, gripper, flipper,
+						Path.LoadingZone_PickUp_PlaceSecond,
+						Path.LoadingZone_PickUp_Third));
+		autonChooser.addOption("Loading Zone Place Pickup Second and Balance",
 				() -> Autos.place1andBalanceFromSides(swerveDrive, intake,
-						elevator, gripper, flipper, Path.Loading_Zone_Place_PickUp_Balance));
-		autonChooser.addOption("Loading Zone Place Pick Up and Balance",
+						elevator, gripper, flipper, Path.LoadingZone_PickUp_PlaceWhileMove_BalanceForward));
+		autonChooser.addOption("Loading Zone Place 2 While Moving and Balance",
 				() -> Autos.place2FromSidesAndBalance(swerveDrive,
-						intake, elevator, gripper, flipper, Path.Loading_Zone_Place2_Balance));
+						intake, elevator, gripper, flipper, Path.LoadingZone_PickUp_Balance));
+		autonChooser.addOption("Loading Zone Place and Drive Forward",
+				() -> Autos.place1AndDriveForwardFromSides(swerveDrive, elevator, gripper, flipper,
+						Path.LoadingZone_DriveForward));
 
 		// Autonomous Bump Side Paths
 		autonChooser.addOption("Bump Side Place 2", () -> Autos.place2FromSides(swerveDrive, intake, elevator, gripper,
-				flipper, Path.Bump_Side_Place2, null));
-		autonChooser.addOption("Bump Side Place 2 Pick Up",
-				() -> Autos.place2FromSides(swerveDrive, intake, elevator, gripper, flipper, Path.Bump_Side_Place2,
-						Path.Bump_Side_Place2_Pick_Up));
-		autonChooser.addOption("Bump Side Place 2 and Balance",
+				flipper, Path.BumpSide_PickUp_PlaceSecond, null));
+		autonChooser.addOption("Bump Side Place 2 Pick Up Third",
+				() -> Autos.place2FromSides(swerveDrive, intake, elevator, gripper, flipper,
+						Path.BumpSide_PickUp_PlaceSecond,
+						Path.BumpSide_PickUp_Third));
+		autonChooser.addOption("Bump Side Place Pickup Second and Balance",
 				() -> Autos.place1andBalanceFromSides(swerveDrive, intake,
-						elevator, gripper, flipper, Path.Bump_Side_Place_PickUp_Balance));
-		autonChooser.addOption("Bump Side Place Pick Up and Balance",
+						elevator, gripper, flipper, Path.BumpSide_PickUp_Balance));
+		autonChooser.addOption("Bump Side Place 2 While Moving and Balance",
 				() -> Autos.place2FromSidesAndBalance(swerveDrive,
-						intake, elevator, gripper, flipper, Path.Bump_Side_Place2_Balance));
+						intake, elevator, gripper, flipper, Path.BumpSide_PickUp_PlaceWhileMove_BalanceForward));
+		autonChooser.addOption("Bump Side Place and Drive Forward", () -> Autos
+				.place1AndDriveForwardFromSides(swerveDrive, elevator, gripper, flipper, Path.BumpSide_DriveForward));
 
 		// Autonomous Center Paths
 		autonChooser.addOption("Place Piece drive Across and Back",
 				() -> Autos.place1andBalanceFromCenter(swerveDrive, intake, elevator, gripper, flipper));
 
 		// Autonomous Testing Paths
-		autonChooser.addOption("Drive Forward", () -> Autos.driveForward(swerveDrive));
-		autonChooser.addOption("Test Auto Balance Forward", () -> swerveDrive.balanceForward());
-		autonChooser.addOption("Test Auto Balance Backward", () -> swerveDrive.balanceBackward());
-		autonChooser.addOption("Test Auto Balance Across and Back", () -> swerveDrive.balanceAcrossAndBack());
+		// autonChooser.addOption("Drive Forward", () ->
+		// Autos.driveForward(swerveDrive));
+		// autonChooser.addOption("Test Auto Balance Forward", () ->
+		// swerveDrive.balanceForward());
+		// autonChooser.addOption("Test Auto Balance Backward", () ->
+		// swerveDrive.balanceBackward());
+		// autonChooser.addOption("Test Auto Balance Across and Back", () ->
+		// swerveDrive.balanceAcrossAndBack());
 
+		// Show Status of Subsystems on Dashboard
 		SmartDashboard.putData(autonChooser);
 		SmartDashboard.putData(swerveDrive);
 		SmartDashboard.putData(intake);

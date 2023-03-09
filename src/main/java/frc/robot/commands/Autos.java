@@ -15,10 +15,6 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 
 public final class Autos {
-  /** Example static factory for an autonomous command. */
-  public static Command driveForward(SwerveDrive swerve) {
-    return Commands.sequence(swerve.driveOnPath(Path.Drive_Forward_1, true));
-  }
 
   /**
    * 
@@ -84,6 +80,11 @@ public final class Autos {
         .andThen(driveWithIntake(path1, intake, swerve, true), swerve.balanceBackward());
   }
 
+  public static Command place1AndDriveForwardFromSides(SwerveDrive swerve, Elevator elevator, Gripper gripper,
+      Flipper flipper, Path path1) {
+    return moveElevatorAndPlace(Height.HIGH, elevator, gripper, flipper).andThen(swerve.driveOnPath(path1, true));
+  }
+
   /**
    * 
    * @param swerve   the swerve drive subsystem
@@ -144,10 +145,6 @@ public final class Autos {
   private static Command driveWithIntake(Path path, Intake intake, SwerveDrive swerve, boolean resetToIntial) {
     return Commands.deadline(swerve.driveOnPath(path, resetToIntial), intake.runIntakeAuton());
   }
-
-  // TODO figure out how to write them if they need to be parallel or sequence
-  // because the swerve drive and intake need to be run parallel but the rest
-  // needs to be sequence. May need to make a new class for each auton
 
   private Autos() {
     throw new UnsupportedOperationException("This is a utility class!");
