@@ -118,7 +118,7 @@ public final class Constants {
 
     public static enum Height {
       HIGH(220000),
-      LOAD(140000),
+      LOAD(45000),
       MID(140000),
       LOW(45000),
       OFF(0.0);

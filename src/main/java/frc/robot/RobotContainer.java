@@ -148,7 +148,6 @@ public class RobotContainer {
 
 		// TODO create DTM that aligns so the front can extake
 
-		// TODO determine if it would be better to rotate to 180 degrees
 		TGR.PrepareBalance.tgr().whileTrue(new ProxyCommand(() -> swerveDrive.squareUp()));
 
 		TGR.ResetWithLimelight.tgr().onTrue(new ProxyCommand(() -> {
