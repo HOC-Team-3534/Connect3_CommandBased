@@ -141,21 +141,27 @@ public class RobotContainer {
 		// wait
 		// between gripper and ungripper
 		TGR.Extake.tgr().onTrue(gripper.ungrip());
-		TGR.FlipElement.tgr()
-				.whileTrue(CommandCombos.reorient(intake, gripper, flipper));
+		/*
+		 * TGR.FlipElement.tgr()
+		 * .whileTrue(CommandCombos.reorient(intake, gripper, flipper));
+		 */
 
 		TGR.ResetWithLimelight.tgr().onTrue(new ProxyCommand(() -> {
 			return swerveDrive.resetPoseToLimelightPose(limelight.getBotPose(false));
 		}));
 
-		TGR.Flap.tgr().whileTrue(CommandCombos.jiggleAround(intake, gripper)).onFalse(gripper.grip(false));
+		TGR.Flap.tgr().whileTrue(CommandCombos.repositionWithIntake(intake));
 
+		// TGR.Flap.tgr().whileTrue(CommandCombos.jiggleAround(intake,
+		// gripper)).onFalse(gripper.grip(false));
+
+		TGR.GripElement.tgr().onTrue(gripper.grip());
 		TGR.PlacePiece.tgr().debounce(0.5)
 				.whileTrue(new ProxyCommand(() -> CommandCombos.moveElevatorAndPlace(elevator, gripper, flipper)));
 
 		TGR.PositiveVoltage.tgr().whileTrue(flipper.flipperVoltage(0.5));
 		TGR.NegativeVoltage.tgr().whileTrue(flipper.flipperVoltage(-0.5));
-		TGR.MoveElevator.tgr().onTrue(elevator.goToDesiredHeight(Height.HIGH))
+		TGR.MoveElevator.tgr().onTrue(elevator.goToDesiredHeight(Height.LOW))
 				.onFalse(elevator.goToDesiredHeight(Height.OFF));
 		TGR.MoveFlipper.tgr().onTrue(flipper.flip());
 
@@ -203,8 +209,8 @@ public class RobotContainer {
 		GridRight(operatorController.rightBumper()),
 		PlaceMid(operatorController.a()),
 		PlaceHigh(operatorController.y()),
-		// GripElement(operatorController.rightTrigger(0.15)),
-		FlipElement(operatorController.leftTrigger(0.15)),
+		GripElement(operatorController.leftTrigger(0.15)),
+		/// FlipElement(operatorController.leftTrigger(0.15)),
 		PositiveVoltage(driverController.povUp().and(() -> EnabledDebugModes.testingVoltageControl)),
 		NegativeVoltage(driverController.povDown().and(() -> EnabledDebugModes.testingVoltageControl)),
 		MoveElevator(driverController.povLeft().and(

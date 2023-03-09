@@ -16,21 +16,8 @@ public final class CommandCombos {
                 .finallyDo((interrupted) -> elevator.setPowerZero());
     }
 
-    public static CommandBase reorient(Intake intake, Gripper gripper, Flipper flipper) {
-        return gripper.ungrip().andThen(flipper.flip(), jiggleAround(intake, gripper));
-    }
-
-    public static Command gripOnIntake(Intake intake, Gripper gripper) {
-        return gripper.ungrip().andThen(Commands.waitSeconds(1.0), Commands.waitUntil(() -> intake.getAmps() < 15.0),
-                Commands.waitUntil(() -> intake.getAmps() > 15.5), Commands.waitSeconds(0.5), gripper.grip());
-    }
-
-    public static CommandBase jiggleAround(Intake intake, Gripper gripper) {
-        return gripper.ungrip()
-                .andThen(intake.runBothSlow().withTimeout(2.0),
-                        gripper.grip(false), Commands.waitSeconds(0.5), gripper.ungrip(false),
-                        intake.runBottomDownTopUp().withTimeout(2.0), gripper.ungrip(false),
-                        intake.runBothSlow());
+    public static Command repositionWithIntake(Intake intake) {
+        return Commands.repeatingSequence(intake.runBothBackward(), intake.runBothFast().withTimeout(3.0));
     }
 
     private CommandCombos() {

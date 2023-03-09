@@ -63,31 +63,19 @@ public class Intake extends SubsystemBase {
         botMotor.set(percent);
     }
 
-    public Command runBothSlow() {
+    public Command runBothFast() {
         if (testing)
             return Commands.none();
         return run(() -> {
-            botMotor.set(0.50);
-            topMotor.set(0.25);
+            botMotor.set(0.7);
+            topMotor.set(0.7);
         });
     }
 
-    public Command runBothFinal() {
+    public Command runBothBackward() {
         if (testing)
             return Commands.none();
-        return run(() -> {
-            botMotor.set(1.0);
-            topMotor.set(0.65);
-        });
-    }
-
-    public Command runBottomDownTopUp() {
-        if (testing)
-            return Commands.none();
-        return run(() -> {
-            botMotor.set(-0.3);
-            topMotor.set(0.25);
-        });
+        return run(() -> setBothMotors(-0.5)).withTimeout(0.1);
     }
 
 }
