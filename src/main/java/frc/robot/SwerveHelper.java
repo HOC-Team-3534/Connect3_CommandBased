@@ -9,6 +9,7 @@ import swerve.SwerveConstants;
 
 public class SwerveHelper {
         public static boolean loadSwerveConstants() {
+                // TODO determine CBOT characterization values
                 double ks = (Constants.ROBOTTYPE == RobotType.TBOT) ? 0.293
                                 : (Constants.ROBOTTYPE == RobotType.PBOT) ? .31 : 0.0;
                 double kv = (Constants.ROBOTTYPE == RobotType.TBOT) ? 2.367
@@ -16,6 +17,7 @@ public class SwerveHelper {
                 double ka = (Constants.ROBOTTYPE == RobotType.TBOT) ? 0.0379
                                 : (Constants.ROBOTTYPE == RobotType.PBOT) ? 0.031 : 0.0;
                 var config = Constants.Drive.Known.SDS_MODULE_CONFIGURATION;
+                // TODO determine if CBOT wheel diameter differs
                 var newConfig = new SDSModuleConfiguration(Units.inchesToMeters(3.81),
                                 config.angleGearRatio,
                                 config.driveGearRatio,

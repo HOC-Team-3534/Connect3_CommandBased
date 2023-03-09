@@ -4,6 +4,7 @@
 package frc.robot;
 
 import frc.robot.Constants.EnabledDebugModes;
+import frc.robot.Constants.Drive.Config.DriveCharacterization;
 import frc.robot.commands.Autos;
 import frc.robot.commands.CommandCombos;
 import frc.robot.subsystems.Gripper;
@@ -103,7 +104,7 @@ public class RobotContainer {
 				.place1AndDriveForwardFromSides(swerveDrive, elevator, gripper, flipper, Path.BumpSide_DriveForward));
 
 		// Autonomous Center Paths
-		autonChooser.addOption("Place Piece drive Across and Back",
+		autonChooser.addOption("Center Place Drive Across and Back",
 				() -> Autos.place1andBalanceFromCenter(swerveDrive, intake, elevator, gripper, flipper));
 
 		// Autonomous Testing Paths
@@ -160,13 +161,13 @@ public class RobotContainer {
 				.whileTrue(new ProxyCommand(() -> CommandCombos.moveElevatorAndPlace(elevator, gripper, flipper)));
 
 		// The following triggered commands are for debug purposes only
-		// TGR.Characterize.tgr().whileTrue(swerveDrive.characterizeDrive(DriveCharacterization.QUASIASTIC_VOLTAGE,
-		// DriveCharacterization.QUASIASTIC_DURATION));
+		TGR.Characterize.tgr().whileTrue(swerveDrive.characterizeDrive(DriveCharacterization.QUASIASTIC_VOLTAGE,
+				DriveCharacterization.QUASIASTIC_DURATION));
 		// TGR.PositiveVoltage.tgr().whileTrue(flipper.flipperVoltage(0.5));
 		// TGR.NegativeVoltage.tgr().whileTrue(flipper.flipperVoltage(-0.5));
 		// TGR.MoveElevator.tgr().onTrue(elevator.goToDesiredHeight(Height.LOW))
 		// .onFalse(elevator.goToDesiredHeight(Height.OFF));
-		// TGR.MoveFlipper.tgr().onTrue(flipper.flip());
+		TGR.MoveFlipper.tgr().onTrue(flipper.flip());
 
 	}
 

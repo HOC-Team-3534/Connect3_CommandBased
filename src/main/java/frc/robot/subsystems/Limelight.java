@@ -84,8 +84,11 @@ public class Limelight extends SubsystemBase {
 			default:
 				return null;
 		}
-		// TODO validity check using robot in target space distance for only within
-		// certain distance
+		var cameraPoseArray = table.getEntry("camerapose_targetspace").getDoubleArray(new double[6]);
+		var distanceAway = new Translation2d(cameraPoseArray[0], cameraPoseArray[2]).getNorm();
+		SmartDashboard.putNumber("Camera Distance Away from AprilTag", distanceAway);
+		if (distanceAway > 2.0)
+			return null;
 		if (botPoseArray == null || botPoseArray.length < 7)
 			return null;
 		var pose = new Pose2d(botPoseArray[0], botPoseArray[1], Rotation2d.fromDegrees(botPoseArray[5]));

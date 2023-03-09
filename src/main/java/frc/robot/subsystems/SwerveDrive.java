@@ -30,6 +30,7 @@ import swerve.SwerveModule;
 import swerve.SwerveSubsystem;
 
 public class SwerveDrive extends SwerveSubsystem {
+    // TODO determine CBOT angle offsets
     final static double fl_degrees = (Constants.ROBOTTYPE == RobotType.TBOT) ? 86.13
             : (Constants.ROBOTTYPE == RobotType.PBOT) ? 273.07 : 0.0;
     final static double fr_degrees = (Constants.ROBOTTYPE == RobotType.TBOT) ? 3.86
