@@ -74,7 +74,6 @@ public class SwerveDrive extends SwerveSubsystem {
     @Override
     public void periodic() {
         super.periodic();
-        // TODO update POSE using limelight vision
         field.setRobotPose(dt.getPose());
         SmartDashboard.putNumber("Pitch", getSlope());
 

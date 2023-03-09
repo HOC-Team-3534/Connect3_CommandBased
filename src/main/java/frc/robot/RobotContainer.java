@@ -184,7 +184,6 @@ public class RobotContainer {
 		try {
 			return autonChooser.getSelected().call();
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		return Commands.none();

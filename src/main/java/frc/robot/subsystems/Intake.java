@@ -45,7 +45,7 @@ public class Intake extends SubsystemBase {
     public Command runIntakeAuton() {
         if (testing)
             return Commands.none();
-        return startEnd(() -> setBothMotors(1.0), () -> setBothMotors(0));
+        return startEnd(() -> setBothMotors(0.3), () -> setBothMotors(0));
     }
 
     private void setBothMotors(double percent) {
