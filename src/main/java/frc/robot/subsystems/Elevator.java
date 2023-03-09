@@ -58,7 +58,7 @@ public class Elevator extends SubsystemBase {
         if (height == Height.OFF)
             return command.andThen(runOnce(() -> setPowerZero()));
         return command.andThen(runOnce(() -> changeHeight(height)),
-                Commands.waitUntil(() -> isCorrectElevatorHeight()));
+                Commands.waitUntil(() -> isCorrectElevatorHeight())).finallyDo((interrupted) -> setPowerZero());
     }
 
     public void setPowerZero() {

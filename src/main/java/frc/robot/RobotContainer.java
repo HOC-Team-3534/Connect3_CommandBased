@@ -5,6 +5,7 @@ package frc.robot;
 
 import frc.robot.Constants.EnabledDebugModes;
 import frc.robot.Constants.Drive.Config.DriveCharacterization;
+import frc.robot.Constants.ELEVATOR.Height;
 import frc.robot.commands.Autos;
 import frc.robot.commands.CommandCombos;
 import frc.robot.subsystems.Gripper;
@@ -160,6 +161,8 @@ public class RobotContainer {
 		TGR.PlacePiece.tgr()
 				.whileTrue(new ProxyCommand(() -> CommandCombos.moveElevatorAndPlace(elevator, gripper, flipper)));
 
+		TGR.ConeAtStation.tgr().whileTrue(elevator.goToDesiredHeight(Height.LOAD));
+
 		// The following triggered commands are for debug purposes only
 		TGR.Characterize.tgr().whileTrue(swerveDrive.characterizeDrive(DriveCharacterization.QUASIASTIC_VOLTAGE,
 				DriveCharacterization.QUASIASTIC_DURATION));
@@ -195,6 +198,7 @@ public class RobotContainer {
 		Intake(driverController.rightTrigger(0.15)),
 		Extake(driverController.rightBumper()),
 		PlacePiece(driverController.y().and(() -> !DTM.bool())),
+		ConeAtStation(driverController.x()),
 
 		Ungrip(operatorController.leftTrigger(0.15)),
 		Grip(operatorController.rightTrigger(0.15)),
