@@ -14,6 +14,7 @@ import com.pathplanner.lib.commands.FollowPathWithEvents;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -125,6 +126,10 @@ public class SwerveDrive extends SwerveSubsystem {
                         balanceBackward());
     }
 
+    public SwerveDrivetrainModel getDT() {
+        return dt;
+    }
+
     private void setMotorBrakeMode() {
         FL_drive.setNeutralMode(NeutralMode.Brake);
         FR_drive.setNeutralMode(NeutralMode.Brake);
@@ -162,8 +167,14 @@ public class SwerveDrive extends SwerveSubsystem {
         return driveOnPath(path.getPath(), resetToInitial);
     }
 
+    public void setKnownPose(PathPlannerTrajectory trajectory) {
+        var initialState = PathPlannerTrajectory.transformStateForAlliance(trajectory.getInitialState(),
+                DriverStation.getAlliance());
+        dt.setKnownPose(new Pose2d(initialState.poseMeters.getTranslation(), initialState.holonomicRotation));
+    }
+
     public Command driveOnPath(PathPlannerTrajectory trajectory, boolean resetToInitial) {
-        return dt.createCommandForTrajectory(trajectory, this, resetToInitial, true);
+        return dt.createCommandForTrajectory(trajectory, this, false, true);
     }
 
     /**

@@ -34,6 +34,8 @@ public final class Autos {
    */
   public static Command place2FromSides(SwerveDrive swerve, Intake intake, Elevator elevator, Gripper gripper,
       Flipper flipper, Path path1, Path path2) {
+    swerve.setKnownPose(path1.getPath());
+
     var command = moveElevatorAndPlace(RobotContainer.getHeightAutonomous(), elevator, gripper, flipper)
         .andThen(driveWithIntake(path1, intake, swerve, true))
         .andThen(moveElevatorAndPlace(RobotContainer.getHeightAutonomous(), elevator, gripper, flipper));
@@ -56,6 +58,7 @@ public final class Autos {
    */
   public static Command place2FromSidesAndBalance(SwerveDrive swerve, Intake intake, Elevator elevator, Gripper gripper,
       Flipper flipper, Path path1) {
+    swerve.setKnownPose(path1.getPath());
     return moveElevatorAndPlace(RobotContainer.getHeightAutonomous(), elevator, gripper, flipper)
         .andThen(driveWithIntakeWithEvent(path1, intake, swerve, true, "place",
             moveElevatorAndPlace(Height.LOW, elevator, gripper, flipper)))
@@ -77,12 +80,14 @@ public final class Autos {
    */
   public static Command place1andBalanceFromSides(SwerveDrive swerve, Intake intake, Elevator elevator, Gripper gripper,
       Flipper flipper, Path path1) {
+    swerve.setKnownPose(path1.getPath());
     return moveElevatorAndPlace(RobotContainer.getHeightAutonomous(), elevator, gripper, flipper)
         .andThen(driveWithIntake(path1, intake, swerve, true), swerve.balanceBackward());
   }
 
   public static Command place1AndDriveForwardFromSides(SwerveDrive swerve, Elevator elevator, Gripper gripper,
       Flipper flipper, Path path1) {
+    swerve.setKnownPose(path1.getPath());
     return moveElevatorAndPlace(RobotContainer.getHeightAutonomous(), elevator, gripper, flipper)
         .andThen(swerve.driveOnPath(path1, true));
   }
@@ -101,6 +106,7 @@ public final class Autos {
   public static Command place1andBalanceFromCenter(SwerveDrive swerve, Intake intake, Elevator elevator,
       Gripper gripper,
       Flipper flipper) {
+
     return moveElevatorAndPlace(RobotContainer.getHeightAutonomous(), elevator, gripper, flipper)
         .andThen(swerve.balanceAcrossAndBack());
   }
@@ -115,7 +121,8 @@ public final class Autos {
    *         and then place the game element and bring the elevator back down
    */
   private static Command moveElevatorAndPlace(Height height, Elevator elevator, Gripper gripper, Flipper flipper) {
-    return elevator.goToDesiredHeight(height).andThen(gripper.ungrip().withTimeout(1.0), flipper.flip())
+    return elevator.goToDesiredHeight(height).withTimeout(3.0)
+        .andThen(gripper.ungrip().withTimeout(1.0), flipper.flip().withTimeout(3.0))
         .finallyDo((interrupted) -> elevator.setPowerZero());
   }
 
