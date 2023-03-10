@@ -8,8 +8,9 @@ import frc.robot.subsystems.Flipper;
 public final class CommandCombos {
 
     public static CommandBase moveElevatorAndPlace(Elevator elevator, Gripper gripper, Flipper flipper) {
-        return (elevator.goToDesiredHeight()
-                .andThen(gripper.ungrip().withTimeout(1.0), flipper.flip()));
+        return elevator.goToDesiredHeight()
+                .andThen(gripper.ungrip().withTimeout(1.0), flipper.flip())
+                .finallyDo((interrupted) -> elevator.setPowerZero());
     }
 
     private CommandCombos() {

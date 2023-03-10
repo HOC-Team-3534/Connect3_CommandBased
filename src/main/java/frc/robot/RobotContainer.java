@@ -3,6 +3,7 @@
 // the WPILib BSD license file in the root directory of this project.
 package frc.robot;
 
+import frc.robot.Constants.ELEVATOR;
 import frc.robot.Constants.EnabledDebugModes;
 import frc.robot.Constants.Drive.Config.DriveCharacterization;
 import frc.robot.Constants.ELEVATOR.Height;
@@ -51,6 +52,7 @@ public class RobotContainer {
 	static SlewRateLimiter slewRateLimiterY = new SlewRateLimiter(2.5);
 	static SlewRateLimiter slewRateLimiterRotation = new SlewRateLimiter(2.5);
 	private static final SendableChooser<Callable<Command>> autonChooser = new SendableChooser<>();
+	private static final SendableChooser<ELEVATOR.Height> heightChooser = new SendableChooser<>();
 
 	/**
 	 * The container for the robot. Contains subsystems, OI devices, and
@@ -116,8 +118,13 @@ public class RobotContainer {
 		// autonChooser.addOption("Test Auto Balance Across and Back", () ->
 		// swerveDrive.balanceAcrossAndBack());
 
+		heightChooser.setDefaultOption("low", Height.LOW);
+		heightChooser.addOption("Mid", Height.MID);
+		heightChooser.addOption("High", Height.HIGH);
+
 		// Show Status of Subsystems on Dashboard
 		SmartDashboard.putData(autonChooser);
+		SmartDashboard.putData(heightChooser);
 		SmartDashboard.putData(swerveDrive);
 		SmartDashboard.putData(intake);
 		SmartDashboard.putData(lights);
@@ -186,6 +193,10 @@ public class RobotContainer {
 			e.printStackTrace();
 		}
 		return Commands.none();
+	}
+
+	public static Height getHeightAutonomous() {
+		return heightChooser.getSelected();
 	}
 
 	public enum TGR {
