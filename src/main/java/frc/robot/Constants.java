@@ -119,7 +119,7 @@ public final class Constants {
     public static enum Height {
       HIGH(210000),
       LOAD(45000),
-      MID(140000),
+      MID(130000),
       LOW(45000),
       OFF(0.0);
 
@@ -136,7 +136,7 @@ public final class Constants {
     public static final boolean DTMEnabled = true;
     public static final boolean updatePoseWithVisionEnabled = true;
     public static final boolean testingVoltageControl = false;
-    public static final boolean testingElevatorPos = true;
-    public static final boolean testingFlipper = false;
+    public static final boolean testingElevatorPos = false;
+    public static final boolean testingFlipper = true;
   }
 }

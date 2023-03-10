@@ -86,8 +86,8 @@ public class SwerveDrive extends SwerveSubsystem {
     public Command balanceForward() {
         /* height of charge station 9 1/8 inches or ~0.232 meters off the ground */
         var command = (driveStraightAutonomous(0).until(this::isFacingForward))
-                .andThen(driveStraightAutonomous(0.15).until(() -> getSlope() < -13.25),
-                        driveStraightAutonomous(0.15).until(() -> getSlope() > -13.0),
+                .andThen(driveStraightAutonomous(0.25).until(() -> getSlope() < -13.25),
+                        driveStraightAutonomous(0.25).until(() -> getSlope() > -13.0),
                         fineTuneBalance())
                 .finallyDo((interupt) -> setMotorCoastMode());
 
@@ -97,8 +97,8 @@ public class SwerveDrive extends SwerveSubsystem {
 
     public Command balanceBackward() {
         var command = (driveStraightAutonomous(0).until(this::isFacingForward))
-                .andThen(driveStraightAutonomous(-0.15).until(() -> getSlope() > 13.25),
-                        driveStraightAutonomous(-0.15).until(() -> getSlope() < 13.0),
+                .andThen(driveStraightAutonomous(-0.25).until(() -> getSlope() > 13.25),
+                        driveStraightAutonomous(-0.25).until(() -> getSlope() < 13.0),
                         fineTuneBalance())
                 .finallyDo((interupt) -> setMotorCoastMode());
 
@@ -122,7 +122,7 @@ public class SwerveDrive extends SwerveSubsystem {
                 .andThen(driveStraightAutonomous(0.35).until(() -> getSlope() < -12.25),
                         driveStraightAutonomous(0.35).until(() -> getSlope() > 12.0),
                         driveStraightAutonomous(0.35).until(() -> getSlope() < 5),
-                        driveStraightAutonomous(0.15).withTimeout(0.5),
+                        driveStraightAutonomous(0.15).withTimeout(1.5),
                         balanceBackward());
     }
 
@@ -149,7 +149,7 @@ public class SwerveDrive extends SwerveSubsystem {
     }
 
     public double getSlope() {
-        return pigeon2.getPitch() - 3.0;
+        return pigeon2.getPitch() + ((RobotType.PBOT == Constants.ROBOTTYPE) ? -3.0 : -0.5);
     }
 
     public boolean isFacingForward() {

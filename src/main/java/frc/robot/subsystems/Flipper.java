@@ -62,8 +62,8 @@ public class Flipper extends SubsystemBase {
     }
 
     enum FlipperPosition {
-        Down(-0.25, 0.6),
-        Up(0.25, 0.6);
+        Down(-0.65, 3.0),
+        Up(0.65, 3.0);
 
         public double voltage, currentShutoff;
 
