@@ -18,7 +18,7 @@ import swerve.SDSModuleConfiguration;
  * wherever the constants are needed, to reduce verbosity.
  */
 public final class Constants {
-  public static RobotType ROBOTTYPE = RobotType.PBOT;
+  public static RobotType ROBOTTYPE = RobotType.CBOT;
   public static double LOOP_PERIOD_MILLIS = 20;
 
   public enum RobotType {
@@ -136,7 +136,7 @@ public final class Constants {
     public static final boolean DTMEnabled = true;
     public static final boolean updatePoseWithVisionEnabled = true;
     public static final boolean testingVoltageControl = false;
-    public static final boolean testingElevatorPos = false;
+    public static final boolean testingElevatorPos = true;
     public static final boolean testingFlipper = false;
   }
 }

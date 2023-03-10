@@ -160,15 +160,16 @@ public class RobotContainer {
 		TGR.PlacePiece.tgr()
 				.whileTrue(new ProxyCommand(() -> CommandCombos.moveElevatorAndPlace(elevator, gripper, flipper)));
 
-		TGR.ConeAtStation.tgr().whileTrue(elevator.goToDesiredHeight(Height.LOAD));
+		TGR.ConeAtStation.tgr().onTrue(elevator.goToDesiredHeight(Height.LOAD))
+				.onFalse(elevator.goToDesiredHeight(Height.OFF));
 
 		// The following triggered commands are for debug purposes only
 		TGR.Characterize.tgr().whileTrue(swerveDrive.characterizeDrive(DriveCharacterization.QUASIASTIC_VOLTAGE,
 				DriveCharacterization.QUASIASTIC_DURATION));
-		// TGR.PositiveVoltage.tgr().whileTrue(flipper.flipperVoltage(0.5));
-		// TGR.NegativeVoltage.tgr().whileTrue(flipper.flipperVoltage(-0.5));
-		// TGR.MoveElevator.tgr().onTrue(elevator.goToDesiredHeight(Height.LOW))
-		// .onFalse(elevator.goToDesiredHeight(Height.OFF));
+		// TGR.PositiveVoltage.tgr().whileTrue(elevator.elevatorVoltage(0.15));
+		// TGR.NegativeVoltage.tgr().whileTrue(elevator.elevatorVoltage(0.0));
+		TGR.MoveElevator.tgr().onTrue(elevator.goToDesiredHeight(Height.LOW))
+				.onFalse(elevator.goToDesiredHeight(Height.OFF));
 		TGR.MoveFlipper.tgr().onTrue(flipper.flip());
 
 	}

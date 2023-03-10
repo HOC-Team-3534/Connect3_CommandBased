@@ -7,8 +7,10 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.Constants;
 import frc.robot.Constants.ELEVATOR;
 import frc.robot.Constants.ELEVATOR.Height;
+import frc.robot.Constants.RobotType;
 import frc.robot.RobotContainer.TGR;
 
 public class Elevator extends SubsystemBase {
@@ -16,9 +18,11 @@ public class Elevator extends SubsystemBase {
     boolean testing = false;
     Height targetHeight = Height.OFF;
 
+    final static boolean elevatorInverted = (Constants.ROBOTTYPE == RobotType.PBOT) ? false : true;
+
     public Elevator() {
         elevatorMotor = new WPI_TalonFX(14);
-        elevatorMotor.setInverted(false);
+        elevatorMotor.setInverted(elevatorInverted);
         elevatorMotor.setSensorPhase(false);
         elevatorMotor.setSelectedSensorPosition(0);
         elevatorMotor
@@ -58,7 +62,7 @@ public class Elevator extends SubsystemBase {
         if (height == Height.OFF)
             return command.andThen(runOnce(() -> setPowerZero()));
         return command.andThen(runOnce(() -> changeHeight(height)),
-                Commands.waitUntil(() -> isCorrectElevatorHeight())).finallyDo((interrupted) -> setPowerZero());
+                Commands.waitUntil(() -> isCorrectElevatorHeight()));
     }
 
     public void setPowerZero() {

@@ -34,13 +34,13 @@ import swerve.SwerveSubsystem;
 public class SwerveDrive extends SwerveSubsystem {
     // TODO determine CBOT angle offsets
     final static double fl_degrees = (Constants.ROBOTTYPE == RobotType.TBOT) ? 86.13
-            : (Constants.ROBOTTYPE == RobotType.PBOT) ? 273.07 : 0.0;
+            : (Constants.ROBOTTYPE == RobotType.PBOT) ? 273.07 : 134.56;
     final static double fr_degrees = (Constants.ROBOTTYPE == RobotType.TBOT) ? 3.86
-            : (Constants.ROBOTTYPE == RobotType.PBOT) ? 304.62 : 0.0;
+            : (Constants.ROBOTTYPE == RobotType.PBOT) ? 304.62 : 36.035;
     final static double bl_degrees = (Constants.ROBOTTYPE == RobotType.TBOT) ? 274.30
-            : (Constants.ROBOTTYPE == RobotType.PBOT) ? 130.86 : 0.0;
+            : (Constants.ROBOTTYPE == RobotType.PBOT) ? 130.86 : 174.19;
     final static double br_degrees = (Constants.ROBOTTYPE == RobotType.TBOT) ? 23.90
-            : (Constants.ROBOTTYPE == RobotType.PBOT) ? 20.39 : 0.0;
+            : (Constants.ROBOTTYPE == RobotType.PBOT) ? 20.39 : 153.37;
     final static boolean loadedConstants = SwerveHelper.loadSwerveConstants();
     final static WPI_TalonFX FL_drive = new WPI_TalonFX(1);
     final static WPI_TalonFX FL_steer = new WPI_TalonFX(3);
