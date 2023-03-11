@@ -33,6 +33,11 @@ public class Flipper extends SubsystemBase {
                 .finallyDo((interrupt) -> flipper.set(0)).beforeStarting(() -> counter = 3);
     }
 
+    public Command flipUp() {
+        return flipAndCheck(FlipperPosition.Up).andThen(stopFlipper(), Commands.waitSeconds(0.25))
+                .finallyDo((interrupt) -> flipper.set(0)).beforeStarting(() -> counter = 3);
+    }
+
     private Command flipAndCheck(FlipperPosition position) {
         return runOnce(() -> flipper.set(position.voltage)).andThen(check(position));
     }

@@ -88,8 +88,7 @@ public class SwerveDrive extends SwerveSubsystem {
         var command = (driveStraightAutonomous(0).until(this::isFacingForward))
                 .andThen(driveStraightAutonomous(0.25).until(() -> getSlope() < -13.25),
                         driveStraightAutonomous(0.25).until(() -> getSlope() > -13.0),
-                        fineTuneBalance())
-                .finallyDo((interupt) -> setMotorCoastMode());
+                        fineTuneBalance());
 
         command.setName("Balance Forward");
         return command;
@@ -99,8 +98,7 @@ public class SwerveDrive extends SwerveSubsystem {
         var command = (driveStraightAutonomous(0).until(this::isFacingForward))
                 .andThen(driveStraightAutonomous(-0.25).until(() -> getSlope() > 13.25),
                         driveStraightAutonomous(-0.25).until(() -> getSlope() < 13.0),
-                        fineTuneBalance())
-                .finallyDo((interupt) -> setMotorCoastMode());
+                        fineTuneBalance());
 
         command.setName("Balance Backward");
         return command;
@@ -109,9 +107,9 @@ public class SwerveDrive extends SwerveSubsystem {
     private Command fineTuneBalance() {
         return runOnce(() -> setMotorBrakeMode()).andThen(run(() -> {
             if (getSlope() > 5)
-                driveStraightWithPower(-0.02);
+                driveStraightWithPower(-0.10);
             else if (getSlope() < -5)
-                driveStraightWithPower(0.02);
+                driveStraightWithPower(0.10);
             else
                 driveStraightWithPower(0.0);
         }));
@@ -135,6 +133,10 @@ public class SwerveDrive extends SwerveSubsystem {
         FR_drive.setNeutralMode(NeutralMode.Brake);
         BL_drive.setNeutralMode(NeutralMode.Brake);
         BR_drive.setNeutralMode(NeutralMode.Brake);
+    }
+
+    public Command coast() {
+        return runOnce(this::setMotorCoastMode);
     }
 
     private void setMotorCoastMode() {

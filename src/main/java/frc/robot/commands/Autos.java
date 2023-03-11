@@ -122,7 +122,7 @@ public final class Autos {
    */
   private static Command moveElevatorAndPlace(Height height, Elevator elevator, Gripper gripper, Flipper flipper) {
     return elevator.goToDesiredHeight(height).withTimeout(3.0)
-        .andThen(gripper.ungrip().withTimeout(0.1), flipper.flip().withTimeout(3.0))
+        .andThen(gripper.ungrip().withTimeout(0.1), flipper.flipUp().asProxy().withTimeout(3.0))
         .finallyDo((interrupted) -> elevator.setPowerZero());
   }
 
