@@ -23,7 +23,7 @@ public class Robot extends TimedRobot {
   private Command m_autonomousCommand;
   private RobotContainer m_robotContainer;
 
-  public static boolean isAutonomous;
+  public static boolean isAutonomous, isTeleopEnabled;
 
   /**
    * This function is run when the robot is first started up and should be used
@@ -51,6 +51,7 @@ public class Robot extends TimedRobot {
   @Override
   public void robotPeriodic() {
     isAutonomous = isAutonomous();
+    isTeleopEnabled = isTeleopEnabled();
     // Runs the Scheduler. This is responsible for polling buttons, adding
     // newly-scheduled
     // commands, running already-scheduled commands, removing finished or
@@ -78,6 +79,8 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void autonomousInit() {
+    RobotContainer.swerveDrive.coast().schedule();
+
     m_autonomousCommand = m_robotContainer.getAutonomousCommand();
     // schedule the autonomous command (example)
     if (m_autonomousCommand != null) {
@@ -92,6 +95,7 @@ public class Robot extends TimedRobot {
 
   @Override
   public void teleopInit() {
+    RobotContainer.swerveDrive.coast().schedule();
     // This makes sure that the autonomous stops running when
     // teleop starts running. If you want the autonomous to
     // continue until interrupted by another command, remove
@@ -99,7 +103,6 @@ public class Robot extends TimedRobot {
     if (m_autonomousCommand != null) {
       m_autonomousCommand.cancel();
     }
-    RobotContainer.swerveDrive.coast().schedule();
   }
 
   /** This function is called periodically during operator control. */

@@ -20,6 +20,7 @@ import frc.robot.subsystems.SwerveDrive;
 import java.util.concurrent.Callable;
 
 import edu.wpi.first.math.filter.SlewRateLimiter;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -178,6 +179,9 @@ public class RobotContainer {
 		TGR.MoveElevator.tgr().onTrue(elevator.goToDesiredHeight(Height.LOW))
 				.onFalse(elevator.goToDesiredHeight(Height.OFF));
 		TGR.MoveFlipper.tgr().onTrue(flipper.flip());
+
+		new Trigger(() -> DriverStation.getMatchTime() < 2.0 &&
+				Robot.isTeleopEnabled).onTrue(swerveDrive.brake());
 
 	}
 

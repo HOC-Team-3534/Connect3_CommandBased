@@ -107,9 +107,9 @@ public class SwerveDrive extends SwerveSubsystem {
     private Command fineTuneBalance() {
         return runOnce(() -> setMotorBrakeMode()).andThen(run(() -> {
             if (getSlope() > 5)
-                driveStraightWithPower(-0.10);
+                driveStraightWithPower(-0.08);
             else if (getSlope() < -5)
-                driveStraightWithPower(0.10);
+                driveStraightWithPower(0.08);
             else
                 driveStraightWithPower(0.0);
         }));
@@ -128,6 +128,10 @@ public class SwerveDrive extends SwerveSubsystem {
         return dt;
     }
 
+    public Command brake() {
+        return Commands.runOnce(this::setMotorBrakeMode);
+    }
+
     private void setMotorBrakeMode() {
         FL_drive.setNeutralMode(NeutralMode.Brake);
         FR_drive.setNeutralMode(NeutralMode.Brake);
@@ -136,7 +140,7 @@ public class SwerveDrive extends SwerveSubsystem {
     }
 
     public Command coast() {
-        return runOnce(this::setMotorCoastMode);
+        return Commands.runOnce(this::setMotorCoastMode);
     }
 
     private void setMotorCoastMode() {
