@@ -15,7 +15,7 @@ import frc.robot.RobotContainer.TGR;
 
 public class Elevator extends SubsystemBase {
     WPI_TalonFX elevatorMotor;
-    boolean testing = false;
+    boolean testing = true;
     Height targetHeight = Height.OFF;
 
     final static boolean elevatorInverted = (Constants.ROBOTTYPE == RobotType.PBOT) ? false : true;

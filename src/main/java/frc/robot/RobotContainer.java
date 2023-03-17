@@ -150,7 +150,7 @@ public class RobotContainer {
 		TGR.DTM.tgr()
 				.whileTrue(new ProxyCommand(
 						() -> swerveDrive
-								.followPathtoGridPose(limelight.getGridPose(swerveDrive.getGridPositionRequest())))
+								.followPIDToGridPose(limelight.getGridPose(swerveDrive.getGridPositionRequest())))
 						.andThen(CommandCombos.moveElevatorAndPlace(elevator, gripper, flipper)
 								.unless(() -> !swerveDrive.isGridPoseValid())));
 

@@ -21,7 +21,7 @@ import java.util.function.BiConsumer;
 public class Limelight extends SubsystemBase {
 	// TODO determine why this shift was is a full wheel base, not a half wheel base
 	final Translation2d shiftAway = new Translation2d(
-			Units.inchesToMeters(14.0 + 6.0) + Constants.Drive.Known.WHEELBASE_METERS,
+			Units.inchesToMeters(14.0 + 12.0) + Constants.Drive.Known.WHEELBASE_METERS / 2.0,
 			0);
 	final Translation2d shiftSideways = new Translation2d(0, Units.inchesToMeters(22.0));
 	NetworkTable table;

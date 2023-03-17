@@ -7,7 +7,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.Commands;
 
 public class Flipper extends SubsystemBase {
-    boolean testing = false;
+    boolean testing = true;
     WPI_TalonSRX flipper;
 
     long lastTimeDownApplied;
