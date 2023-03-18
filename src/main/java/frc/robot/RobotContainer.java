@@ -174,7 +174,7 @@ public class RobotContainer {
 		// The following triggered commands are for debug purposes only
 		TGR.Characterize.tgr().whileTrue(swerveDrive.characterizeDrive(DriveCharacterization.QUASIASTIC_VOLTAGE,
 				DriveCharacterization.QUASIASTIC_DURATION));
-		TGR.PositiveVoltage.tgr().whileTrue(flipper.flipperVoltage(0.65));
+		TGR.PositiveVoltage.tgr().whileTrue(flipper.flipperVoltage(1.0));
 		TGR.NegativeVoltage.tgr().whileTrue(flipper.flipperVoltage(-0.65));
 		TGR.MoveElevator.tgr().onTrue(elevator.goToDesiredHeight(Height.LOW))
 				.onFalse(elevator.goToDesiredHeight(Height.OFF));
