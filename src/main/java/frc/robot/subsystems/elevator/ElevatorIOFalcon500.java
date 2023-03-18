@@ -17,7 +17,7 @@ public class ElevatorIOFalcon500 implements ElevatorIO {
             throw new RuntimeException("Simulation should not instantiate any IO");
 
         elevatorMotor = new WPI_TalonFX(14);
-        var elevatorInverted = (Constants.ROBOTTYPE == RobotType.PBOT) ? false : true;
+        var elevatorInverted = (Constants.ROBOTTYPE == RobotType.PBOT) ? true : true;
         elevatorMotor.setInverted(elevatorInverted);
         elevatorMotor.setSensorPhase(false);
         elevatorMotor.setSelectedSensorPosition(0);

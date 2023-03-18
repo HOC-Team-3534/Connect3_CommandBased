@@ -1,7 +1,9 @@
 package frc.robot.subsystems.flipper;
 
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
+import frc.robot.Constants;
 
+import frc.robot.Constants.RobotType;
 import frc.robot.Robot;
 
 public class FlipperIOTalonSRX implements FlipperIO {
@@ -13,7 +15,8 @@ public class FlipperIOTalonSRX implements FlipperIO {
 
         flipper = new WPI_TalonSRX(19);
         flipper.configFactoryDefault();
-        flipper.setInverted(true);
+        final boolean isInverted = (Constants.ROBOTTYPE == RobotType.PBOT) ? false : true;
+        flipper.setInverted(isInverted);
     }
 
     @Override

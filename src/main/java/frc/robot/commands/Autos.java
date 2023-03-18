@@ -9,7 +9,6 @@ import frc.robot.Path;
 import frc.robot.RobotContainer;
 import frc.robot.subsystems.elevator.Elevator;
 import frc.robot.subsystems.flipper.Flipper;
-import frc.robot.subsystems.gripper.Gripper;
 import frc.robot.subsystems.intake.Intake;
 import frc.robot.subsystems.swerveDrive.SwerveDrive;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -32,12 +31,12 @@ public final class Autos {
    * @return autonomous command to place 2 elements and optionally pickup 3rd
    *         piece from one of the sides
    */
-  public static Command place2FromSides(SwerveDrive swerve, Intake intake, Elevator elevator, Gripper gripper,
+  public static Command place2FromSides(SwerveDrive swerve, Intake intake, Elevator elevator,
       Flipper flipper, Path path1, Path path2) {
 
-    var command = moveElevatorAndPlace(RobotContainer.getHeightAutonomous(), elevator, gripper, flipper)
+    var command = moveElevatorAndPlace(RobotContainer.getHeightAutonomous(), elevator, flipper)
         .andThen(driveWithIntake(path1, intake, swerve, true))
-        .andThen(moveElevatorAndPlace(RobotContainer.getHeightAutonomous(), elevator, gripper, flipper));
+        .andThen(moveElevatorAndPlace(RobotContainer.getHeightAutonomous(), elevator, flipper));
     if (path2 != null)
       command = command.andThen(driveWithIntake(path2, intake, swerve, false));
     return command;
@@ -55,11 +54,11 @@ public final class Autos {
    * @return autonomous command to place 2 elements and optionally pickup 3rd
    *         piece from one of the sides
    */
-  public static Command place2FromSidesAndBalance(SwerveDrive swerve, Intake intake, Elevator elevator, Gripper gripper,
+  public static Command place2FromSidesAndBalance(SwerveDrive swerve, Intake intake, Elevator elevator,
       Flipper flipper, Path path1) {
-    return moveElevatorAndPlace(RobotContainer.getHeightAutonomous(), elevator, gripper, flipper)
+    return moveElevatorAndPlace(RobotContainer.getHeightAutonomous(), elevator, flipper)
         .andThen(driveWithIntakeWithEvent(path1, intake, swerve, true, "place",
-            moveElevatorAndPlace(Height.LOW, elevator, gripper, flipper)))
+            moveElevatorAndPlace(Height.OFF, elevator, flipper)))
         .andThen(swerve.balanceForward());
   }
 
@@ -76,15 +75,15 @@ public final class Autos {
    * @return autonomous command to place 1 elements and balance on the charge
    *         station from one of the sides
    */
-  public static Command place1andBalanceFromSides(SwerveDrive swerve, Intake intake, Elevator elevator, Gripper gripper,
+  public static Command place1andBalanceFromSides(SwerveDrive swerve, Intake intake, Elevator elevator,
       Flipper flipper, Path path1) {
-    return moveElevatorAndPlace(RobotContainer.getHeightAutonomous(), elevator, gripper, flipper)
+    return moveElevatorAndPlace(RobotContainer.getHeightAutonomous(), elevator, flipper)
         .andThen(driveWithIntake(path1, intake, swerve, true), swerve.balanceBackward());
   }
 
-  public static Command place1AndDriveForwardFromSides(SwerveDrive swerve, Elevator elevator, Gripper gripper,
+  public static Command place1AndDriveForwardFromSides(SwerveDrive swerve, Elevator elevator,
       Flipper flipper, Path path1) {
-    return moveElevatorAndPlace(RobotContainer.getHeightAutonomous(), elevator, gripper, flipper)
+    return moveElevatorAndPlace(RobotContainer.getHeightAutonomous(), elevator, flipper)
         .andThen(swerve.driveOnPath(path1, true));
   }
 
@@ -100,10 +99,10 @@ public final class Autos {
    *         station from the center
    */
   public static Command place1andBalanceFromCenter(SwerveDrive swerve, Intake intake, Elevator elevator,
-      Gripper gripper,
+
       Flipper flipper) {
 
-    return moveElevatorAndPlace(RobotContainer.getHeightAutonomous(), elevator, gripper, flipper)
+    return moveElevatorAndPlace(RobotContainer.getHeightAutonomous(), elevator, flipper)
         .andThen(swerve.balanceAcrossAndBack());
   }
 
@@ -116,9 +115,9 @@ public final class Autos {
    * @return the autonomomous combo command to moe the elevator to desired height
    *         and then place the game element and bring the elevator back down
    */
-  private static Command moveElevatorAndPlace(Height height, Elevator elevator, Gripper gripper, Flipper flipper) {
+  private static Command moveElevatorAndPlace(Height height, Elevator elevator, Flipper flipper) {
     return elevator.goToDesiredHeight(height).withTimeout(3.0)
-        .andThen(gripper.ungrip().withTimeout(0.1), flipper.flipUp().asProxy().withTimeout(3.0))
+        .andThen(flipper.flipUp().asProxy().withTimeout(3.0))
         .finallyDo((interrupted) -> elevator.off());
   }
 

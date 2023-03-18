@@ -62,22 +62,14 @@ public class Vision extends SubsystemBase {
 
         var visionData = io.getVisionData();
 
-        Pose2d pose = null;
-        double timestamp = 0, latency = 0;
-
         if (Constants.EnabledDebugModes.updatePoseWithVisionEnabled && visionData != null) {
             visionPoseUpdate.accept(visionData.pose, visionData.estBotPoseLatencySecs); // TODO switch to timestamp,
                                                                                         // not
                                                                                         // latency
-            pose = visionData.pose;
-            timestamp = visionData.estBotPoseTimestampSecs;
-            latency = visionData.estBotPoseLatencySecs;
+            Logger.getInstance().recordOutput("Vision/Pose", visionData.pose);
+            Logger.getInstance().recordOutput("Vision/Timestamp", visionData.estBotPoseTimestampSecs);
+            Logger.getInstance().recordOutput("Vision/Latency", visionData.estBotPoseLatencySecs);
         }
-
-        Logger.getInstance().recordOutput("Vision/Pose", pose);
-        Logger.getInstance().recordOutput("Vision/Timestamp", timestamp);
-        Logger.getInstance().recordOutput("Vision/Latency", latency);
-
     }
 
     public Pose2d getBotPose() {

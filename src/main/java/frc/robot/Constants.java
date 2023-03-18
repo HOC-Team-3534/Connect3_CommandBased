@@ -18,7 +18,7 @@ import swerve.SDSModuleConfiguration;
  * wherever the constants are needed, to reduce verbosity.
  */
 public final class Constants {
-  public static RobotType ROBOTTYPE = RobotType.CBOT;
+  public static RobotType ROBOTTYPE = RobotType.PBOT;
   public static double LOOP_PERIOD_SECS = 0.020;
   public static final boolean tuningMode = false;
   public static final boolean replayMode = false;
@@ -122,7 +122,6 @@ public final class Constants {
       HIGH(210000),
       LOAD(45000),
       MID(130000),
-      LOW(45000),
       OFF(0.0);
 
       public double height;
@@ -137,9 +136,7 @@ public final class Constants {
     public static final boolean CharacterizeEnabled = false;
     public static final boolean DTMEnabled = false;
     public static final boolean updatePoseWithVisionEnabled = true;
-    public static final boolean testingVoltageControl = false;
-    public static final boolean testingElevatorPos = false;
-    public static final boolean testingFlipper = true;
+    public static final boolean testingVoltageControl = true;
   }
 
   public static Mode getMode() {

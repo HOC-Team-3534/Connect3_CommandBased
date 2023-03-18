@@ -12,7 +12,7 @@ public class Elevator extends SubsystemBase {
     final ElevatorIO io;
     final ElevatorIOInputsAutoLogged inputs = new ElevatorIOInputsAutoLogged();
 
-    boolean testing = true;
+    boolean testing = false;
     Height targetHeight = Height.OFF;
 
     public Elevator(ElevatorIO io) {
@@ -24,12 +24,6 @@ public class Elevator extends SubsystemBase {
         Logger.getInstance().processInputs("Elevator", inputs);
     }
 
-    public Command goToDesiredHeight() {
-        if (testing)
-            return Commands.none();
-        return goToDesiredHeight(getDesiredHeight());
-    }
-
     public Command goToDesiredHeight(Height height) {
         if (testing)
             return Commands.none();
@@ -39,17 +33,6 @@ public class Elevator extends SubsystemBase {
             return command.andThen(runOnce(() -> off()));
         return command.andThen(runOnce(() -> setHeight(height)),
                 Commands.waitUntil(() -> isCorrectElevatorHeight()));
-    }
-
-    public Height getDesiredHeight() {
-        Height desiredHeight = Height.LOW;
-        if (TGR.PlaceHigh.bool() && TGR.PlaceMid.bool()) {
-            desiredHeight = Height.LOW;
-        } else if (TGR.PlaceHigh.bool())
-            desiredHeight = Height.HIGH;
-        else if (TGR.PlaceMid.bool())
-            desiredHeight = Height.MID;
-        return desiredHeight;
     }
 
     private boolean isCorrectElevatorHeight() {

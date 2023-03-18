@@ -15,9 +15,6 @@ import frc.robot.subsystems.elevator.ElevatorIOFalcon500;
 import frc.robot.subsystems.flipper.Flipper;
 import frc.robot.subsystems.flipper.FlipperIO;
 import frc.robot.subsystems.flipper.FlipperIOTalonSRX;
-import frc.robot.subsystems.gripper.Gripper;
-import frc.robot.subsystems.gripper.GripperIO;
-import frc.robot.subsystems.gripper.GripperIOTalonSRX;
 import frc.robot.subsystems.intake.Intake;
 import frc.robot.subsystems.intake.IntakeIO;
 import frc.robot.subsystems.intake.IntakeIOFalcon500s;
@@ -57,7 +54,6 @@ public class RobotContainer {
 	private static SwerveDrive swerveDrive;
 	private static Intake intake;
 	private static Elevator elevator;
-	private static Gripper gripper;
 	private static Flipper flipper;
 	private static Lights lights;
 	private static Vision vision;
@@ -84,8 +80,6 @@ public class RobotContainer {
 			});
 			elevator = new Elevator(new ElevatorIO() {
 			});
-			gripper = new Gripper(new GripperIO() {
-			});
 			flipper = new Flipper(new FlipperIO() {
 			});
 			lights = new Lights(new LightsIO() {
@@ -96,7 +90,6 @@ public class RobotContainer {
 			swerveDrive = new SwerveDrive(new SwerveDriveIO3534Swerve());
 			intake = new Intake(new IntakeIOFalcon500s());
 			elevator = new Elevator(new ElevatorIOFalcon500());
-			gripper = new Gripper(new GripperIOTalonSRX());
 			flipper = new Flipper(new FlipperIOTalonSRX());
 			lights = new Lights(new LightsIORevBlinkin());
 			vision = new Vision(swerveDrive::getPose, swerveDrive::updatePoseWithVision, new VisionIOLimelight());
@@ -109,49 +102,49 @@ public class RobotContainer {
 		swerveDrive.setDefaultCommand(swerveDrive.drive());
 		intake.setDefaultCommand(intake.runIntake());
 		lights.setDefaultCommand(lights.runLights());
-		flipper.setDefaultCommand(flipper.makeSureDown());
+		flipper.setDefaultCommand(flipper.conditionallyLevel());
 
 		// Autonomous Command Sendable Chooser
 		autonChooser.addDefaultOption("No Auton", () -> Commands.none());
 
 		// Autonomous Loading Zone Paths
 		autonChooser.addOption("Loading Zone Place 2",
-				() -> Autos.place2FromSides(swerveDrive, intake, elevator, gripper, flipper,
+				() -> Autos.place2FromSides(swerveDrive, intake, elevator, flipper,
 						Path.LoadingZone_PickUp_PlaceSecond,
 						null));
 		autonChooser.addOption("Loading Zone Place 2 And Pick Up Third",
-				() -> Autos.place2FromSides(swerveDrive, intake, elevator, gripper, flipper,
+				() -> Autos.place2FromSides(swerveDrive, intake, elevator, flipper,
 						Path.LoadingZone_PickUp_PlaceSecond,
 						Path.LoadingZone_PickUp_Third));
 		autonChooser.addOption("Loading Zone Place Pickup Second and Balance",
 				() -> Autos.place1andBalanceFromSides(swerveDrive, intake,
-						elevator, gripper, flipper, Path.LoadingZone_PickUp_PlaceWhileMove_BalanceForward));
+						elevator, flipper, Path.LoadingZone_PickUp_PlaceWhileMove_BalanceForward));
 		autonChooser.addOption("Loading Zone Place 2 While Moving and Balance",
 				() -> Autos.place2FromSidesAndBalance(swerveDrive,
-						intake, elevator, gripper, flipper, Path.LoadingZone_PickUp_Balance));
+						intake, elevator, flipper, Path.LoadingZone_PickUp_Balance));
 		autonChooser.addOption("Loading Zone Place and Drive Forward",
-				() -> Autos.place1AndDriveForwardFromSides(swerveDrive, elevator, gripper, flipper,
+				() -> Autos.place1AndDriveForwardFromSides(swerveDrive, elevator, flipper,
 						Path.LoadingZone_DriveForward));
 
 		// Autonomous Bump Side Paths
-		autonChooser.addOption("Bump Side Place 2", () -> Autos.place2FromSides(swerveDrive, intake, elevator, gripper,
+		autonChooser.addOption("Bump Side Place 2", () -> Autos.place2FromSides(swerveDrive, intake, elevator,
 				flipper, Path.BumpSide_PickUp_PlaceSecond, null));
 		autonChooser.addOption("Bump Side Place 2 Pick Up Third",
-				() -> Autos.place2FromSides(swerveDrive, intake, elevator, gripper, flipper,
+				() -> Autos.place2FromSides(swerveDrive, intake, elevator, flipper,
 						Path.BumpSide_PickUp_PlaceSecond,
 						Path.BumpSide_PickUp_Third));
 		autonChooser.addOption("Bump Side Place Pickup Second and Balance",
 				() -> Autos.place1andBalanceFromSides(swerveDrive, intake,
-						elevator, gripper, flipper, Path.BumpSide_PickUp_Balance));
+						elevator, flipper, Path.BumpSide_PickUp_Balance));
 		autonChooser.addOption("Bump Side Place 2 While Moving and Balance",
 				() -> Autos.place2FromSidesAndBalance(swerveDrive,
-						intake, elevator, gripper, flipper, Path.BumpSide_PickUp_PlaceWhileMove_BalanceForward));
+						intake, elevator, flipper, Path.BumpSide_PickUp_PlaceWhileMove_BalanceForward));
 		autonChooser.addOption("Bump Side Place and Drive Forward", () -> Autos
-				.place1AndDriveForwardFromSides(swerveDrive, elevator, gripper, flipper, Path.BumpSide_DriveForward));
+				.place1AndDriveForwardFromSides(swerveDrive, elevator, flipper, Path.BumpSide_DriveForward));
 
 		// Autonomous Center Paths
 		autonChooser.addOption("Center Place Drive Across and Back",
-				() -> Autos.place1andBalanceFromCenter(swerveDrive, intake, elevator, gripper, flipper));
+				() -> Autos.place1andBalanceFromCenter(swerveDrive, intake, elevator, flipper));
 
 		// Autonomous Testing Paths
 		// autonChooser.addOption("Test Auto Balance Forward", () ->
@@ -167,10 +160,9 @@ public class RobotContainer {
 					AlertType.INFO).set(true);
 		}
 
-		heightChooser.addDefaultOption("low", Height.LOW);
+		heightChooser.addDefaultOption("Low", Height.OFF);
 		heightChooser.addOption("Mid", Height.MID);
 		heightChooser.addOption("High", Height.HIGH);
-		heightChooser.addOption("OFF", Height.OFF);
 	}
 
 	/**
@@ -189,8 +181,7 @@ public class RobotContainer {
 		TGR.DTM.tgr()
 				.whileTrue(new ProxyCommand(
 						() -> swerveDrive
-								.followPIDToGridPose(vision.getGridPose(swerveDrive.getGridPositionRequest())))
-						.andThen(CommandCombos.moveElevatorAndPlace(elevator, gripper, flipper)
+								.followPIDToGridPose(vision.getGridPose(swerveDrive.getGridPositionRequest()))
 								.unless(() -> !swerveDrive.isGridPoseValid())));
 
 		// TODO create DTM that aligns so the front can extake
@@ -201,11 +192,13 @@ public class RobotContainer {
 			return swerveDrive.resetPoseToVisionPose(vision.getBotPose());
 		}));
 
-		TGR.Ungrip.tgr().whileTrue(gripper.ungrip());
-		TGR.Grip.tgr().whileTrue(gripper.grip());
+		TGR.PlaceHigh.tgr().onTrue(elevator.goToDesiredHeight(Height.HIGH))
+				.onFalse(elevator.goToDesiredHeight(Height.OFF));
+		TGR.PlaceMid.tgr().onTrue(elevator.goToDesiredHeight(Height.MID))
+				.onFalse(elevator.goToDesiredHeight(Height.OFF));
 
-		TGR.PlacePiece.tgr()
-				.whileTrue(new ProxyCommand(() -> CommandCombos.moveElevatorAndPlace(elevator, gripper, flipper)));
+		TGR.FlipUp.tgr().onTrue(flipper.flipUp());
+		TGR.FlipDown.tgr().onTrue(new ProxyCommand(flipper::flipDownOrLevel));
 
 		TGR.ConeAtStation.tgr().onTrue(elevator.goToDesiredHeight(Height.LOAD))
 				.onFalse(elevator.goToDesiredHeight(Height.OFF));
@@ -213,11 +206,8 @@ public class RobotContainer {
 		// The following triggered commands are for debug purposes only
 		TGR.Characterize.tgr().whileTrue(swerveDrive.characterizeDrive(DriveCharacterization.QUASIASTIC_VOLTAGE,
 				DriveCharacterization.QUASIASTIC_DURATION));
-		TGR.PositiveVoltage.tgr().whileTrue(flipper.flipperVoltage(1.0));
-		TGR.NegativeVoltage.tgr().whileTrue(flipper.flipperVoltage(-0.65));
-		TGR.MoveElevator.tgr().onTrue(elevator.goToDesiredHeight(Height.LOW))
-				.onFalse(elevator.goToDesiredHeight(Height.OFF));
-		TGR.MoveFlipper.tgr().onTrue(flipper.flip());
+		TGR.PositiveVoltage.tgr().whileTrue(elevator.elevatorVoltage(0.15));
+		TGR.NegativeVoltage.tgr().whileTrue(elevator.elevatorVoltage(-0.15));
 
 		new Trigger(() -> DriverStation.getMatchTime() < 2.0 &&
 				Robot.isTeleopEnabled).onTrue(swerveDrive.brake());
@@ -259,11 +249,11 @@ public class RobotContainer {
 
 		Intake(driverController.rightTrigger(0.15)),
 		Extake(driverController.rightBumper()),
-		PlacePiece(driverController.y().and(() -> !DTM.bool())),
 		ConeAtStation(driverController.x()),
 
-		Ungrip(operatorController.leftTrigger(0.15)),
-		Grip(operatorController.rightTrigger(0.15)),
+		FlipUp(operatorController.rightTrigger(0.15)),
+		FlipDown(operatorController.leftTrigger(0.15)),
+
 		CubeLights(operatorController.b()),
 		ConeLights(operatorController.x()),
 		GridLeft(operatorController.leftBumper()),
@@ -272,10 +262,7 @@ public class RobotContainer {
 		PlaceHigh(operatorController.y()),
 
 		PositiveVoltage(driverController.povUp().and(() -> EnabledDebugModes.testingVoltageControl)),
-		NegativeVoltage(driverController.povDown().and(() -> EnabledDebugModes.testingVoltageControl)),
-		MoveElevator(driverController.povLeft().and(
-				() -> EnabledDebugModes.testingElevatorPos)),
-		MoveFlipper(driverController.povRight().and(() -> EnabledDebugModes.testingFlipper));
+		NegativeVoltage(driverController.povDown().and(() -> EnabledDebugModes.testingVoltageControl));
 
 		Trigger trigger;
 

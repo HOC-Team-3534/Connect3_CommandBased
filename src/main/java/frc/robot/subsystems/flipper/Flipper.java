@@ -7,12 +7,12 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.Commands;
 
 public class Flipper extends SubsystemBase {
-    boolean testing = true;
+    boolean testing = false;
     final FlipperIO io;
     final FlipperIOInputsAutoLogged inputs = new FlipperIOInputsAutoLogged();
 
-    long lastTimeDownApplied;
-    int counter;
+    boolean isDown;
+    boolean level;
 
     public Flipper(FlipperIO io) {
         this.io = io;
@@ -25,17 +25,32 @@ public class Flipper extends SubsystemBase {
         Logger.getInstance().processInputs("Flipper", inputs);
     }
 
-    public Command flip() {
+    public Command flipUp() {
         if (testing)
             return Commands.none();
-        return (flipAndCheck(FlipperPosition.Up).andThen(stopFlipper(), Commands.waitSeconds(0.25),
-                flipAndCheck(FlipperPosition.Down)))
-                .finallyDo((interrupt) -> set(0)).beforeStarting(() -> counter = 3);
+        return flipAndCheck(FlipperPosition.Up).andThen(stopFlipper(), Commands.waitSeconds(0.25))
+                .finallyDo((interrupt) -> set(0)).beforeStarting(() -> level = true);
     }
 
-    public Command flipUp() {
-        return flipAndCheck(FlipperPosition.Up).andThen(stopFlipper(), Commands.waitSeconds(0.25))
-                .finallyDo((interrupt) -> set(0)).beforeStarting(() -> counter = 3);
+    public Command flipDown() {
+        if (testing)
+            return Commands.none();
+        return flipAndCheck(FlipperPosition.Down).andThen(stopFlipper(), Commands.waitSeconds(0.25))
+                .beforeStarting(() -> isDown = true);
+    }
+
+    public Command makeLevel() {
+        return flipDown().andThen(
+                flipperVoltage(FlipperPosition.Up.voltage).withTimeout(0.25).beforeStarting(() -> isDown = false));
+    }
+
+    public Command flipDownOrLevel() {
+        if (testing)
+            return Commands.none();
+        if (isDown)
+            return makeLevel();
+        else
+            return flipDown();
     }
 
     private Command flipAndCheck(FlipperPosition position) {
@@ -50,14 +65,12 @@ public class Flipper extends SubsystemBase {
         return runOnce(() -> set(0));
     }
 
-    public Command makeSureDown() {
+    public Command conditionallyLevel() {
         return run(() -> {
-            if (System.currentTimeMillis() - lastTimeDownApplied > 1000 && counter > 0) {
-                set(FlipperPosition.Down.voltage);
-                lastTimeDownApplied = System.currentTimeMillis();
-                counter--;
-            } else if (inputs.currentAmps > FlipperPosition.Down.currentShutoff)
-                set(0);
+            if (level) {
+                level = false;
+                makeLevel().schedule();
+            }
         });
 
     }
@@ -72,8 +85,8 @@ public class Flipper extends SubsystemBase {
     }
 
     enum FlipperPosition {
-        Down(-0.65, 3.0),
-        Up(0.65, 3.0);
+        Down(-1.0, 10.0),
+        Up(1.0, 10.0);
 
         public double voltage, currentShutoff;
 

@@ -134,6 +134,11 @@ public class SwerveDriveIO3534Swerve implements SwerveDriveIO {
         return dt.getPose();
     }
 
+    @Override
+    public SwerveDrivetrainModel getDriveTrainModel() {
+        return dt;
+    }
+
     public static boolean loadSwerveConstants() {
         // TODO determine CBOT characterization values
         double ks = (Constants.ROBOTTYPE == RobotType.TBOT) ? 0.293
