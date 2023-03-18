@@ -19,7 +19,9 @@ import swerve.SDSModuleConfiguration;
  */
 public final class Constants {
   public static RobotType ROBOTTYPE = RobotType.CBOT;
-  public static double LOOP_PERIOD_MILLIS = 20;
+  public static double LOOP_PERIOD_SECS = 0.020;
+  public static final boolean tuningMode = false;
+  public static final boolean replayMode = false;
 
   public enum RobotType {
     CBOT,
@@ -139,4 +141,14 @@ public final class Constants {
     public static final boolean testingElevatorPos = false;
     public static final boolean testingFlipper = true;
   }
+
+  public static Mode getMode() {
+    return Robot.isReal() ? Mode.REAL : replayMode ? Mode.REPLAY : Mode.SIM;
+  }
+
+  public static enum Mode {
+    REAL, REPLAY, SIM
+  }
+
+  public static final String logFolder = "/media/sda2";
 }

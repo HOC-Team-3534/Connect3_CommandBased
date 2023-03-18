@@ -1,14 +1,10 @@
-package frc.robot.subsystems;
+package frc.robot.subsystems.swerveDrive;
 
 import java.util.HashMap;
 import java.util.Map;
 
-import javax.lang.model.util.ElementScanner14;
+import org.littletonrobotics.junction.Logger;
 
-import com.ctre.phoenix.motorcontrol.NeutralMode;
-import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
-import com.ctre.phoenix.sensors.CANCoder;
-import com.ctre.phoenix.sensors.WPI_Pigeon2;
 import com.pathplanner.lib.PathPlannerTrajectory;
 import com.pathplanner.lib.commands.FollowPathWithEvents;
 
@@ -18,83 +14,39 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.util.Units;
-import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.smartdashboard.Field2d;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
-import edu.wpi.first.wpilibj2.command.ProfiledPIDCommand;
 import frc.robot.Constants.RobotType;
-import frc.robot.Constants.Drive.AUTO;
-import frc.robot.Constants.Drive.Config;
 import frc.robot.RobotContainer.AXS;
 import frc.robot.RobotContainer.TGR;
 import frc.robot.Constants;
 import frc.robot.Path;
-import frc.robot.SwerveHelper;
-import swerve.SwerveDrivetrainModel;
 import swerve.SwerveInput;
-import swerve.SwerveModule;
 import swerve.SwerveSubsystem;
 
 public class SwerveDrive extends SwerveSubsystem {
-    // TODO determine CBOT angle offsets
-    final static double fl_degrees = (Constants.ROBOTTYPE == RobotType.TBOT) ? 86.13
-            : (Constants.ROBOTTYPE == RobotType.PBOT) ? 273.07 : 134.56;
-    final static double fr_degrees = (Constants.ROBOTTYPE == RobotType.TBOT) ? 3.86
-            : (Constants.ROBOTTYPE == RobotType.PBOT) ? 304.62 : 36.035;
-    final static double bl_degrees = (Constants.ROBOTTYPE == RobotType.TBOT) ? 274.30
-            : (Constants.ROBOTTYPE == RobotType.PBOT) ? 130.86 : 174.19;
-    final static double br_degrees = (Constants.ROBOTTYPE == RobotType.TBOT) ? 23.90
-            : (Constants.ROBOTTYPE == RobotType.PBOT) ? 20.39 : 153.37;
-    final static boolean loadedConstants = SwerveHelper.loadSwerveConstants();
-    final static WPI_TalonFX FL_drive = new WPI_TalonFX(1);
-    final static WPI_TalonFX FL_steer = new WPI_TalonFX(3);
-    final static CANCoder FL_cancoder = new CANCoder(2);
-    final static SwerveModule fl = new SwerveModule(FL_drive, FL_steer, FL_cancoder,
-            Rotation2d.fromDegrees(fl_degrees));
-    final static WPI_TalonFX FR_drive = new WPI_TalonFX(4);
-    final static WPI_TalonFX FR_steer = new WPI_TalonFX(6);
-    final static CANCoder FR_cancoder = new CANCoder(5);
-    final static SwerveModule fr = new SwerveModule(FR_drive, FR_steer, FR_cancoder,
-            Rotation2d.fromDegrees(fr_degrees));
-    final static WPI_TalonFX BL_drive = new WPI_TalonFX(7);
-    final static WPI_TalonFX BL_steer = new WPI_TalonFX(9);
-    final static CANCoder BL_cancoder = new CANCoder(8);
-    final static SwerveModule bl = new SwerveModule(BL_drive, BL_steer, BL_cancoder,
-            Rotation2d.fromDegrees(bl_degrees));
-    final static WPI_TalonFX BR_drive = new WPI_TalonFX(10);
-    final static WPI_TalonFX BR_steer = new WPI_TalonFX(12);
-    final static CANCoder BR_cancoder = new CANCoder(11);
-    final static SwerveModule br = new SwerveModule(BR_drive, BR_steer, BR_cancoder,
-            Rotation2d.fromDegrees(br_degrees));
-    final static WPI_Pigeon2 pigeon2 = new WPI_Pigeon2(Config.PIGEON2_ID);
-    final static SwerveDrivetrainModel dt = new SwerveDrivetrainModel(fl, fr, bl, br, pigeon2);
+    final SwerveDriveIO io;
+    final SwerveDriveIOInputsAutoLogged inputs = new SwerveDriveIOInputsAutoLogged();
+
     Pose2d gridPose;
     double timeCharacterizing;
-    boolean resetThetaController;
-    final Field2d field = new Field2d();
     final ProfiledPIDController xController, yController, thetaController;
 
-    public SwerveDrive() {
-        super(dt);
+    public SwerveDrive(SwerveDriveIO io) {
+        super(io.getDriveTrainModel());
+        this.io = io;
 
         xController = new ProfiledPIDController(1.75, 0, 17.5, new TrapezoidProfile.Constraints(3.5, 2.0));
         yController = new ProfiledPIDController(1.75, 0, 17.5, new TrapezoidProfile.Constraints(3.5, 2.0));
         thetaController = new ProfiledPIDController(3, 0, 30,
                 new TrapezoidProfile.Constraints(3.0 * Math.PI, 2.0 * Math.PI));
-
         thetaController.enableContinuousInput(0, Units.degreesToRadians(360.0));
-
-        SmartDashboard.putData("Field", field);
     }
 
     @Override
     public void periodic() {
-        super.periodic();
-        field.setRobotPose(dt.getPose());
-        SmartDashboard.putNumber("Pitch", getSlope());
-
+        io.updateInputs(inputs);
+        Logger.getInstance().processInputs("SwerveDrive", inputs);
     }
 
     public Command balanceForward() {
@@ -119,7 +71,7 @@ public class SwerveDrive extends SwerveSubsystem {
     }
 
     private Command fineTuneBalance() {
-        return runOnce(() -> setMotorBrakeMode()).andThen(run(() -> {
+        return runOnce(io::DriveInBrake).andThen(run(() -> {
             if (getSlope() > 5)
                 driveStraightWithPower(-0.08);
             else if (getSlope() < -5)
@@ -138,42 +90,24 @@ public class SwerveDrive extends SwerveSubsystem {
                         balanceBackward());
     }
 
-    public SwerveDrivetrainModel getDT() {
-        return dt;
-    }
-
     public Command brake() {
-        return Commands.runOnce(this::setMotorBrakeMode);
-    }
-
-    private void setMotorBrakeMode() {
-        FL_drive.setNeutralMode(NeutralMode.Brake);
-        FR_drive.setNeutralMode(NeutralMode.Brake);
-        BL_drive.setNeutralMode(NeutralMode.Brake);
-        BR_drive.setNeutralMode(NeutralMode.Brake);
+        return Commands.runOnce(io::DriveInBrake);
     }
 
     public Command coast() {
-        return Commands.runOnce(this::setMotorCoastMode);
-    }
-
-    private void setMotorCoastMode() {
-        FL_drive.setNeutralMode(NeutralMode.Coast);
-        FR_drive.setNeutralMode(NeutralMode.Coast);
-        BL_drive.setNeutralMode(NeutralMode.Coast);
-        BR_drive.setNeutralMode(NeutralMode.Coast);
+        return Commands.runOnce(io::DriveInCoast);
     }
 
     public void updatePoseWithVision(Pose2d pose, double latency) {
-        dt.updateOdometryWithVision(pose, latency);
+        io.updatePoseEstimationWithVision(pose, latency);
     }
 
     public double getSlope() {
-        return pigeon2.getPitch() + ((RobotType.PBOT == Constants.ROBOTTYPE) ? -3.0 : -0.5);
+        return inputs.pitchDegs + ((RobotType.PBOT == Constants.ROBOTTYPE) ? -3.0 : -0.5);
     }
 
     public boolean isFacingForward() {
-        return Math.abs(dt.getGyroHeading().getDegrees() % 360) < 2.0;
+        return Math.abs(inputs.headingDegs) < 2.0;
     }
 
     public Command driveOnPath(Path path, boolean resetToInitial, String eventName, Command eventCommand) {
@@ -187,14 +121,8 @@ public class SwerveDrive extends SwerveSubsystem {
         return driveOnPath(path.getPath(), resetToInitial);
     }
 
-    public void setKnownPose(PathPlannerTrajectory trajectory) {
-        var initialState = PathPlannerTrajectory.transformStateForAlliance(trajectory.getInitialState(),
-                DriverStation.getAlliance());
-        dt.setKnownPose(new Pose2d(initialState.poseMeters.getTranslation(), initialState.holonomicRotation));
-    }
-
     public Command driveOnPath(PathPlannerTrajectory trajectory, boolean resetToInitial) {
-        return dt.createCommandForTrajectory(trajectory, this, false, true);
+        return io.driveOnPath(trajectory, this, resetToInitial);
     }
 
     /**
@@ -205,9 +133,11 @@ public class SwerveDrive extends SwerveSubsystem {
      */
     public Command drive() {
         var command = run(() -> {
-            dt.setModuleStates(new SwerveInput(AXS.Drive_ForwardBackward.getAxis(),
+            var swerveInput = new SwerveInput(AXS.Drive_ForwardBackward.getAxis(),
                     AXS.Drive_LeftRight.getAxis(),
-                    AXS.Drive_Rotation.getAxis()), TGR.Creep.bool(), false);
+                    AXS.Drive_Rotation.getAxis());
+
+            io.drive(swerveInput, TGR.Creep.bool(), false);
         });
 
         command.setName("Drive Manually");
@@ -216,15 +146,15 @@ public class SwerveDrive extends SwerveSubsystem {
 
     public Command squareUp() {
         // put from -180 to 180
-        var ang = dt.getGyroHeading().rotateBy(new Rotation2d()).getDegrees();
+        var ang = inputs.headingDegs;
         if (ang < 45 && ang > -45)
-            return driveWithDesiredAngle(new Rotation2d());
+            return driveWithFixedAngle(new Rotation2d());
         else if (ang > 135 || ang < -135)
-            return driveWithDesiredAngle(Rotation2d.fromDegrees(180));
+            return driveWithFixedAngle(Rotation2d.fromDegrees(180));
         else if (ang < 135 && ang > 45)
-            return driveWithDesiredAngle(Rotation2d.fromDegrees(90));
+            return driveWithFixedAngle(Rotation2d.fromDegrees(90));
         else
-            return driveWithDesiredAngle(Rotation2d.fromDegrees(270));
+            return driveWithFixedAngle(Rotation2d.fromDegrees(270));
     }
 
     /**
@@ -235,12 +165,13 @@ public class SwerveDrive extends SwerveSubsystem {
      * @param rot Desired angle to rotate the robot to
      * @return The command that moves the robot with desired angle
      */
-    public Command driveWithDesiredAngle(Rotation2d rot) {
-        return runOnce(() -> resetThetaController = true).andThen(run(() -> {
-            dt.setModuleStates(new SwerveInput(AXS.Drive_ForwardBackward.getAxis(),
+    public Command driveWithFixedAngle(Rotation2d rot) {
+        return runOnce(io::resetThetaController).andThen(run(() -> {
+            var swerveInput = new SwerveInput(AXS.Drive_ForwardBackward.getAxis(),
                     AXS.Drive_LeftRight.getAxis(),
-                    0), rot, TGR.Creep.bool(), resetThetaController);
-            resetThetaController = false;
+                    0);
+
+            io.driveWithFixedAngle(swerveInput, rot, TGR.Creep.bool());
         }));
     }
 
@@ -253,10 +184,9 @@ public class SwerveDrive extends SwerveSubsystem {
      * @return The command that moves the robot in a straight path
      */
     public Command driveStraightAutonomous(double percent) {
-        var command = runOnce(() -> resetThetaController = true)
+        var command = runOnce(io::resetThetaController)
                 .andThen(run(() -> {
                     driveStraightWithPower(percent);
-                    resetThetaController = false;
                 }));
 
         command.setName("Auton Drive Straight");
@@ -264,7 +194,7 @@ public class SwerveDrive extends SwerveSubsystem {
     }
 
     private void driveStraightWithPower(double percent) {
-        dt.setModuleStates(new SwerveInput(percent, 0, 0), new Rotation2d(), false, resetThetaController);
+        io.driveStraight(percent);
     }
 
     /**
@@ -282,9 +212,7 @@ public class SwerveDrive extends SwerveSubsystem {
         this.gridPose = gridPose;
         if (gridPose == null)
             return Commands.print("Grid Pose Null");
-        return dt.createOnTheFlyPathCommand(gridPose,
-                gridPose.getTranslation().minus(dt.getPose().getTranslation()).getAngle(), 0.0,
-                AUTO.kMaxSpeedMetersPerSecond, AUTO.kMaxAccelerationMetersPerSecondSquared, this);
+        return io.followOTFCommand(gridPose, inputs.pose, this);
     }
 
     public Command followPIDToGridPose(Pose2d gridPose) {
@@ -298,12 +226,16 @@ public class SwerveDrive extends SwerveSubsystem {
         yController.setGoal(gridPose.getY());
         thetaController.setGoal(gridPose.getRotation().getRadians());
         return run(() -> {
-            dt.setModuleStates(new ChassisSpeeds(xController.calculate(getPose().getX()),
+            var speeds = new ChassisSpeeds(xController.calculate(getPose().getX()),
                     yController.calculate(getPose().getY()),
-                    thetaController.calculate(getPose().getRotation().getRadians())),
-                    false);
+                    thetaController.calculate(getPose().getRotation().getRadians()));
+            io.setChassisSpeeds(speeds, false);
 
         });
+    }
+
+    public Command stop() {
+        return runOnce(() -> io.setChassisSpeeds(new ChassisSpeeds(), true));
     }
 
     /**
@@ -316,13 +248,13 @@ public class SwerveDrive extends SwerveSubsystem {
     }
 
     public Pose2d getPose() {
-        return dt.getPose();
+        return inputs.pose;
     }
 
-    public Command resetPoseToLimelightPose(Pose2d pose) {
+    public Command resetPoseToVisionPose(Pose2d pose) {
         if (pose == null)
             return Commands.none();
-        return Commands.run(() -> dt.setKnownPose(pose)); // Purposefully not requiring the subystem
+        return Commands.run(() -> io.setKnownPose(pose)); // Purposefully not requiring the subystem
     }
 
     public enum GridPosition {
@@ -344,4 +276,5 @@ public class SwerveDrive extends SwerveSubsystem {
             return GridPosition.Center;
         }
     }
+
 }

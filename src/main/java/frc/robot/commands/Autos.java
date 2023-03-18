@@ -7,11 +7,11 @@ package frc.robot.commands;
 import frc.robot.Constants.ELEVATOR.Height;
 import frc.robot.Path;
 import frc.robot.RobotContainer;
-import frc.robot.subsystems.Gripper;
-import frc.robot.subsystems.Elevator;
-import frc.robot.subsystems.Flipper;
-import frc.robot.subsystems.Intake;
-import frc.robot.subsystems.SwerveDrive;
+import frc.robot.subsystems.elevator.Elevator;
+import frc.robot.subsystems.flipper.Flipper;
+import frc.robot.subsystems.gripper.Gripper;
+import frc.robot.subsystems.intake.Intake;
+import frc.robot.subsystems.swerveDrive.SwerveDrive;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 
@@ -34,7 +34,6 @@ public final class Autos {
    */
   public static Command place2FromSides(SwerveDrive swerve, Intake intake, Elevator elevator, Gripper gripper,
       Flipper flipper, Path path1, Path path2) {
-    swerve.setKnownPose(path1.getPath());
 
     var command = moveElevatorAndPlace(RobotContainer.getHeightAutonomous(), elevator, gripper, flipper)
         .andThen(driveWithIntake(path1, intake, swerve, true))
@@ -58,7 +57,6 @@ public final class Autos {
    */
   public static Command place2FromSidesAndBalance(SwerveDrive swerve, Intake intake, Elevator elevator, Gripper gripper,
       Flipper flipper, Path path1) {
-    swerve.setKnownPose(path1.getPath());
     return moveElevatorAndPlace(RobotContainer.getHeightAutonomous(), elevator, gripper, flipper)
         .andThen(driveWithIntakeWithEvent(path1, intake, swerve, true, "place",
             moveElevatorAndPlace(Height.LOW, elevator, gripper, flipper)))
@@ -80,14 +78,12 @@ public final class Autos {
    */
   public static Command place1andBalanceFromSides(SwerveDrive swerve, Intake intake, Elevator elevator, Gripper gripper,
       Flipper flipper, Path path1) {
-    swerve.setKnownPose(path1.getPath());
     return moveElevatorAndPlace(RobotContainer.getHeightAutonomous(), elevator, gripper, flipper)
         .andThen(driveWithIntake(path1, intake, swerve, true), swerve.balanceBackward());
   }
 
   public static Command place1AndDriveForwardFromSides(SwerveDrive swerve, Elevator elevator, Gripper gripper,
       Flipper flipper, Path path1) {
-    swerve.setKnownPose(path1.getPath());
     return moveElevatorAndPlace(RobotContainer.getHeightAutonomous(), elevator, gripper, flipper)
         .andThen(swerve.driveOnPath(path1, true));
   }
@@ -123,7 +119,7 @@ public final class Autos {
   private static Command moveElevatorAndPlace(Height height, Elevator elevator, Gripper gripper, Flipper flipper) {
     return elevator.goToDesiredHeight(height).withTimeout(3.0)
         .andThen(gripper.ungrip().withTimeout(0.1), flipper.flipUp().asProxy().withTimeout(3.0))
-        .finallyDo((interrupted) -> elevator.setPowerZero());
+        .finallyDo((interrupted) -> elevator.off());
   }
 
   /**

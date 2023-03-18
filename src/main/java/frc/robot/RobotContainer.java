@@ -9,20 +9,36 @@ import frc.robot.Constants.Drive.Config.DriveCharacterization;
 import frc.robot.Constants.ELEVATOR.Height;
 import frc.robot.commands.Autos;
 import frc.robot.commands.CommandCombos;
-import frc.robot.subsystems.Gripper;
-import frc.robot.subsystems.Elevator;
-import frc.robot.subsystems.Flipper;
-import frc.robot.subsystems.Intake;
-import frc.robot.subsystems.Lights;
-import frc.robot.subsystems.Limelight;
-import frc.robot.subsystems.SwerveDrive;
+import frc.robot.subsystems.elevator.Elevator;
+import frc.robot.subsystems.elevator.ElevatorIO;
+import frc.robot.subsystems.elevator.ElevatorIOFalcon500;
+import frc.robot.subsystems.flipper.Flipper;
+import frc.robot.subsystems.flipper.FlipperIO;
+import frc.robot.subsystems.flipper.FlipperIOTalonSRX;
+import frc.robot.subsystems.gripper.Gripper;
+import frc.robot.subsystems.gripper.GripperIO;
+import frc.robot.subsystems.gripper.GripperIOTalonSRX;
+import frc.robot.subsystems.intake.Intake;
+import frc.robot.subsystems.intake.IntakeIO;
+import frc.robot.subsystems.intake.IntakeIOFalcon500s;
+import frc.robot.subsystems.lights.Lights;
+import frc.robot.subsystems.lights.LightsIO;
+import frc.robot.subsystems.lights.LightsIORevBlinkin;
+import frc.robot.subsystems.swerveDrive.SwerveDrive;
+import frc.robot.subsystems.swerveDrive.SwerveDriveIO;
+import frc.robot.subsystems.swerveDrive.SwerveDriveIO3534Swerve;
+import frc.robot.subsystems.vision.Vision;
+import frc.robot.subsystems.vision.VisionIO;
+import frc.robot.subsystems.vision.VisionIOLimelight;
+import frc.robot.util.Alert;
+import frc.robot.util.Alert.AlertType;
 
 import java.util.concurrent.Callable;
 
+import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
+
 import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.ProxyCommand;
@@ -38,27 +54,54 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
  */
 public class RobotContainer {
 	// The robot's subsystems and commands are defined here...
-	public static final SwerveDrive swerveDrive = new SwerveDrive();
-	private static final Intake intake = new Intake();
-	private static final Elevator elevator = new Elevator();
-	private static final Gripper gripper = new Gripper();
-	private static final Flipper flipper = new Flipper();
-	private static final Lights lights = new Lights();
-	private static final Limelight limelight = new Limelight(swerveDrive::getPose, swerveDrive::updatePoseWithVision);
+	private static SwerveDrive swerveDrive;
+	private static Intake intake;
+	private static Elevator elevator;
+	private static Gripper gripper;
+	private static Flipper flipper;
+	private static Lights lights;
+	private static Vision vision;
 	// The driver station connected controllers are defined here...
 	private static final CommandXboxController driverController = new CommandXboxController(0);
 	private static final CommandXboxController operatorController = new CommandXboxController(1);
 	static SlewRateLimiter slewRateLimiterX = new SlewRateLimiter(2.5);
 	static SlewRateLimiter slewRateLimiterY = new SlewRateLimiter(2.5);
 	static SlewRateLimiter slewRateLimiterRotation = new SlewRateLimiter(2.5);
-	private static final SendableChooser<Callable<Command>> autonChooser = new SendableChooser<>();
-	private static final SendableChooser<ELEVATOR.Height> heightChooser = new SendableChooser<>();
+	private static final LoggedDashboardChooser<Callable<Command>> autonChooser = new LoggedDashboardChooser<>(
+			"Auton Command");
+	private static final LoggedDashboardChooser<ELEVATOR.Height> heightChooser = new LoggedDashboardChooser<>(
+			"Auton Elevator Height");
 
 	/**
 	 * The container for the robot. Contains subsystems, OI devices, and
 	 * commands.
 	 */
 	public RobotContainer() {
+		if (Robot.isSimulation()) {
+			swerveDrive = new SwerveDrive(new SwerveDriveIO() {
+			});
+			intake = new Intake(new IntakeIO() {
+			});
+			elevator = new Elevator(new ElevatorIO() {
+			});
+			gripper = new Gripper(new GripperIO() {
+			});
+			flipper = new Flipper(new FlipperIO() {
+			});
+			lights = new Lights(new LightsIO() {
+			});
+			vision = new Vision(swerveDrive::getPose, swerveDrive::updatePoseWithVision, new VisionIO() {
+			});
+		} else {
+			swerveDrive = new SwerveDrive(new SwerveDriveIO3534Swerve());
+			intake = new Intake(new IntakeIOFalcon500s());
+			elevator = new Elevator(new ElevatorIOFalcon500());
+			gripper = new Gripper(new GripperIOTalonSRX());
+			flipper = new Flipper(new FlipperIOTalonSRX());
+			lights = new Lights(new LightsIORevBlinkin());
+			vision = new Vision(swerveDrive::getPose, swerveDrive::updatePoseWithVision, new VisionIOLimelight());
+		}
+
 		// Configure the trigger bindings
 		configureBindings();
 
@@ -69,7 +112,7 @@ public class RobotContainer {
 		flipper.setDefaultCommand(flipper.makeSureDown());
 
 		// Autonomous Command Sendable Chooser
-		autonChooser.setDefaultOption("No Auton", () -> Commands.none());
+		autonChooser.addDefaultOption("No Auton", () -> Commands.none());
 
 		// Autonomous Loading Zone Paths
 		autonChooser.addOption("Loading Zone Place 2",
@@ -118,20 +161,16 @@ public class RobotContainer {
 		// autonChooser.addOption("Test Auto Balance Across and Back", () ->
 		// swerveDrive.balanceAcrossAndBack());
 
-		heightChooser.setDefaultOption("low", Height.LOW);
+		// Alert if in tuning mode
+		if (Constants.tuningMode) {
+			new Alert("Tuning mode active, expect decreased network performance.",
+					AlertType.INFO).set(true);
+		}
+
+		heightChooser.addDefaultOption("low", Height.LOW);
 		heightChooser.addOption("Mid", Height.MID);
 		heightChooser.addOption("High", Height.HIGH);
 		heightChooser.addOption("OFF", Height.OFF);
-
-		// Show Status of Subsystems on Dashboard
-		SmartDashboard.putData(autonChooser);
-		SmartDashboard.putData(heightChooser);
-		SmartDashboard.putData(swerveDrive);
-		SmartDashboard.putData(intake);
-		SmartDashboard.putData(lights);
-		SmartDashboard.putData(elevator);
-		SmartDashboard.putData(gripper);
-		SmartDashboard.putData(flipper);
 	}
 
 	/**
@@ -150,7 +189,7 @@ public class RobotContainer {
 		TGR.DTM.tgr()
 				.whileTrue(new ProxyCommand(
 						() -> swerveDrive
-								.followPIDToGridPose(limelight.getGridPose(swerveDrive.getGridPositionRequest())))
+								.followPIDToGridPose(vision.getGridPose(swerveDrive.getGridPositionRequest())))
 						.andThen(CommandCombos.moveElevatorAndPlace(elevator, gripper, flipper)
 								.unless(() -> !swerveDrive.isGridPoseValid())));
 
@@ -159,7 +198,7 @@ public class RobotContainer {
 		TGR.PrepareBalance.tgr().whileTrue(new ProxyCommand(() -> swerveDrive.squareUp()));
 
 		TGR.ResetWithLimelight.tgr().onTrue(new ProxyCommand(() -> {
-			return swerveDrive.resetPoseToLimelightPose(limelight.getBotPose(false));
+			return swerveDrive.resetPoseToVisionPose(vision.getBotPose());
 		}));
 
 		TGR.Ungrip.tgr().whileTrue(gripper.ungrip());
@@ -192,15 +231,23 @@ public class RobotContainer {
 	 */
 	public Command getAutonomousCommand() {
 		try {
-			return autonChooser.getSelected().call();
+			return autonChooser.get().call();
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 		return Commands.none();
 	}
 
+	public Command getCoastCommand() {
+		return swerveDrive.coast();
+	}
+
+	public Command getDriveStopCommand() {
+		return swerveDrive.stop().ignoringDisable(true);
+	}
+
 	public static Height getHeightAutonomous() {
-		return heightChooser.getSelected();
+		return heightChooser.get();
 	}
 
 	public enum TGR {

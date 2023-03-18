@@ -1,6 +1,6 @@
-package frc.robot.subsystems;
+package frc.robot.subsystems.intake;
 
-import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
+import org.littletonrobotics.junction.Logger;
 
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
@@ -8,18 +8,18 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.RobotContainer.TGR;
 
 public class Intake extends SubsystemBase {
-    WPI_TalonFX topMotor, botMotor;
+    final IntakeIO io;
+    final IntakeIOInputsAutoLogged inputs = new IntakeIOInputsAutoLogged();
     boolean testing = false;
 
-    public Intake() {
-        if (!testing) {
-            topMotor = new WPI_TalonFX(15);
-            botMotor = new WPI_TalonFX(16);
-            topMotor.configFactoryDefault();
-            botMotor.configFactoryDefault();
-            topMotor.setInverted(true);
-            botMotor.setInverted(true);
-        }
+    public Intake(IntakeIO io) {
+        this.io = io;
+    }
+
+    @Override
+    public void periodic() {
+        io.updateInputs(inputs);
+        Logger.getInstance().processInputs("Intake", inputs);
     }
 
     public Command runIntake() {
@@ -49,7 +49,17 @@ public class Intake extends SubsystemBase {
     }
 
     private void setBothMotors(double percent) {
-        topMotor.set(percent);
-        botMotor.set(percent);
+        setTop(percent);
+        setBottom(percent);
+    }
+
+    private void setTop(double percent) {
+        io.setTop(percent);
+        Logger.getInstance().recordOutput("Intake/PercentOutputTop_SetPoint", percent);
+    }
+
+    private void setBottom(double percent) {
+        io.setBottom(percent);
+        Logger.getInstance().recordOutput("Intake/PercentOutputBottom_SetPoint", percent);
     }
 }

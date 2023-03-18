@@ -1,25 +1,43 @@
-package frc.robot.subsystems;
+package frc.robot.subsystems.lights;
+
+import org.littletonrobotics.junction.Logger;
 
 import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.motorcontrol.Spark;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.RobotContainer.TGR;
 
 public class Lights extends SubsystemBase {
-    Spark spark = new Spark(0);
+
+    final LightsIO io;
+    final LightsIOInputsAutoLogged inputs = new LightsIOInputsAutoLogged();
+
+    public Lights(LightsIO io) {
+        this.io = io;
+    }
+
+    @Override
+    public void periodic() {
+        io.updateInputs(inputs);
+        Logger.getInstance().processInputs("Lights", inputs);
+    }
 
     public Command runLights() {
         return run(() -> {
             if (TGR.ConeLights.bool())
-                spark.set(0.69); // YELLOW
+                set(0.69); // YELLOW
             else if (TGR.CubeLights.bool())
-                spark.set(0.91); // PURPLE
+                set(0.91); // PURPLE
             else if (TGR.DTM.bool())
-                spark.set(0.77); // GREEN
+                set(0.77); // GREEN
             else
                 neutral();
         });
+    }
+
+    private void set(double percent) {
+        io.set(percent);
+        Logger.getInstance().recordOutput("Lights/PercentOutput_SetPoint", percent);
     }
 
     public void neutral() {
@@ -28,15 +46,15 @@ public class Lights extends SubsystemBase {
         // color we are
         switch (DriverStation.getAlliance()) {
             case Blue:
-                spark.set(0.87);
+                set(0.87);
                 break;
 
             case Red:
-                spark.set(0.61);
+                set(0.61);
                 break;
 
             default:
-                spark.set(0.0);
+                set(0.0);
                 break;
         }
     }
