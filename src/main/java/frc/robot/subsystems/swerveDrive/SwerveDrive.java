@@ -47,6 +47,8 @@ public class SwerveDrive extends SwerveSubsystem {
     public void periodic() {
         io.updateInputs(inputs);
         Logger.getInstance().processInputs("SwerveDrive", inputs);
+
+        Logger.getInstance().recordOutput("SwerveDrive/Pose", getPose());
     }
 
     public Command balanceForward() {
@@ -212,7 +214,7 @@ public class SwerveDrive extends SwerveSubsystem {
         this.gridPose = gridPose;
         if (gridPose == null)
             return Commands.print("Grid Pose Null");
-        return io.followOTFCommand(gridPose, inputs.pose, this);
+        return io.followOTFCommand(gridPose, getPose(), this);
     }
 
     public Command followPIDToGridPose(Pose2d gridPose) {
@@ -248,7 +250,7 @@ public class SwerveDrive extends SwerveSubsystem {
     }
 
     public Pose2d getPose() {
-        return inputs.pose;
+        return io.getPose();
     }
 
     public Command resetPoseToVisionPose(Pose2d pose) {

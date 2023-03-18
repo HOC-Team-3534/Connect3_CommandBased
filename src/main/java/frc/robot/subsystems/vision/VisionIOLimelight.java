@@ -11,6 +11,7 @@ import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class VisionIOLimelight implements VisionIO {
+    VisionData visionData;
 
     @Override
     public void updateInputs(AprilTagFieldLayout layout, VisionIOInputs inputs) {
@@ -20,7 +21,7 @@ public class VisionIOLimelight implements VisionIO {
 
         if (!valid && RobotBase.isReal()) {
             inputs.aprilTagID = -1;
-            inputs.estBotPose = null;
+            visionData = null;
             return;
         }
 
@@ -28,7 +29,7 @@ public class VisionIOLimelight implements VisionIO {
                 : (int) table.getEntry("tid").getInteger(0);
 
         if (inputs.aprilTagID <= 0) {
-            inputs.estBotPose = null;
+            visionData = null;
             return;
         }
         double[] botPoseArray;
@@ -42,20 +43,24 @@ public class VisionIOLimelight implements VisionIO {
                 break;
 
             default:
-                inputs.estBotPose = null;
+                visionData = null;
                 return;
         }
         var cameraPoseArray = table.getEntry("camerapose_targetspace").getDoubleArray(new double[6]);
         var distanceAway = new Translation2d(cameraPoseArray[0], cameraPoseArray[2]).getNorm();
         SmartDashboard.putNumber("Camera Distance Away from AprilTag", distanceAway);
         if (distanceAway > 2.0)
-            inputs.estBotPose = null;
+            visionData = null;
         if (botPoseArray == null || botPoseArray.length < 7)
-            inputs.estBotPose = null;
-        inputs.estBotPose = new Pose2d(botPoseArray[0], botPoseArray[1], Rotation2d.fromDegrees(botPoseArray[5]));
+            visionData = null;
+        var pose = new Pose2d(botPoseArray[0], botPoseArray[1], Rotation2d.fromDegrees(botPoseArray[5]));
         var latency = botPoseArray[6] / 1000.0;
-        inputs.estBotPoseLatencySecs = latency;
-        inputs.estBotPoseTimestampSecs = Timer.getFPGATimestamp() - latency;
+        var timestamp = Timer.getFPGATimestamp() - latency;
+        visionData = new VisionData(pose, timestamp, latency);
+    }
+
+    public VisionData getVisionData() {
+        return visionData;
     }
 
 }

@@ -61,7 +61,6 @@ public class SwerveDriveIO3534Swerve implements SwerveDriveIO {
     public void updateInputs(SwerveDriveIOInputs inputs) {
         inputs.pitchDegs = pigeon2.getPitch();
         inputs.headingDegs = dt.getGyroHeading().getDegrees() % 360;
-        inputs.pose = dt.getPose();
     }
 
     @Override
@@ -128,6 +127,11 @@ public class SwerveDriveIO3534Swerve implements SwerveDriveIO {
         return dt.createOnTheFlyPathCommand(gridPose,
                 gridPose.getTranslation().minus(currPose.getTranslation()).getAngle(), 0.0,
                 AUTO.kMaxSpeedMetersPerSecond, AUTO.kMaxAccelerationMetersPerSecondSquared, swerveDrive);
+    }
+
+    @Override
+    public Pose2d getPose() {
+        return dt.getPose();
     }
 
     public static boolean loadSwerveConstants() {

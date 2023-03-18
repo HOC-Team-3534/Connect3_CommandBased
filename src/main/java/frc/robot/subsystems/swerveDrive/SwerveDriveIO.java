@@ -14,7 +14,6 @@ public interface SwerveDriveIO {
     @AutoLog
     public static class SwerveDriveIOInputs {
         public double pitchDegs, headingDegs;
-        public Pose2d pose;
     }
 
     public default void updateInputs(SwerveDriveIOInputs inputs) {
@@ -58,6 +57,10 @@ public interface SwerveDriveIO {
     }
 
     public default Command followOTFCommand(Pose2d gridPose, Pose2d currPose, SwerveDrive swerveDrive) {
+        return null;
+    }
+
+    public default Pose2d getPose() {
         return null;
     }
 
