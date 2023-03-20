@@ -48,6 +48,8 @@ public class SwerveDrive extends SwerveSubsystem {
         io.updateInputs(inputs);
         Logger.getInstance().processInputs("SwerveDrive", inputs);
 
+        super.periodic();
+
         var pose = getPose();
         if (pose != null)
             Logger.getInstance().recordOutput("SwerveDrive/Pose", pose);
