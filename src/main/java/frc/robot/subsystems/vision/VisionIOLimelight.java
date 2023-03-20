@@ -59,6 +59,7 @@ public class VisionIOLimelight implements VisionIO {
         visionData = new VisionData(pose, timestamp, latency);
     }
 
+    @Override
     public VisionData getVisionData() {
         return visionData;
     }
