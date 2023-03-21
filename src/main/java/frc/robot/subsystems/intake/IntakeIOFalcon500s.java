@@ -18,4 +18,14 @@ public class IntakeIOFalcon500s implements IntakeIO {
         topMotor.setInverted(true);
         botMotor.setInverted(true);
     }
+
+    @Override
+    public void setTop(double percent) {
+        topMotor.set(percent);
+    }
+
+    @Override
+    public void setBottom(double percent) {
+        botMotor.set(percent);
+    }
 }

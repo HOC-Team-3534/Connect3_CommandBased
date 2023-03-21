@@ -2,6 +2,8 @@ package frc.robot.subsystems.swerveDrive;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.Callable;
+import java.util.function.Function;
 
 import org.littletonrobotics.junction.Logger;
 
@@ -28,13 +30,16 @@ public class SwerveDrive extends SwerveSubsystem {
     final SwerveDriveIO io;
     final SwerveDriveIOInputsAutoLogged inputs = new SwerveDriveIOInputsAutoLogged();
 
-    Pose2d gridPose;
     double timeCharacterizing;
     final ProfiledPIDController xController, yController, thetaController;
+    final Function<GridPosition, Pose2d> gridPoseFunction;
+    final Callable<Pose2d> loadingPoseCallable;
 
-    public SwerveDrive(SwerveDriveIO io) {
+    public SwerveDrive(SwerveDriveIO io, Function<GridPosition, Pose2d> gp, Callable<Pose2d> lp) {
         super(io.getDriveTrainModel());
         this.io = io;
+        this.gridPoseFunction = gp;
+        this.loadingPoseCallable = lp;
 
         xController = new ProfiledPIDController(1.75, 0, 17.5, new TrapezoidProfile.Constraints(3.5, 2.0));
         yController = new ProfiledPIDController(1.75, 0, 17.5, new TrapezoidProfile.Constraints(3.5, 2.0));
@@ -104,8 +109,8 @@ public class SwerveDrive extends SwerveSubsystem {
         return Commands.runOnce(io::DriveInCoast);
     }
 
-    public void updatePoseWithVision(Pose2d pose, double latency) {
-        io.updatePoseEstimationWithVision(pose, latency);
+    public void updatePoseWithVision(Pose2d pose, double timestamp) {
+        io.updatePoseEstimationWithVision(pose, timestamp);
     }
 
     public double getSlope() {
@@ -203,34 +208,35 @@ public class SwerveDrive extends SwerveSubsystem {
         io.driveStraight(percent);
     }
 
-    /**
-     * Follows an autonomously generated path to a specific grid position in which
-     * the operator chooses generates a path on the fly and drives the robot in DTM
-     * to the position
-     * 
-     * @param gridPose The grid Position the robot will generate a path to(Left
-     *                 Right or Center)
-     * @return The command that the robot will use to autonomously follow in DTM to
-     *         a grid position
-     */
-
-    public Command followPathtoGridPose(Pose2d gridPose) {
-        this.gridPose = gridPose;
-        if (gridPose == null)
-            return Commands.print("Grid Pose Null");
-        return io.followOTFCommand(gridPose, getPose(), this);
+    private double getDistanceFrom(Pose2d pose) {
+        return getPose().getTranslation().getDistance(pose.getTranslation());
     }
 
-    public Command followPIDToGridPose(Pose2d gridPose) {
-        this.gridPose = gridPose;
-        if (gridPose == null)
-            return Commands.none();
+    public Command DTMFollowToPose() {
+        var grid = gridPoseFunction.apply(getGridPositionRequest());
+        Pose2d loading = null;
+        try {
+            loading = loadingPoseCallable.call();
+        } catch (Exception e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+        if (grid != null && getDistanceFrom(grid) < 2.5)
+            return followToPose(grid);
+        if (loading != null && getDistanceFrom(loading) < 2.5)
+            return followToPose(loading);
+        return Commands.none();
+
+    }
+
+    private Command followToPose(Pose2d desiredPose) {
+
         xController.reset(getPose().getX());
         yController.reset(getPose().getY());
         thetaController.reset(getPose().getRotation().getRadians());
-        xController.setGoal(gridPose.getX());
-        yController.setGoal(gridPose.getY());
-        thetaController.setGoal(gridPose.getRotation().getRadians());
+        xController.setGoal(desiredPose.getX());
+        yController.setGoal(desiredPose.getY());
+        thetaController.setGoal(desiredPose.getRotation().getRadians());
         return run(() -> {
             var speeds = new ChassisSpeeds(xController.calculate(getPose().getX()),
                     yController.calculate(getPose().getY()),
@@ -242,15 +248,6 @@ public class SwerveDrive extends SwerveSubsystem {
 
     public Command stop() {
         return runOnce(() -> io.setChassisSpeeds(new ChassisSpeeds(), true));
-    }
-
-    /**
-     * Checks to see if there is a valid grid position that limelight picks up
-     * 
-     * @return Valid grid position
-     */
-    public boolean isGridPoseValid() {
-        return gridPose != null;
     }
 
     public Pose2d getPose() {

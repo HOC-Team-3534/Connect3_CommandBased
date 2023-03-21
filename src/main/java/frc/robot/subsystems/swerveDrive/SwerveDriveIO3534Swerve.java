@@ -80,8 +80,8 @@ public class SwerveDriveIO3534Swerve implements SwerveDriveIO {
     }
 
     @Override
-    public void updatePoseEstimationWithVision(Pose2d pose, double latency) {
-        dt.updateOdometryWithVision(pose, latency);
+    public void updatePoseEstimationWithVision(Pose2d pose, double timestamp) {
+        dt.updateOdometryWithVision(pose, timestamp, true);
     }
 
     @Override

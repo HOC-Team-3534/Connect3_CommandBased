@@ -30,7 +30,7 @@ public interface SwerveDriveIO {
     public default void DriveInCoast() {
     }
 
-    public default void updatePoseEstimationWithVision(Pose2d pose, double latency) {
+    public default void updatePoseEstimationWithVision(Pose2d pose, double timestamp) {
     }
 
     public default void setChassisSpeeds(ChassisSpeeds speeds, boolean openLoop) {

@@ -75,7 +75,7 @@ public class RobotContainer {
 	public RobotContainer() {
 		if (Robot.isSimulation()) {
 			swerveDrive = new SwerveDrive(new SwerveDriveIO() {
-			});
+			}, vision::getGridPose, vision::getLoadingZonePose);
 			intake = new Intake(new IntakeIO() {
 			});
 			elevator = new Elevator(new ElevatorIO() {
@@ -87,7 +87,8 @@ public class RobotContainer {
 			vision = new Vision(swerveDrive::getPose, swerveDrive::updatePoseWithVision, new VisionIO() {
 			});
 		} else {
-			swerveDrive = new SwerveDrive(new SwerveDriveIO3534Swerve());
+			swerveDrive = new SwerveDrive(new SwerveDriveIO3534Swerve(), vision::getGridPose,
+					vision::getLoadingZonePose);
 			intake = new Intake(new IntakeIOFalcon500s());
 			elevator = new Elevator(new ElevatorIOFalcon500());
 			flipper = new Flipper(new FlipperIOTalonSRX());
@@ -178,11 +179,7 @@ public class RobotContainer {
 	 * joysticks}.
 	 */
 	private void configureBindings() {
-		TGR.DTM.tgr()
-				.whileTrue(new ProxyCommand(
-						() -> swerveDrive
-								.followPIDToGridPose(vision.getGridPose(swerveDrive.getGridPositionRequest()))
-								.unless(() -> !swerveDrive.isGridPoseValid())));
+		TGR.DTM.tgr().whileTrue(new ProxyCommand(swerveDrive::DTMFollowToPose));
 
 		// TODO create DTM that aligns so the front can extake
 

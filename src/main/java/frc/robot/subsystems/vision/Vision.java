@@ -9,12 +9,15 @@ import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 import frc.robot.subsystems.swerveDrive.SwerveDrive.GridPosition;
 
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.concurrent.Callable;
 import java.util.function.BiConsumer;
 
@@ -28,6 +31,7 @@ public class Vision extends SubsystemBase {
     final Callable<Pose2d> robotPose;
     final BiConsumer<Pose2d, Double> visionPoseUpdate;
     AprilTagFieldLayout aprilTagFieldLayout;
+    Pose2d loadingZonePose;
 
     final VisionIO io;
     final VisionIOInputsAutoLogged inputs = new VisionIOInputsAutoLogged();
@@ -36,17 +40,20 @@ public class Vision extends SubsystemBase {
         this.io = io;
         this.robotPose = robotPose;
         this.visionPoseUpdate = visionPoseUpdate;
+
         try {
             aprilTagFieldLayout = AprilTagFields.k2023ChargedUp.loadAprilTagLayoutField();
             switch (DriverStation.getAlliance()) {
                 case Blue:
                     aprilTagFieldLayout.setOrigin(AprilTagFieldLayout.OriginPosition.kBlueAllianceWallRightSide);
+                    loadingZonePose = new Pose2d();// TODO need to find the correct value from Cad
                     break;
                 case Red:
                     aprilTagFieldLayout.setOrigin(AprilTagFieldLayout.OriginPosition.kRedAllianceWallRightSide);
+                    loadingZonePose = new Pose2d();
                     break;
-                case Invalid:
-
+                default:
+                    loadingZonePose = new Pose2d();
                     break;
             }
         } catch (IOException e) {
@@ -64,9 +71,9 @@ public class Vision extends SubsystemBase {
         var visionData = io.getVisionData();
 
         if (Constants.EnabledDebugModes.updatePoseWithVisionEnabled && visionData != null) {
-            visionPoseUpdate.accept(visionData.pose, visionData.estBotPoseLatencySecs); // TODO switch to timestamp,
-                                                                                        // not
-                                                                                        // latency
+            visionPoseUpdate.accept(visionData.pose, visionData.estBotPoseTimestampSecs); // TODO switch to timestamp,
+                                                                                          // not
+                                                                                          // latency
             Logger.getInstance().recordOutput("Vision/Pose", visionData.pose);
             Logger.getInstance().recordOutput("Vision/Timestamp", visionData.estBotPoseTimestampSecs);
             Logger.getInstance().recordOutput("Vision/Latency", visionData.estBotPoseLatencySecs);
@@ -78,6 +85,10 @@ public class Vision extends SubsystemBase {
 
     public Pose2d getBotPose() {
         return io.getVisionData().pose;
+    }
+
+    public Pose2d getLoadingZonePose() {
+        return loadingZonePose;
     }
 
     public Pose2d getGridPose(GridPosition position) {

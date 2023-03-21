@@ -119,9 +119,9 @@ public final class Constants {
     public static final double kElevatorAcceleration = 80000.0;// Counts per 100ms per second
 
     public static enum Height {
-      HIGH(210000),
+      HIGH(195000),
       LOAD(45000),
-      MID(130000),
+      MID(115000),
       OFF(0.0);
 
       public double height;
