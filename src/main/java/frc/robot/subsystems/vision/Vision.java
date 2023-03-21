@@ -33,6 +33,9 @@ public class Vision extends SubsystemBase {
     AprilTagFieldLayout aprilTagFieldLayout;
     Pose2d loadingZonePose;
 
+    final double widthOfField = 8.014;
+    final double lengthOfField = 16.542;
+
     final VisionIO io;
     final VisionIOInputsAutoLogged inputs = new VisionIOInputsAutoLogged();
 
@@ -46,11 +49,13 @@ public class Vision extends SubsystemBase {
             switch (DriverStation.getAlliance()) {
                 case Blue:
                     aprilTagFieldLayout.setOrigin(AprilTagFieldLayout.OriginPosition.kBlueAllianceWallRightSide);
-                    loadingZonePose = new Pose2d();// TODO need to find the correct value from Cad
+                    loadingZonePose = new Pose2d(lengthOfField - 2.105,
+                            widthOfField - Constants.Drive.Known.TOTAL_ROBOT_LENGTH / 2, Rotation2d.fromDegrees(-90));
                     break;
                 case Red:
                     aprilTagFieldLayout.setOrigin(AprilTagFieldLayout.OriginPosition.kRedAllianceWallRightSide);
-                    loadingZonePose = new Pose2d();
+                    loadingZonePose = new Pose2d(lengthOfField - 2.105, Constants.Drive.Known.TOTAL_ROBOT_LENGTH / 2,
+                            Rotation2d.fromDegrees(90));
                     break;
                 default:
                     loadingZonePose = new Pose2d();

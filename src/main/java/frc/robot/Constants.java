@@ -45,6 +45,10 @@ public final class Constants {
        */
       public final static double WHEELBASE_METERS = (Constants.ROBOTTYPE == RobotType.TBOT) ? 0.578
           : (Constants.ROBOTTYPE == RobotType.PBOT) ? 0.508 : 0.5207;
+
+      public final static double TOTAL_ROBOT_LENGTH = (Constants.ROBOTTYPE == RobotType.PBOT) ? 34 * 0.0254
+          : 34.5 * 0.0254;
+
       public static final SDSModuleConfiguration SDS_MODULE_CONFIGURATION = SDSModuleConfiguration
           .SDSMK4(SDSModuleConfiguration.driveGearRatios.SDSMK4_L2);
       public static final double MAX_DRIVE_MOTOR_RPM = 6380.0; // Falcon500
