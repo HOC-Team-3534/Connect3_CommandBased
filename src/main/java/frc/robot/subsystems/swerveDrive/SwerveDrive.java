@@ -64,25 +64,27 @@ public class SwerveDrive extends SwerveSubsystem {
     public Command balance(Direction facingDirection, Direction driveDirection) {
         var driveSign = driveDirection.equals(Direction.Forward) ? 1 : -1;
 
-        var command = (driveStraightAutonomous(0, facingDirection).until(() -> isFacingDirection(facingDirection)))
+        var command = (driveInX(0, facingDirection).until(() -> isFacingDirection(facingDirection)))
                 .andThen(
-                        driveStraightAutonomous(0.25 * driveSign, facingDirection)
+                        driveInX(0.25 * driveSign, facingDirection)
                                 .until(() -> Math.abs(getSlope()) > 13.25),
-                        driveStraightAutonomous(0.25 * driveSign, facingDirection)
+                        driveInX(0.25 * driveSign, facingDirection)
                                 .until(() -> Math.abs(getSlope()) < 13.0),
                         fineTuneBalance(facingDirection));
 
-        command.setName("Balance Backward");
+        command.setName("Balance");
         return command;
     }
 
     private Command fineTuneBalance(Direction facingDirection) {
 
+        var driveSign = facingDirection.equals(Direction.Forward) ? 1 : -1;
+
         return runOnce(io::DriveInBrake).andThen(run(() -> {
             if (getSlope() > 5)
-                driveStraightWithPower(-0.08, facingDirection);
+                driveStraightWithPower(driveSign * -0.08, facingDirection);
             else if (getSlope() < -5)
-                driveStraightWithPower(0.08, facingDirection);
+                driveStraightWithPower(driveSign * 0.08, facingDirection);
             else
                 driveStraightWithPower(0.0, facingDirection);
         }));
@@ -93,11 +95,11 @@ public class SwerveDrive extends SwerveSubsystem {
     }
 
     public Command driveAcross() {
-        return driveStraightAutonomous(0, Direction.Forward).until(() -> isFacingDirection(Direction.Forward))
-                .andThen(driveStraightAutonomous(0.35, Direction.Forward).until(() -> getSlope() < -12.25),
-                        driveStraightAutonomous(0.35, Direction.Forward).until(() -> getSlope() > 12.0),
-                        driveStraightAutonomous(0.35, Direction.Forward).until(() -> getSlope() < 5),
-                        driveStraightAutonomous(0.15, Direction.Forward).withTimeout(1.5));
+        return driveInX(0, Direction.Forward).until(() -> isFacingDirection(Direction.Forward))
+                .andThen(driveInX(0.35, Direction.Forward).until(() -> getSlope() < -12.25),
+                        driveInX(0.35, Direction.Forward).until(() -> getSlope() > 12.0),
+                        driveInX(0.35, Direction.Forward).until(() -> getSlope() < 5),
+                        driveInX(0.15, Direction.Forward).withTimeout(1.5));
     }
 
     public Command brake() {
@@ -193,7 +195,7 @@ public class SwerveDrive extends SwerveSubsystem {
      * @param percent The percent the robot will drive straight forward
      * @return The command that moves the robot in a straight path
      */
-    public Command driveStraightAutonomous(double percent, Direction facingDirection) {
+    public Command driveInX(double percent, Direction facingDirection) {
         var command = runOnce(io::resetThetaController)
                 .andThen(run(() -> {
                     driveStraightWithPower(percent, facingDirection);
