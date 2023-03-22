@@ -238,10 +238,14 @@ public class SwerveDrive extends SwerveSubsystem {
             // TODO Auto-generated catch block
             e.printStackTrace();
         }
-        if (grid != null && getDistanceFrom(grid) < 2.5)
+        if (grid != null && getDistanceFrom(grid) < 2.5) {
+            Logger.getInstance().recordOutput("SwerveDrive/DestinationGridPose", grid);
             return followToPose(grid);
-        if (loading != null && getDistanceFrom(loading) < 2.5)
+        }
+        if (loading != null && getDistanceFrom(loading) < 2.5) {
+            Logger.getInstance().recordOutput("SwerveDrive/DestinationLoadingPose", loading);
             return followToPose(loading);
+        }
         return Commands.none();
 
     }
