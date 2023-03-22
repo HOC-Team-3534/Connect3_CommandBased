@@ -20,16 +20,16 @@ public class VisionIOPhotonVision implements VisionIO {
     private final LoggedTunableNumber x_offset = new LoggedTunableNumber(
             "Vision/x_offset", Units.inchesToMeters(-12.5));
     private final LoggedTunableNumber y_offset = new LoggedTunableNumber(
-            "Vision/y_offset");
+            "Vision/y_offset", 0);
     private final LoggedTunableNumber z_offset = new LoggedTunableNumber(
             "Vision/x_offset", Units.inchesToMeters(8));
 
     private final LoggedTunableNumber roll_offset = new LoggedTunableNumber(
-            "Vision/roll_offset");
+            "Vision/roll_offset", 0);
     private final LoggedTunableNumber pitch_offset = new LoggedTunableNumber(
             "Vision/pitch_offset", Units.degreesToRadians(3));
     private final LoggedTunableNumber yaw_offset = new LoggedTunableNumber(
-            "Vision/yaw_offset");
+            "Vision/yaw_offset", 0);
 
     Transform3d cameraToRobot = new Transform3d(
             new Translation3d(x_offset.get(), y_offset.get(), z_offset.get()),
