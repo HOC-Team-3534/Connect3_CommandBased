@@ -157,8 +157,11 @@ public class SwerveDrive extends SwerveSubsystem {
     }
 
     public Command squareUp() {
-        // put from -180 to 180
-        var ang = inputs.headingDegs;
+        var ang = inputs.headingDegs % 360;
+        if (ang < -180)
+            ang += 360;
+        if (ang > 180)
+            ang -= 360;
         if (ang < 45 && ang > -45)
             return driveWithFixedAngle(new Rotation2d());
         else if (ang > 135 || ang < -135)
