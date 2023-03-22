@@ -11,6 +11,7 @@ import frc.robot.subsystems.elevator.Elevator;
 import frc.robot.subsystems.flipper.Flipper;
 import frc.robot.subsystems.intake.Intake;
 import frc.robot.subsystems.swerveDrive.SwerveDrive;
+import frc.robot.subsystems.swerveDrive.SwerveDrive.Direction;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 
@@ -57,7 +58,7 @@ public final class Autos {
   public static Command place2andBalanceFromSides(SwerveDrive swerve, Intake intake, Elevator elevator,
       Flipper flipper, Path path1) {
     return moveElevatorAndPlace(RobotContainer.getHeightAutonomous(), elevator, flipper)
-        .andThen(driveWithIntake(path1, intake, swerve, true), swerve.balanceForward(),
+        .andThen(driveWithIntake(path1, intake, swerve, true), swerve.balance(Direction.Backward, Direction.Backward),
             intake.shootAuton().withTimeout(1.0));
   }
 

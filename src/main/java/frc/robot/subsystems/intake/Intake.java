@@ -54,7 +54,7 @@ public class Intake extends SubsystemBase {
         return startEnd(() -> setBothMotors(-0.20), () -> setBothMotors(0));
     }
 
-    public Command shootExtakeAuton() {
+    public Command shootAuton() {
         if (testing)
             return Commands.none();
         return startEnd(() -> setBothMotors(-0.50), () -> setBothMotors(0));
