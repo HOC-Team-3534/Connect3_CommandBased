@@ -95,7 +95,7 @@ public class SwerveDriveIO3534Swerve implements SwerveDriveIO {
     }
 
     @Override
-    public void driveStraight(double percent) {
+    public void driveWithAngle(double percent) {
         dt.setModuleStates(new SwerveInput(percent, 0, 0), new Rotation2d(), false, resetThetaController);
         resetThetaController = false;
     }

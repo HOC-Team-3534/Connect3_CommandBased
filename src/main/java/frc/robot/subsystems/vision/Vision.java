@@ -9,15 +9,12 @@ import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 import frc.robot.subsystems.swerveDrive.SwerveDrive.GridPosition;
 
 import java.io.IOException;
 import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.concurrent.Callable;
 import java.util.function.BiConsumer;
 
@@ -25,7 +22,7 @@ import org.littletonrobotics.junction.Logger;
 
 public class Vision extends SubsystemBase {
     final Translation2d shiftAway = new Translation2d(
-            Units.inchesToMeters(14.0 + 12.0) + Constants.Drive.Known.WHEELBASE_METERS / 2.0,
+            Units.inchesToMeters(14.0 + 12.0) + Constants.Drive.Known.TOTAL_ROBOT_LENGTH / 2.0,
             0);
     final Translation2d shiftSideways = new Translation2d(0, Units.inchesToMeters(22.0));
     final Callable<Pose2d> robotPose;

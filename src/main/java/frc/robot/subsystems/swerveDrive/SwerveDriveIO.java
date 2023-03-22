@@ -39,7 +39,7 @@ public interface SwerveDriveIO {
     public default void setKnownPose(Pose2d pose) {
     }
 
-    public default void driveStraight(double percent) {
+    public default void driveWithAngle(double percent) {
     }
 
     public default void resetThetaController() {

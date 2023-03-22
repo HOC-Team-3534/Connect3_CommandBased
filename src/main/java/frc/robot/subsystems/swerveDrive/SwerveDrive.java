@@ -60,45 +60,43 @@ public class SwerveDrive extends SwerveSubsystem {
             Logger.getInstance().recordOutput("SwerveDrive/Pose", pose);
     }
 
-    public Command balanceForward() {
-        /* height of charge station 9 1/8 inches or ~0.232 meters off the ground */
-        var command = (driveStraightAutonomous(0).until(this::isFacingForward))
-                .andThen(driveStraightAutonomous(0.25).until(() -> getSlope() < -13.25),
-                        driveStraightAutonomous(0.25).until(() -> getSlope() > -13.0),
-                        fineTuneBalance());
+    public Command balance(Direction facingDirection, Direction driveDirection) {
+        var driveSign = driveDirection.equals(Direction.Forward) ? 1 : -1;
 
-        command.setName("Balance Forward");
-        return command;
-    }
-
-    public Command balanceBackward() {
-        var command = (driveStraightAutonomous(0).until(this::isFacingForward))
-                .andThen(driveStraightAutonomous(-0.25).until(() -> getSlope() > 13.25),
-                        driveStraightAutonomous(-0.25).until(() -> getSlope() < 13.0),
-                        fineTuneBalance());
+        var command = (driveStraightAutonomous(0, facingDirection).until(() -> isFacingDirection(facingDirection)))
+                .andThen(
+                        driveStraightAutonomous(0.25 * driveSign, facingDirection)
+                                .until(() -> Math.abs(getSlope()) > 13.25),
+                        driveStraightAutonomous(0.25 * driveSign, facingDirection)
+                                .until(() -> Math.abs(getSlope()) < 13.0),
+                        fineTuneBalance(facingDirection));
 
         command.setName("Balance Backward");
         return command;
     }
 
-    private Command fineTuneBalance() {
+    private Command fineTuneBalance(Direction facingDirection) {
+
         return runOnce(io::DriveInBrake).andThen(run(() -> {
             if (getSlope() > 5)
-                driveStraightWithPower(-0.08);
+                driveStraightWithPower(-0.08, facingDirection);
             else if (getSlope() < -5)
-                driveStraightWithPower(0.08);
+                driveStraightWithPower(0.08, facingDirection);
             else
-                driveStraightWithPower(0.0);
+                driveStraightWithPower(0.0, facingDirection);
         }));
     }
 
     public Command balanceAcrossAndBack() {
-        return driveStraightAutonomous(0).until(this::isFacingForward)
-                .andThen(driveStraightAutonomous(0.35).until(() -> getSlope() < -12.25),
-                        driveStraightAutonomous(0.35).until(() -> getSlope() > 12.0),
-                        driveStraightAutonomous(0.35).until(() -> getSlope() < 5),
-                        driveStraightAutonomous(0.15).withTimeout(1.5),
-                        balanceBackward());
+        return driveAcross().andThen(balance(Direction.Forward, Direction.Backward));
+    }
+
+    public Command driveAcross() {
+        return driveStraightAutonomous(0, Direction.Forward).until(() -> isFacingDirection(Direction.Forward))
+                .andThen(driveStraightAutonomous(0.35, Direction.Forward).until(() -> getSlope() < -12.25),
+                        driveStraightAutonomous(0.35, Direction.Forward).until(() -> getSlope() > 12.0),
+                        driveStraightAutonomous(0.35, Direction.Forward).until(() -> getSlope() < 5),
+                        driveStraightAutonomous(0.15, Direction.Forward).withTimeout(1.5));
     }
 
     public Command brake() {
@@ -117,8 +115,8 @@ public class SwerveDrive extends SwerveSubsystem {
         return inputs.pitchDegs + ((RobotType.PBOT == Constants.ROBOTTYPE) ? -3.0 : -0.5);
     }
 
-    public boolean isFacingForward() {
-        return Math.abs(inputs.headingDegs) < 2.0;
+    public boolean isFacingDirection(Direction direction) {
+        return Math.abs(inputs.headingDegs - direction.rot.getDegrees() % 360) < 2.0;
     }
 
     public Command driveOnPath(Path path, boolean resetToInitial, String eventName, Command eventCommand) {
@@ -194,18 +192,18 @@ public class SwerveDrive extends SwerveSubsystem {
      * @param percent The percent the robot will drive straight forward
      * @return The command that moves the robot in a straight path
      */
-    public Command driveStraightAutonomous(double percent) {
+    public Command driveStraightAutonomous(double percent, Direction facingDirection) {
         var command = runOnce(io::resetThetaController)
                 .andThen(run(() -> {
-                    driveStraightWithPower(percent);
+                    driveStraightWithPower(percent, facingDirection);
                 }));
 
         command.setName("Auton Drive Straight");
         return command;
     }
 
-    private void driveStraightWithPower(double percent) {
-        io.driveStraight(percent);
+    private void driveStraightWithPower(double percent, Direction facingDirection) {
+        io.driveWithAngle(percent, facingDirection.rot);
     }
 
     private double getDistanceFrom(Pose2d pose) {
@@ -277,6 +275,16 @@ public class SwerveDrive extends SwerveSubsystem {
             return GridPosition.Right;
         } else {
             return GridPosition.Center;
+        }
+    }
+
+    public enum Direction {
+        Forward(0), Backward(180);
+
+        public Rotation2d rot;
+
+        Direction(double deg) {
+            this.rot = Rotation2d.fromDegrees(deg);
         }
     }
 

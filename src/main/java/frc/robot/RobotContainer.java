@@ -118,11 +118,8 @@ public class RobotContainer {
 						Path.LoadingZone_PickUp_PlaceSecond,
 						Path.LoadingZone_PickUp_Third));
 		autonChooser.addOption("Loading Zone Place Pickup Second and Balance",
-				() -> Autos.place1andBalanceFromSides(swerveDrive, intake,
-						elevator, flipper, Path.LoadingZone_PickUp_PlaceWhileMove_BalanceForward));
-		autonChooser.addOption("Loading Zone Place 2 While Moving and Balance",
-				() -> Autos.place2FromSidesAndBalance(swerveDrive,
-						intake, elevator, flipper, Path.LoadingZone_PickUp_Balance));
+				() -> Autos.place2andBalanceFromSides(swerveDrive, intake,
+						elevator, flipper, Path.LoadingZone_PickUp_Balance));
 		autonChooser.addOption("Loading Zone Place and Drive Forward",
 				() -> Autos.place1AndDriveForwardFromSides(swerveDrive, elevator, flipper,
 						Path.LoadingZone_DriveForward));
@@ -135,11 +132,8 @@ public class RobotContainer {
 						Path.BumpSide_PickUp_PlaceSecond,
 						Path.BumpSide_PickUp_Third));
 		autonChooser.addOption("Bump Side Place Pickup Second and Balance",
-				() -> Autos.place1andBalanceFromSides(swerveDrive, intake,
+				() -> Autos.place2andBalanceFromSides(swerveDrive, intake,
 						elevator, flipper, Path.BumpSide_PickUp_Balance));
-		autonChooser.addOption("Bump Side Place 2 While Moving and Balance",
-				() -> Autos.place2FromSidesAndBalance(swerveDrive,
-						intake, elevator, flipper, Path.BumpSide_PickUp_PlaceWhileMove_BalanceForward));
 		autonChooser.addOption("Bump Side Place and Drive Forward", () -> Autos
 				.place1AndDriveForwardFromSides(swerveDrive, elevator, flipper, Path.BumpSide_DriveForward));
 

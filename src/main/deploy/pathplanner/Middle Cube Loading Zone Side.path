@@ -2,13 +2,13 @@
   "waypoints": [
     {
       "anchorPoint": {
-        "x": 1.699789542436228,
-        "y": 4.9242715628288405
+        "x": 5.707917558692261,
+        "y": 3.3496498421568277
       },
       "prevControl": null,
       "nextControl": {
-        "x": 2.6997895424362275,
-        "y": 4.9242715628288405
+        "x": 6.707917558692265,
+        "y": 3.3496498421568277
       },
       "holonomicAngle": 0,
       "isReversal": false,
@@ -24,18 +24,18 @@
     },
     {
       "anchorPoint": {
-        "x": 6.9533001923146704,
-        "y": 4.609347218694437
+        "x": 6.781523277332269,
+        "y": 3.406908813817628
       },
       "prevControl": {
-        "x": 5.307104757066657,
-        "y": 4.738179904931239
+        "x": 6.399307351104934,
+        "y": 3.4785742999852536
       },
       "nextControl": {
-        "x": 5.307104757066657,
-        "y": 4.738179904931239
+        "x": 6.399307351104934,
+        "y": 3.4785742999852536
       },
-      "holonomicAngle": 0,
+      "holonomicAngle": 0.0,
       "isReversal": true,
       "velOverride": null,
       "isLocked": false,
@@ -49,40 +49,15 @@
     },
     {
       "anchorPoint": {
-        "x": 1.814307485757829,
-        "y": 3.8506658441888315
+        "x": 5.392993214557857,
+        "y": 2.705486410972822
       },
       "prevControl": {
-        "x": 1.7713632570122286,
-        "y": 4.423255560796836
-      },
-      "nextControl": {
-        "x": 1.8422252889766972,
-        "y": 3.478428467937255
-      },
-      "holonomicAngle": 0.0,
-      "isReversal": false,
-      "velOverride": null,
-      "isLocked": false,
-      "isStopPoint": false,
-      "stopEvent": {
-        "names": [],
-        "executionBehavior": "parallel",
-        "waitBehavior": "none",
-        "waitTime": 0
-      }
-    },
-    {
-      "anchorPoint": {
-        "x": 2.587303603178635,
+        "x": 6.3663957327914655,
         "y": 3.263761384665627
       },
-      "prevControl": {
-        "x": 2.200805544468232,
-        "y": 3.4212235567328277
-      },
       "nextControl": null,
-      "holonomicAngle": 0.0,
+      "holonomicAngle": 180.0,
       "isReversal": false,
       "velOverride": null,
       "isLocked": false,
@@ -95,12 +70,5 @@
       }
     }
   ],
-  "markers": [
-    {
-      "position": 1.9,
-      "names": [
-        "place"
-      ]
-    }
-  ]
+  "markers": []
 }

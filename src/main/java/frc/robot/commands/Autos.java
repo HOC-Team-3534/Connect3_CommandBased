@@ -36,7 +36,7 @@ public final class Autos {
 
     var command = moveElevatorAndPlace(RobotContainer.getHeightAutonomous(), elevator, flipper)
         .andThen(driveWithIntake(path1, intake, swerve, true))
-        .andThen(moveElevatorAndPlace(RobotContainer.getHeightAutonomous(), elevator, flipper));
+        .andThen(intake.extakeAuton().withTimeout(1.0));
     if (path2 != null)
       command = command.andThen(driveWithIntake(path2, intake, swerve, false));
     return command;
@@ -47,27 +47,6 @@ public final class Autos {
    * @param swerve   the swerve drive subsystem
    * @param intake   the intake subsystem
    * @param elevator the elevator subsystem
-   * @param gripper  the gripper subsystem
-   * @param flipper  the flipper subsystem
-   * @param path1    the path to follow after placing the first piece, MUST end
-   *                 at the grid side of charge station and have a "place" event
-   * @return autonomous command to place 2 elements and optionally pickup 3rd
-   *         piece from one of the sides
-   */
-  public static Command place2FromSidesAndBalance(SwerveDrive swerve, Intake intake, Elevator elevator,
-      Flipper flipper, Path path1) {
-    return moveElevatorAndPlace(RobotContainer.getHeightAutonomous(), elevator, flipper)
-        .andThen(driveWithIntakeWithEvent(path1, intake, swerve, true, "place",
-            moveElevatorAndPlace(Height.OFF, elevator, flipper)))
-        .andThen(swerve.balanceForward());
-  }
-
-  /**
-   * 
-   * @param swerve   the swerve drive subsystem
-   * @param intake   the intake subsystem
-   * @param elevator the elevator subsystem
-   * @param gripper  the gripper subsystem
    * @param flipper  the flipper subsystem
    * @param path1    the path to follow after placing the first piece, MUST end
    *                 forward of the charge station across from the center grid
@@ -75,10 +54,11 @@ public final class Autos {
    * @return autonomous command to place 1 elements and balance on the charge
    *         station from one of the sides
    */
-  public static Command place1andBalanceFromSides(SwerveDrive swerve, Intake intake, Elevator elevator,
+  public static Command place2andBalanceFromSides(SwerveDrive swerve, Intake intake, Elevator elevator,
       Flipper flipper, Path path1) {
     return moveElevatorAndPlace(RobotContainer.getHeightAutonomous(), elevator, flipper)
-        .andThen(driveWithIntake(path1, intake, swerve, true), swerve.balanceBackward());
+        .andThen(driveWithIntake(path1, intake, swerve, true), swerve.balanceForward(),
+            intake.shootAuton().withTimeout(1.0));
   }
 
   public static Command place1AndDriveForwardFromSides(SwerveDrive swerve, Elevator elevator,
@@ -92,7 +72,6 @@ public final class Autos {
    * @param swerve   the swerve drive subsystem
    * @param intake   the intake subsystem
    * @param elevator the elevator subsystem
-   * @param gripper  the gripper subsystem
    * @param flipper  the flipper subsystem
    * @return autonomous command to place 1 elements, cross the charge station, and
    *         balance on the charge
@@ -110,7 +89,6 @@ public final class Autos {
    * 
    * @param height   the desired height to place the game element
    * @param elevator the elevator subsystem
-   * @param gripper  the gripper subsystem
    * @param flipper  the flipper subsystem
    * @return the autonomomous combo command to moe the elevator to desired height
    *         and then place the game element and bring the elevator back down
@@ -127,27 +105,11 @@ public final class Autos {
    * @param intake        the intake subsystem
    * @param swerve        the swerve drive subsystem
    * @param resetToIntial should the position be reset to the start of the path
-   * @param eventName     name of the event from path plannner
-   * @param eventCommand  the command to run when the event on the path happens
-   * @return the autonomous combo command to drive along a path while turning on
-   *         the intake
-   */
-  private static Command driveWithIntakeWithEvent(Path path, Intake intake, SwerveDrive swerve, boolean resetToIntial,
-      String eventName, Command eventCommand) {
-    return Commands.deadline(swerve.driveOnPath(path, resetToIntial, eventName, eventCommand), intake.runIntakeAuton());
-  }
-
-  /**
-   * 
-   * @param path          the path to follow
-   * @param intake        the intake subsystem
-   * @param swerve        the swerve drive subsystem
-   * @param resetToIntial should the position be reset to the start of the path
    * @return the autonomous combo command to drive along a path while turning on
    *         the intake
    */
   private static Command driveWithIntake(Path path, Intake intake, SwerveDrive swerve, boolean resetToIntial) {
-    return Commands.deadline(swerve.driveOnPath(path, resetToIntial), intake.runIntakeAuton());
+    return Commands.deadline(swerve.driveOnPath(path, resetToIntial), intake.runIntakeAuton().asProxy());
   }
 
   private Autos() {
