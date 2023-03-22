@@ -16,6 +16,7 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.Constants.RobotType;
@@ -208,6 +209,19 @@ public class SwerveDrive extends SwerveSubsystem {
 
     private double getDistanceFrom(Pose2d pose) {
         return getPose().getTranslation().getDistance(pose.getTranslation());
+    }
+
+    private boolean checkCloseToPose(Pose2d pose) {
+        var poseComp = getPose().relativeTo(pose);
+        return poseComp.getTranslation().getNorm() < 0.01 && Math.abs(poseComp.getRotation().getDegrees()) < 2;
+    }
+
+    public Command correctToStartAndThenDriveOnPath(Path path) {
+        var traj = path.getPath();
+        var initialState = PathPlannerTrajectory.transformStateForAlliance(traj.getInitialState(),
+                DriverStation.getAlliance());
+        var initialPose = new Pose2d(initialState.poseMeters.getTranslation(), initialState.holonomicRotation);
+        return followToPose(initialPose).until(() -> checkCloseToPose(initialPose)).andThen(driveOnPath(traj, false));
     }
 
     public Command DTMFollowToPose() {

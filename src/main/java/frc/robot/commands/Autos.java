@@ -22,7 +22,6 @@ public final class Autos {
    * @param swerve   the swerve drive subsystem
    * @param intake   the intake subsystem
    * @param elevator the elevator subsystem
-   * @param gripper  the gripper subsystem
    * @param flipper  the flipper subsystem
    * @param path1    the path to follow after placing the first piece, MUST end
    *                 at a grid place location
@@ -36,8 +35,7 @@ public final class Autos {
       Flipper flipper, Path path1, Path path2) {
 
     var command = moveElevatorAndPlace(RobotContainer.getHeightAutonomous(), elevator, flipper)
-        .andThen(driveWithIntake(path1, intake, swerve, true))
-        .andThen(intake.extakeAuton().withTimeout(1.0));
+        .andThen(driveWithIntake(path1, intake, swerve, true), intake.extakeAuton().withTimeout(1.0));
     if (path2 != null)
       command = command.andThen(driveWithIntake(path2, intake, swerve, false));
     return command;
@@ -84,6 +82,13 @@ public final class Autos {
 
     return moveElevatorAndPlace(RobotContainer.getHeightAutonomous(), elevator, flipper)
         .andThen(swerve.balanceAcrossAndBack());
+  }
+
+  public static Command place2andBalanceFromCenter(SwerveDrive swerve, Intake intake, Elevator elevator,
+      Flipper flipper, Path cubePath) {
+    return moveElevatorAndPlace(RobotContainer.getHeightAutonomous(), elevator, flipper).andThen(swerve.driveAcross(),
+        swerve.correctToStartAndThenDriveOnPath(cubePath), swerve.balance(Direction.Backward, Direction.Backward),
+        intake.shootAuton());
   }
 
   /**
