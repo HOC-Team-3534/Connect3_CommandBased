@@ -18,9 +18,9 @@ import swerve.SDSModuleConfiguration;
  * wherever the constants are needed, to reduce verbosity.
  */
 public final class Constants {
-  public static RobotType ROBOTTYPE = RobotType.PBOT;
+  public static RobotType ROBOTTYPE = RobotType.CBOT;
   public static double LOOP_PERIOD_SECS = 0.020;
-  public static final boolean tuningMode = false;
+  public static final boolean tuningMode = true;
   public static final boolean replayMode = false;
 
   public enum RobotType {

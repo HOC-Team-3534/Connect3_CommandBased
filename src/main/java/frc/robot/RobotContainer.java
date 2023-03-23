@@ -27,6 +27,7 @@ import frc.robot.subsystems.swerveDrive.SwerveDriveIO3534Swerve;
 import frc.robot.subsystems.vision.Vision;
 import frc.robot.subsystems.vision.VisionIO;
 import frc.robot.subsystems.vision.VisionIOLimelight;
+import frc.robot.subsystems.vision.VisionIOPhotonVision;
 import frc.robot.util.Alert;
 import frc.robot.util.Alert.AlertType;
 
@@ -35,6 +36,7 @@ import java.util.concurrent.Callable;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 
 import edu.wpi.first.math.filter.SlewRateLimiter;
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
@@ -75,7 +77,7 @@ public class RobotContainer {
 	public RobotContainer() {
 		if (Robot.isSimulation()) {
 			swerveDrive = new SwerveDrive(new SwerveDriveIO() {
-			}, vision::getGridPose, vision::getLoadingZonePose);
+			});
 			intake = new Intake(new IntakeIO() {
 			});
 			elevator = new Elevator(new ElevatorIO() {
@@ -87,13 +89,12 @@ public class RobotContainer {
 			vision = new Vision(swerveDrive::getPose, swerveDrive::updatePoseWithVision, new VisionIO() {
 			});
 		} else {
-			swerveDrive = new SwerveDrive(new SwerveDriveIO3534Swerve(), vision::getGridPose,
-					vision::getLoadingZonePose);
+			swerveDrive = new SwerveDrive(new SwerveDriveIO3534Swerve());
 			intake = new Intake(new IntakeIOFalcon500s());
 			elevator = new Elevator(new ElevatorIOFalcon500());
 			flipper = new Flipper(new FlipperIOTalonSRX());
 			lights = new Lights(new LightsIORevBlinkin());
-			vision = new Vision(swerveDrive::getPose, swerveDrive::updatePoseWithVision, new VisionIOLimelight());
+			vision = new Vision(swerveDrive::getPose, swerveDrive::updatePoseWithVision, new VisionIOPhotonVision());
 		}
 
 		// Configure the trigger bindings
@@ -197,12 +198,22 @@ public class RobotContainer {
 		// The following triggered commands are for debug purposes only
 		TGR.Characterize.tgr().whileTrue(swerveDrive.characterizeDrive(DriveCharacterization.QUASIASTIC_VOLTAGE,
 				DriveCharacterization.QUASIASTIC_DURATION));
-		TGR.PositiveVoltage.tgr().whileTrue(elevator.elevatorVoltage(0.15));
-		TGR.NegativeVoltage.tgr().whileTrue(elevator.elevatorVoltage(-0.15));
+		TGR.PositiveVoltage.tgr().whileTrue(flipper.flipperVoltage(1.0));
+		TGR.NegativeVoltage.tgr().whileTrue(flipper.flipperVoltage(-1.0));
 
 		new Trigger(() -> DriverStation.getMatchTime() < 2.0 &&
 				Robot.isTeleopEnabled).onTrue(swerveDrive.brake());
 
+	}
+
+	public static Pose2d visionGridPose() {
+
+		return vision.getGridPose(swerveDrive.getGridPositionRequest());
+
+	}
+
+	public static Pose2d visionLoadingPose() {
+		return vision.getLoadingZonePose();
 	}
 
 	/**

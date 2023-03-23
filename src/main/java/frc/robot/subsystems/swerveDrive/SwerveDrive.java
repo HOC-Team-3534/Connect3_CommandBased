@@ -24,6 +24,7 @@ import frc.robot.RobotContainer.AXS;
 import frc.robot.RobotContainer.TGR;
 import frc.robot.Constants;
 import frc.robot.Path;
+import frc.robot.RobotContainer;
 import swerve.SwerveInput;
 import swerve.SwerveSubsystem;
 
@@ -33,14 +34,10 @@ public class SwerveDrive extends SwerveSubsystem {
 
     double timeCharacterizing;
     final ProfiledPIDController xController, yController, thetaController;
-    final Function<GridPosition, Pose2d> gridPoseFunction;
-    final Callable<Pose2d> loadingPoseCallable;
 
-    public SwerveDrive(SwerveDriveIO io, Function<GridPosition, Pose2d> gp, Callable<Pose2d> lp) {
+    public SwerveDrive(SwerveDriveIO io) {
         super(io.getDriveTrainModel());
         this.io = io;
-        this.gridPoseFunction = gp;
-        this.loadingPoseCallable = lp;
 
         xController = new ProfiledPIDController(1.75, 0, 17.5, new TrapezoidProfile.Constraints(3.5, 2.0));
         yController = new ProfiledPIDController(1.75, 0, 17.5, new TrapezoidProfile.Constraints(3.5, 2.0));
@@ -230,10 +227,10 @@ public class SwerveDrive extends SwerveSubsystem {
     }
 
     public Command DTMFollowToPose() {
-        var grid = gridPoseFunction.apply(getGridPositionRequest());
+        var grid = RobotContainer.visionGridPose();
         Pose2d loading = null;
         try {
-            loading = loadingPoseCallable.call();
+            loading = RobotContainer.visionLoadingPose();
         } catch (Exception e) {
             // TODO Auto-generated catch block
             e.printStackTrace();

@@ -15,7 +15,7 @@ public class FlipperIOTalonSRX implements FlipperIO {
 
         flipper = new WPI_TalonSRX(19);
         flipper.configFactoryDefault();
-        final boolean isInverted = (Constants.ROBOTTYPE == RobotType.PBOT) ? false : true;
+        final boolean isInverted = (Constants.ROBOTTYPE == RobotType.PBOT) ? false : false;
         flipper.setInverted(isInverted);
     }
 
