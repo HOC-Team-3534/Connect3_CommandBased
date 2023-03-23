@@ -2,8 +2,6 @@ package frc.robot.subsystems.swerveDrive;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.Callable;
-import java.util.function.Function;
 
 import org.littletonrobotics.junction.Logger;
 
@@ -17,6 +15,7 @@ import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.Constants.RobotType;
@@ -34,6 +33,8 @@ public class SwerveDrive extends SwerveSubsystem {
 
     double timeCharacterizing;
     final ProfiledPIDController xController, yController, thetaController;
+
+    Field2d field = new Field2d();
 
     public SwerveDrive(SwerveDriveIO io) {
         super(io.getDriveTrainModel());
@@ -54,8 +55,10 @@ public class SwerveDrive extends SwerveSubsystem {
         super.periodic();
 
         var pose = getPose();
-        if (pose != null)
+        if (pose != null) {
             Logger.getInstance().recordOutput("SwerveDrive/Pose", pose);
+            RobotContainer.getField().setRobotPose(pose);
+        }
     }
 
     public Command balance(Direction facingDirection, Direction driveDirection) {

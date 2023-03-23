@@ -5,21 +5,18 @@ import org.photonvision.PhotonCamera;
 import org.photonvision.PhotonUtils;
 
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
-import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.util.Units;
-import edu.wpi.first.wpilibj.smartdashboard.Field2d;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants;
+import frc.robot.RobotContainer;
 import frc.robot.util.LoggedTunableNumber;
 
 public class VisionIOPhotonVision implements VisionIO {
         PhotonCamera camera = new PhotonCamera("3534camera");
         VisionData visionData;
-        Field2d field = new Field2d();
 
         private final LoggedTunableNumber x_offset = new LoggedTunableNumber(
                         "Vision/x_offset", Units.inchesToMeters(-12.5));
@@ -43,10 +40,6 @@ public class VisionIOPhotonVision implements VisionIO {
                         "Vision/DistanceFromTagToCenterRobotMeters", Units.inchesToMeters(43.0));
 
         final double lengthOfField = 16.542;
-
-        public VisionIOPhotonVision() {
-                SmartDashboard.putData(field);
-        }
 
         @Override
         public void updateInputs(AprilTagFieldLayout layout, VisionIOInputs inputs) {
@@ -72,6 +65,8 @@ public class VisionIOPhotonVision implements VisionIO {
 
                         Logger.getInstance().recordOutput("Vision/RawRobotPose3d", robotPose);
 
+                        RobotContainer.getField().getObject("Vision Robot Pose").setPose(robotPose.toPose2d());
+
                         System.arraycopy(inputs.pose, 0, getPoseArray(robotPose), 0, 6);
 
                         var distanceTransform = (tagPose.getX() < lengthOfField / 2) ? distanceFromTag.get()
@@ -85,6 +80,9 @@ public class VisionIOPhotonVision implements VisionIO {
                         Logger.getInstance().recordOutput("Vision/CalibrationPoseError", poseError);
 
                         System.arraycopy(inputs.callibrationPoseError, 0, getPoseArray(poseError), 0, 6);
+
+                        RobotContainer.getField().getObject("Vision Calibration Desired Robot Pose")
+                                        .setPose(calibrationDesiredPose.toPose2d());
 
                         /**
                          * This Calibration Error value assumes you are calibrating from straight in

@@ -38,6 +38,8 @@ import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.smartdashboard.Field2d;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.ProxyCommand;
@@ -69,6 +71,8 @@ public class RobotContainer {
 			"Auton Command");
 	private static final LoggedDashboardChooser<ELEVATOR.Height> heightChooser = new LoggedDashboardChooser<>(
 			"Auton Elevator Height");
+
+	static final Field2d field = new Field2d();
 
 	/**
 	 * The container for the robot. Contains subsystems, OI devices, and
@@ -159,6 +163,8 @@ public class RobotContainer {
 		heightChooser.addDefaultOption("Low", Height.OFF);
 		heightChooser.addOption("Mid", Height.MID);
 		heightChooser.addOption("High", Height.HIGH);
+
+		SmartDashboard.putData(field);
 	}
 
 	/**
@@ -214,6 +220,10 @@ public class RobotContainer {
 
 	public static Pose2d visionLoadingPose() {
 		return vision.getLoadingZonePose();
+	}
+
+	public static Field2d getField() {
+		return field;
 	}
 
 	/**
