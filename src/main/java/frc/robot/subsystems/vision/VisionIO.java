@@ -8,6 +8,8 @@ public interface VisionIO {
     @AutoLog
     public static class VisionIOInputs {
         public long aprilTagID;
+        public double[] pose;
+        public double[] callibrationPoseError;
     }
 
     public default void updateInputs(AprilTagFieldLayout layout, VisionIOInputs inputs) {

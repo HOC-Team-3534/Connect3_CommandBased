@@ -72,6 +72,8 @@ public class VisionIOPhotonVision implements VisionIO {
 
                         Logger.getInstance().recordOutput("Vision/RawRobotPose3d", robotPose);
 
+                        System.arraycopy(inputs.pose, 0, getPoseArray(robotPose), 0, 6);
+
                         var distanceTransform = (tagPose.getX() < lengthOfField / 2) ? distanceFromTag.get()
                                         : -distanceFromTag.get();
                         var transformTagToCalibrationPosition = new Transform3d(
@@ -81,6 +83,8 @@ public class VisionIOPhotonVision implements VisionIO {
                                         .transformBy(transformTagToCalibrationPosition);
                         var poseError = robotPose.relativeTo(calibrationDesiredPose);
                         Logger.getInstance().recordOutput("Vision/CalibrationPoseError", poseError);
+
+                        System.arraycopy(inputs.callibrationPoseError, 0, getPoseArray(poseError), 0, 6);
 
                         /**
                          * This Calibration Error value assumes you are calibrating from straight in
@@ -109,5 +113,16 @@ public class VisionIOPhotonVision implements VisionIO {
                                         new Translation3d(x_offset.get(), y_offset.get(), z_offset.get()),
                                         new Rotation3d(roll_offset.get(), pitch_offset.get(), yaw_offset.get()));
                 }
+        }
+
+        public static double[] getPoseArray(Pose3d pose) {
+                double[] poseArray = new double[6];
+                poseArray[0] = pose.getX();
+                poseArray[1] = pose.getY();
+                poseArray[2] = pose.getZ();
+                poseArray[3] = pose.getRotation().getX();
+                poseArray[4] = pose.getRotation().getY();
+                poseArray[5] = pose.getRotation().getZ();
+                return poseArray;
         }
 }

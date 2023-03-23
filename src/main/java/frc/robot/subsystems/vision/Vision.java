@@ -20,11 +20,10 @@ import java.util.concurrent.Callable;
 import java.util.function.BiConsumer;
 
 import org.littletonrobotics.junction.Logger;
-import org.littletonrobotics.junction.networktables.LoggedDashboardInput;
 
 public class Vision extends SubsystemBase {
     final Translation2d shiftAway = new Translation2d(
-            Units.inchesToMeters(14.0 + 12.0) + Constants.Drive.Known.TOTAL_ROBOT_LENGTH / 2.0,
+            Units.inchesToMeters(14.0 + 1.0) + Constants.Drive.Known.TOTAL_ROBOT_LENGTH / 2.0,
             0);
     final Translation2d shiftSideways = new Translation2d(0, Units.inchesToMeters(22.0));
     final Callable<Pose2d> robotPose;
@@ -49,12 +48,12 @@ public class Vision extends SubsystemBase {
                 case Blue:
                     aprilTagFieldLayout.setOrigin(AprilTagFieldLayout.OriginPosition.kBlueAllianceWallRightSide);
                     loadingZonePose = new Pose2d(lengthOfField - 2.105,
-                            widthOfField - Constants.Drive.Known.TOTAL_ROBOT_LENGTH / 2, Rotation2d.fromDegrees(-90));
+                            widthOfField - Constants.Drive.Known.TOTAL_ROBOT_LENGTH / 2, Rotation2d.fromDegrees(90));
                     break;
                 case Red:
                     aprilTagFieldLayout.setOrigin(AprilTagFieldLayout.OriginPosition.kRedAllianceWallRightSide);
                     loadingZonePose = new Pose2d(lengthOfField - 2.105, Constants.Drive.Known.TOTAL_ROBOT_LENGTH / 2,
-                            Rotation2d.fromDegrees(90));
+                            Rotation2d.fromDegrees(-90));
                     break;
                 default:
                     loadingZonePose = new Pose2d();
