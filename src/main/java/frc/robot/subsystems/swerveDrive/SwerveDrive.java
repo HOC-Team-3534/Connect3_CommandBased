@@ -58,19 +58,23 @@ public class SwerveDrive extends SwerveSubsystem {
         if (pose != null) {
             Logger.getInstance().recordOutput("SwerveDrive/Pose", pose);
             RobotContainer.getField().setRobotPose(pose);
+
         }
+        var gridPose = RobotContainer.visionGridPose();
+        if (gridPose != null)
+            RobotContainer.getField().getObject("Grid Pose").setPose(gridPose);
+        var loadingPose = RobotContainer.visionLoadingPose();
+        if (loadingPose != null)
+            RobotContainer.getField().getObject("Loading Pose").setPose(loadingPose);
     }
 
     public Command balance(Direction facingDirection, Direction driveDirection) {
         var driveSign = driveDirection.equals(Direction.Forward) ? 1 : -1;
 
-        var command = (driveInX(0, facingDirection).until(() -> isFacingDirection(facingDirection)))
-                .andThen(
-                        driveInX(0.25 * driveSign, facingDirection)
-                                .until(() -> Math.abs(getSlope()) > 13.25),
-                        driveInX(0.25 * driveSign, facingDirection)
-                                .until(() -> Math.abs(getSlope()) < 13.0),
-                        fineTuneBalance(facingDirection));
+        var command = (driveInX(0, facingDirection).until(() -> isFacingDirection(facingDirection))).andThen(
+                driveInX(0.25 * driveSign, facingDirection).until(() -> Math.abs(getSlope()) > 13.25),
+                driveInX(0.25 * driveSign, facingDirection).until(() -> Math.abs(getSlope()) < 13.0),
+                fineTuneBalance(facingDirection));
 
         command.setName("Balance");
         return command;
@@ -95,11 +99,11 @@ public class SwerveDrive extends SwerveSubsystem {
     }
 
     public Command driveAcross() {
-        return driveInX(0, Direction.Forward).until(() -> isFacingDirection(Direction.Forward))
-                .andThen(driveInX(0.35, Direction.Forward).until(() -> getSlope() < -12.25),
-                        driveInX(0.35, Direction.Forward).until(() -> getSlope() > 12.0),
-                        driveInX(0.35, Direction.Forward).until(() -> getSlope() < 5),
-                        driveInX(0.15, Direction.Forward).withTimeout(1.5));
+        return driveInX(0, Direction.Forward).until(() -> isFacingDirection(Direction.Forward)).andThen(
+                driveInX(0.35, Direction.Forward).until(() -> getSlope() < -12.25),
+                driveInX(0.35, Direction.Forward).until(() -> getSlope() > 12.0),
+                driveInX(0.35, Direction.Forward).until(() -> getSlope() < 5),
+                driveInX(0.15, Direction.Forward).withTimeout(1.5));
     }
 
     public Command brake() {
@@ -114,9 +118,7 @@ public class SwerveDrive extends SwerveSubsystem {
         io.updatePoseEstimationWithVision(pose, timestamp);
     }
 
-    public double getSlope() {
-        return inputs.pitchDegs + ((RobotType.PBOT == Constants.ROBOTTYPE) ? -3.0 : -0.5);
-    }
+    public double getSlope() { return inputs.pitchDegs + ((RobotType.PBOT == Constants.ROBOTTYPE) ? -3.0 : -0.5); }
 
     public boolean isFacingDirection(Direction direction) {
         return Math.abs(inputs.headingDegs - direction.rot.getDegrees() % 360) < 2.0;
@@ -145,8 +147,7 @@ public class SwerveDrive extends SwerveSubsystem {
      */
     public Command drive() {
         var command = run(() -> {
-            var swerveInput = new SwerveInput(AXS.Drive_ForwardBackward.getAxis(),
-                    AXS.Drive_LeftRight.getAxis(),
+            var swerveInput = new SwerveInput(AXS.Drive_ForwardBackward.getAxis(), AXS.Drive_LeftRight.getAxis(),
                     AXS.Drive_Rotation.getAxis());
 
             io.drive(swerveInput, TGR.Creep.bool(), false);
@@ -182,9 +183,7 @@ public class SwerveDrive extends SwerveSubsystem {
      */
     public Command driveWithFixedAngle(Rotation2d rot) {
         return runOnce(io::resetThetaController).andThen(run(() -> {
-            var swerveInput = new SwerveInput(AXS.Drive_ForwardBackward.getAxis(),
-                    AXS.Drive_LeftRight.getAxis(),
-                    0);
+            var swerveInput = new SwerveInput(AXS.Drive_ForwardBackward.getAxis(), AXS.Drive_LeftRight.getAxis(), 0);
 
             io.driveWithFixedAngle(swerveInput, rot, TGR.Creep.bool());
         }));
@@ -199,10 +198,9 @@ public class SwerveDrive extends SwerveSubsystem {
      * @return The command that moves the robot in a straight path
      */
     public Command driveInX(double percent, Direction facingDirection) {
-        var command = runOnce(io::resetThetaController)
-                .andThen(run(() -> {
-                    driveStraightWithPower(percent, facingDirection);
-                }));
+        var command = runOnce(io::resetThetaController).andThen(run(() -> {
+            driveStraightWithPower(percent, facingDirection);
+        }));
 
         command.setName("Auton Drive Straight");
         return command;
@@ -271,9 +269,7 @@ public class SwerveDrive extends SwerveSubsystem {
         return runOnce(() -> io.setChassisSpeeds(new ChassisSpeeds(), true));
     }
 
-    public Pose2d getPose() {
-        return io.getPose();
-    }
+    public Pose2d getPose() { return io.getPose(); }
 
     public Command resetPoseToVisionPose(Pose2d pose) {
         if (pose == null)
@@ -282,9 +278,7 @@ public class SwerveDrive extends SwerveSubsystem {
     }
 
     public enum GridPosition {
-        Left,
-        Center,
-        Right
+        Left, Center, Right
     }
 
     public GridPosition getGridPositionRequest() {
@@ -309,6 +303,14 @@ public class SwerveDrive extends SwerveSubsystem {
         Direction(double deg) {
             this.rot = Rotation2d.fromDegrees(deg);
         }
+    }
+
+    public static double[] getPoseArray(Pose2d pose) {
+        double[] poseArray = new double[3];
+        poseArray[0] = pose.getX();
+        poseArray[1] = pose.getY();
+        poseArray[3] = pose.getRotation().getDegrees();
+        return poseArray;
     }
 
 }

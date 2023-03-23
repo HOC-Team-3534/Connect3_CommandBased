@@ -18,22 +18,18 @@ public class VisionIOPhotonVision implements VisionIO {
         PhotonCamera camera = new PhotonCamera("3534camera");
         VisionData visionData;
 
-        private final LoggedTunableNumber x_offset = new LoggedTunableNumber(
-                        "Vision/x_offset", Units.inchesToMeters(-12.5));
-        private final LoggedTunableNumber y_offset = new LoggedTunableNumber(
-                        "Vision/y_offset", 0);
-        private final LoggedTunableNumber z_offset = new LoggedTunableNumber(
-                        "Vision/x_offset", Units.inchesToMeters(8));
+        private final LoggedTunableNumber x_offset = new LoggedTunableNumber("Vision/x_offset",
+                        Units.inchesToMeters(-12.5));
+        private final LoggedTunableNumber y_offset = new LoggedTunableNumber("Vision/y_offset", 0);
+        private final LoggedTunableNumber z_offset = new LoggedTunableNumber("Vision/x_offset",
+                        Units.inchesToMeters(8));
 
-        private final LoggedTunableNumber roll_offset = new LoggedTunableNumber(
-                        "Vision/roll_offset", 0);
-        private final LoggedTunableNumber pitch_offset = new LoggedTunableNumber(
-                        "Vision/pitch_offset", Units.degreesToRadians(3));
-        private final LoggedTunableNumber yaw_offset = new LoggedTunableNumber(
-                        "Vision/yaw_offset", 0);
+        private final LoggedTunableNumber roll_offset = new LoggedTunableNumber("Vision/roll_offset", 0);
+        private final LoggedTunableNumber pitch_offset = new LoggedTunableNumber("Vision/pitch_offset",
+                        Units.degreesToRadians(3));
+        private final LoggedTunableNumber yaw_offset = new LoggedTunableNumber("Vision/yaw_offset", 0);
 
-        Transform3d cameraToRobot = new Transform3d(
-                        new Translation3d(x_offset.get(), y_offset.get(), z_offset.get()),
+        Transform3d cameraToRobot = new Transform3d(new Translation3d(x_offset.get(), y_offset.get(), z_offset.get()),
                         new Rotation3d(roll_offset.get(), pitch_offset.get(), yaw_offset.get()));
 
         private final LoggedTunableNumber distanceFromTag = new LoggedTunableNumber(
@@ -65,31 +61,33 @@ public class VisionIOPhotonVision implements VisionIO {
 
                         Logger.getInstance().recordOutput("Vision/RawRobotPose3d", robotPose);
 
-                        RobotContainer.getField().getObject("Vision Robot Pose").setPose(robotPose.toPose2d());
-
                         System.arraycopy(inputs.pose, 0, getPoseArray(robotPose), 0, 6);
 
-                        var distanceTransform = (tagPose.getX() < lengthOfField / 2) ? distanceFromTag.get()
-                                        : -distanceFromTag.get();
-                        var transformTagToCalibrationPosition = new Transform3d(
-                                        new Translation3d(distanceTransform, 0, -tagPose.getZ()),
-                                        new Rotation3d());
-                        var calibrationDesiredPose = tagPose
-                                        .transformBy(transformTagToCalibrationPosition);
-                        var poseError = robotPose.relativeTo(calibrationDesiredPose);
-                        Logger.getInstance().recordOutput("Vision/CalibrationPoseError", poseError);
+                        if (Constants.tuningMode) {
 
-                        System.arraycopy(inputs.callibrationPoseError, 0, getPoseArray(poseError), 0, 6);
+                                RobotContainer.getField().getObject("Vision Robot Pose").setPose(robotPose.toPose2d());
 
-                        RobotContainer.getField().getObject("Vision Calibration Desired Robot Pose")
-                                        .setPose(calibrationDesiredPose.toPose2d());
+                                var distanceTransform = (tagPose.getX() < lengthOfField / 2) ? distanceFromTag.get()
+                                                : -distanceFromTag.get();
+                                var transformTagToCalibrationPosition = new Transform3d(
+                                                new Translation3d(distanceTransform, 0, -tagPose.getZ()),
+                                                new Rotation3d());
+                                var calibrationDesiredPose = tagPose.transformBy(transformTagToCalibrationPosition);
+                                var poseError = robotPose.relativeTo(calibrationDesiredPose);
+                                Logger.getInstance().recordOutput("Vision/CalibrationPoseError", poseError);
 
-                        /**
-                         * This Calibration Error value assumes you are calibrating from straight in
-                         * front of the april tag you are looking at
-                         * where the distance between the center of the robot and the april tag is set
-                         * by the tunable number "DistanceFromTagToCenterRobotMeters"
-                         */
+                                System.arraycopy(inputs.callibrationPoseError, 0, getPoseArray(poseError), 0, 6);
+
+                                RobotContainer.getField().getObject("Vision Calibration Desired Robot Pose")
+                                                .setPose(calibrationDesiredPose.toPose2d());
+
+                                /**
+                                 * This Calibration Error value assumes you are calibrating from straight in
+                                 * front of the april tag you are looking at where the distance between the
+                                 * center of the robot and the april tag is set by the tunable number
+                                 * "DistanceFromTagToCenterRobotMeters"
+                                 */
+                        }
 
                 } else {
                         inputs.aprilTagID = -1;
@@ -98,9 +96,7 @@ public class VisionIOPhotonVision implements VisionIO {
         }
 
         @Override
-        public VisionData getVisionData() {
-                return visionData;
-        }
+        public VisionData getVisionData() { return visionData; }
 
         private void checkForChangesToCameraTuning() {
                 if (!Constants.tuningMode)
