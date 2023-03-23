@@ -8,26 +8,12 @@ import frc.robot.Constants.EnabledDebugModes;
 import frc.robot.Constants.Drive.Config.DriveCharacterization;
 import frc.robot.Constants.ELEVATOR.Height;
 import frc.robot.commands.Autos;
-import frc.robot.commands.CommandCombos;
-import frc.robot.subsystems.elevator.Elevator;
-import frc.robot.subsystems.elevator.ElevatorIO;
-import frc.robot.subsystems.elevator.ElevatorIOFalcon500;
-import frc.robot.subsystems.flipper.Flipper;
-import frc.robot.subsystems.flipper.FlipperIO;
-import frc.robot.subsystems.flipper.FlipperIOTalonSRX;
-import frc.robot.subsystems.intake.Intake;
-import frc.robot.subsystems.intake.IntakeIO;
-import frc.robot.subsystems.intake.IntakeIOFalcon500s;
-import frc.robot.subsystems.lights.Lights;
-import frc.robot.subsystems.lights.LightsIO;
-import frc.robot.subsystems.lights.LightsIORevBlinkin;
-import frc.robot.subsystems.swerveDrive.SwerveDrive;
-import frc.robot.subsystems.swerveDrive.SwerveDriveIO;
-import frc.robot.subsystems.swerveDrive.SwerveDriveIO3534Swerve;
-import frc.robot.subsystems.vision.Vision;
-import frc.robot.subsystems.vision.VisionIO;
-import frc.robot.subsystems.vision.VisionIOLimelight;
-import frc.robot.subsystems.vision.VisionIOPhotonVision;
+import frc.robot.subsystems.elevator.*;
+import frc.robot.subsystems.flipper.*;
+import frc.robot.subsystems.intake.*;
+import frc.robot.subsystems.lights.*;
+import frc.robot.subsystems.swerveDrive.*;
+import frc.robot.subsystems.vision.*;
 import frc.robot.util.Alert;
 import frc.robot.util.Alert.AlertType;
 
@@ -75,23 +61,16 @@ public class RobotContainer {
 	static final Field2d field = new Field2d();
 
 	/**
-	 * The container for the robot. Contains subsystems, OI devices, and
-	 * commands.
+	 * The container for the robot. Contains subsystems, OI devices, and commands.
 	 */
 	public RobotContainer() {
 		if (Robot.isSimulation()) {
-			swerveDrive = new SwerveDrive(new SwerveDriveIO() {
-			});
-			intake = new Intake(new IntakeIO() {
-			});
-			elevator = new Elevator(new ElevatorIO() {
-			});
-			flipper = new Flipper(new FlipperIO() {
-			});
-			lights = new Lights(new LightsIO() {
-			});
-			vision = new Vision(swerveDrive::getPose, swerveDrive::updatePoseWithVision, new VisionIO() {
-			});
+			swerveDrive = new SwerveDrive(new SwerveDriveIO() {});
+			intake = new Intake(new IntakeIO() {});
+			elevator = new Elevator(new ElevatorIO() {});
+			flipper = new Flipper(new FlipperIO() {});
+			lights = new Lights(new LightsIO() {});
+			vision = new Vision(swerveDrive::getPose, swerveDrive::updatePoseWithVision, new VisionIO() {});
 		} else {
 			swerveDrive = new SwerveDrive(new SwerveDriveIO3534Swerve());
 			intake = new Intake(new IntakeIOFalcon500s());
@@ -114,33 +93,24 @@ public class RobotContainer {
 		autonChooser.addDefaultOption("No Auton", () -> Commands.none());
 
 		// Autonomous Loading Zone Paths
-		autonChooser.addOption("Loading Zone Place 2",
-				() -> Autos.place2FromSides(swerveDrive, intake, elevator, flipper,
-						Path.LoadingZone_PickUp_PlaceSecond,
-						null));
-		autonChooser.addOption("Loading Zone Place 2 And Pick Up Third",
-				() -> Autos.place2FromSides(swerveDrive, intake, elevator, flipper,
-						Path.LoadingZone_PickUp_PlaceSecond,
-						Path.LoadingZone_PickUp_Third));
-		autonChooser.addOption("Loading Zone Place Pickup Second and Balance",
-				() -> Autos.place2andBalanceFromSides(swerveDrive, intake,
-						elevator, flipper, Path.LoadingZone_PickUp_Balance));
-		autonChooser.addOption("Loading Zone Place and Drive Forward",
-				() -> Autos.place1AndDriveForwardFromSides(swerveDrive, elevator, flipper,
-						Path.LoadingZone_DriveForward));
+		autonChooser.addOption("Loading Zone Place 2", () -> Autos.place2FromSides(swerveDrive, intake, elevator,
+				flipper, Path.LoadingZone_PickUp_PlaceSecond, null));
+		autonChooser.addOption("Loading Zone Place 2 And Pick Up Third", () -> Autos.place2FromSides(swerveDrive,
+				intake, elevator, flipper, Path.LoadingZone_PickUp_PlaceSecond, Path.LoadingZone_PickUp_Third));
+		autonChooser.addOption("Loading Zone Place Pickup Second and Balance", () -> Autos
+				.place2andBalanceFromSides(swerveDrive, intake, elevator, flipper, Path.LoadingZone_PickUp_Balance));
+		autonChooser.addOption("Loading Zone Place and Drive Forward", () -> Autos
+				.place1AndDriveForwardFromSides(swerveDrive, elevator, flipper, Path.LoadingZone_DriveForward));
 
 		// Autonomous Bump Side Paths
-		autonChooser.addOption("Bump Side Place 2", () -> Autos.place2FromSides(swerveDrive, intake, elevator,
-				flipper, Path.BumpSide_PickUp_PlaceSecond, null));
-		autonChooser.addOption("Bump Side Place 2 Pick Up Third",
-				() -> Autos.place2FromSides(swerveDrive, intake, elevator, flipper,
-						Path.BumpSide_PickUp_PlaceSecond,
-						Path.BumpSide_PickUp_Third));
-		autonChooser.addOption("Bump Side Place Pickup Second and Balance",
-				() -> Autos.place2andBalanceFromSides(swerveDrive, intake,
-						elevator, flipper, Path.BumpSide_PickUp_Balance));
-		autonChooser.addOption("Bump Side Place and Drive Forward", () -> Autos
-				.place1AndDriveForwardFromSides(swerveDrive, elevator, flipper, Path.BumpSide_DriveForward));
+		autonChooser.addOption("Bump Side Place 2", () -> Autos.place2FromSides(swerveDrive, intake, elevator, flipper,
+				Path.BumpSide_PickUp_PlaceSecond, null));
+		autonChooser.addOption("Bump Side Place 2 Pick Up Third", () -> Autos.place2FromSides(swerveDrive, intake,
+				elevator, flipper, Path.BumpSide_PickUp_PlaceSecond, Path.BumpSide_PickUp_Third));
+		autonChooser.addOption("Bump Side Place Pickup Second and Balance", () -> Autos
+				.place2andBalanceFromSides(swerveDrive, intake, elevator, flipper, Path.BumpSide_PickUp_Balance));
+		autonChooser.addOption("Bump Side Place and Drive Forward",
+				() -> Autos.place1AndDriveForwardFromSides(swerveDrive, elevator, flipper, Path.BumpSide_DriveForward));
 
 		// Autonomous Center Paths
 		autonChooser.addOption("Center Place Drive Across and Back",
@@ -156,8 +126,7 @@ public class RobotContainer {
 
 		// Alert if in tuning mode
 		if (Constants.tuningMode) {
-			new Alert("Tuning mode active, expect decreased network performance.",
-					AlertType.INFO).set(true);
+			new Alert("Tuning mode active, expect decreased network performance.", AlertType.INFO).set(true);
 		}
 
 		heightChooser.addDefaultOption("Low", Height.OFF);
@@ -169,15 +138,13 @@ public class RobotContainer {
 
 	/**
 	 * Use this method to define your trigger->command mappings. Triggers can be
-	 * created via the
-	 * {@link Trigger#Trigger(java.util.function.BooleanSupplier)} constructor
-	 * with an arbitrary predicate, or via the named factories in
-	 * {@link edu.wpi.first.wpilibj2.command.button.CommandGenericHID}'s
-	 * subclasses for {@link CommandXboxController
-	 * Xbox}/{@link edu.wpi.first.wpilibj2.command.button.CommandPS4Controller
-	 * PS4} controllers or
-	 * {@link edu.wpi.first.wpilibj2.command.button.CommandJoystick Flight
-	 * joysticks}.
+	 * created via the {@link Trigger#Trigger(java.util.function.BooleanSupplier)}
+	 * constructor with an arbitrary predicate, or via the named factories in
+	 * {@link edu.wpi.first.wpilibj2.command.button.CommandGenericHID}'s subclasses
+	 * for {@link CommandXboxController
+	 * Xbox}/{@link edu.wpi.first.wpilibj2.command.button.CommandPS4Controller PS4}
+	 * controllers or {@link edu.wpi.first.wpilibj2.command.button.CommandJoystick
+	 * Flight joysticks}.
 	 */
 	private void configureBindings() {
 		TGR.DTM.tgr().whileTrue(new ProxyCommand(swerveDrive::DTMFollowToPose));
@@ -207,8 +174,7 @@ public class RobotContainer {
 		TGR.PositiveVoltage.tgr().whileTrue(flipper.flipperVoltage(1.0));
 		TGR.NegativeVoltage.tgr().whileTrue(flipper.flipperVoltage(-1.0));
 
-		new Trigger(() -> DriverStation.getMatchTime() < 2.0 &&
-				Robot.isTeleopEnabled).onTrue(swerveDrive.brake());
+		new Trigger(() -> DriverStation.getMatchTime() < 2.0 && Robot.isTeleopEnabled).onTrue(swerveDrive.brake());
 
 	}
 
@@ -222,9 +188,7 @@ public class RobotContainer {
 		return vision.getLoadingZonePose();
 	}
 
-	public static Field2d getField() {
-		return field;
-	}
+	public static Field2d getField() { return field; }
 
 	/**
 	 * Use this to pass the autonomous command to the main {@link Robot} class.
@@ -240,17 +204,11 @@ public class RobotContainer {
 		return Commands.none();
 	}
 
-	public Command getCoastCommand() {
-		return swerveDrive.coast();
-	}
+	public Command getCoastCommand() { return swerveDrive.coast(); }
 
-	public Command getDriveStopCommand() {
-		return swerveDrive.stop().ignoringDisable(true);
-	}
+	public Command getDriveStopCommand() { return swerveDrive.stop().ignoringDisable(true); }
 
-	public static Height getHeightAutonomous() {
-		return heightChooser.get();
-	}
+	public static Height getHeightAutonomous() { return heightChooser.get(); }
 
 	public enum TGR {
 		DTM(driverController.leftTrigger(0.15).and(() -> EnabledDebugModes.DTMEnabled)),
@@ -259,19 +217,14 @@ public class RobotContainer {
 		Characterize(driverController.a().and(() -> EnabledDebugModes.CharacterizeEnabled)),
 		ResetWithLimelight(driverController.leftStick().and(() -> !DTM.bool())),
 
-		Intake(driverController.rightTrigger(0.15)),
-		Extake(driverController.rightBumper()),
+		Intake(driverController.rightTrigger(0.15)), Extake(driverController.rightBumper()),
 		ConeAtStation(driverController.x()),
 
-		FlipUp(operatorController.rightTrigger(0.15)),
-		FlipDown(operatorController.leftTrigger(0.15)),
+		FlipUp(operatorController.rightTrigger(0.15)), FlipDown(operatorController.leftTrigger(0.15)),
 
-		CubeLights(operatorController.b()),
-		ConeLights(operatorController.x()),
-		GridLeft(operatorController.leftBumper()),
-		GridRight(operatorController.rightBumper()),
-		PlaceMid(operatorController.a()),
-		PlaceHigh(operatorController.y()),
+		CubeLights(operatorController.b()), ConeLights(operatorController.x()),
+		GridLeft(operatorController.leftBumper()), GridRight(operatorController.rightBumper()),
+		PlaceMid(operatorController.a()), PlaceHigh(operatorController.y()),
 
 		PositiveVoltage(driverController.povUp().and(() -> EnabledDebugModes.testingVoltageControl)),
 		NegativeVoltage(driverController.povDown().and(() -> EnabledDebugModes.testingVoltageControl));
