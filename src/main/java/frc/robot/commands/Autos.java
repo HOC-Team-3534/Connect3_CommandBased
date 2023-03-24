@@ -23,16 +23,16 @@ public final class Autos {
    * @param intake   the intake subsystem
    * @param elevator the elevator subsystem
    * @param flipper  the flipper subsystem
-   * @param path1    the path to follow after placing the first piece, MUST end
-   *                 at a grid place location
+   * @param path1    the path to follow after placing the first piece, MUST end at
+   *                 a grid place location
    * @param path2    optional path to follow after placing second piece to go and
    *                 pick up a third piece, MUST start at the same location as
    *                 path1
    * @return autonomous command to place 2 elements and optionally pickup 3rd
    *         piece from one of the sides
    */
-  public static Command place2FromSides(SwerveDrive swerve, Intake intake, Elevator elevator,
-      Flipper flipper, Path path1, Path path2) {
+  public static Command place2FromSides(SwerveDrive swerve, Intake intake, Elevator elevator, Flipper flipper,
+      Path path1, Path path2) {
 
     var command = moveElevatorAndPlace(RobotContainer.getHeightAutonomous(), elevator, flipper)
         .andThen(driveWithIntake(path1, intake, swerve, true), intake.extakeAuton().withTimeout(1.0));
@@ -53,15 +53,15 @@ public final class Autos {
    * @return autonomous command to place 1 elements and balance on the charge
    *         station from one of the sides
    */
-  public static Command place2andBalanceFromSides(SwerveDrive swerve, Intake intake, Elevator elevator,
-      Flipper flipper, Path path1) {
-    return moveElevatorAndPlace(RobotContainer.getHeightAutonomous(), elevator, flipper)
-        .andThen(driveWithIntake(path1, intake, swerve, true), swerve.balance(Direction.Backward, Direction.Backward),
-            intake.shootAuton().withTimeout(1.0));
+  public static Command place2andBalanceFromSides(SwerveDrive swerve, Intake intake, Elevator elevator, Flipper flipper,
+      Path path1) {
+    return moveElevatorAndPlace(RobotContainer.getHeightAutonomous(), elevator, flipper).andThen(
+        driveWithIntake(path1, intake, swerve, true), swerve.balance(Direction.Backward, Direction.Backward),
+        intake.shootAuton().withTimeout(1.0));
   }
 
-  public static Command place1AndDriveForwardFromSides(SwerveDrive swerve, Elevator elevator,
-      Flipper flipper, Path path1) {
+  public static Command place1AndDriveForwardFromSides(SwerveDrive swerve, Elevator elevator, Flipper flipper,
+      Path path1) {
     return moveElevatorAndPlace(RobotContainer.getHeightAutonomous(), elevator, flipper)
         .andThen(swerve.driveOnPath(path1, true));
   }
@@ -73,8 +73,7 @@ public final class Autos {
    * @param elevator the elevator subsystem
    * @param flipper  the flipper subsystem
    * @return autonomous command to place 1 elements, cross the charge station, and
-   *         balance on the charge
-   *         station from the center
+   *         balance on the charge station from the center
    */
   public static Command place1andBalanceFromCenter(SwerveDrive swerve, Intake intake, Elevator elevator,
 
@@ -100,8 +99,7 @@ public final class Autos {
    *         and then place the game element and bring the elevator back down
    */
   private static Command moveElevatorAndPlace(Height height, Elevator elevator, Flipper flipper) {
-    return elevator.goToDesiredHeight(height).withTimeout(3.0)
-        .andThen(flipper.flipUp().asProxy().withTimeout(3.0))
+    return elevator.goToDesiredHeight(height).withTimeout(3.0).andThen(flipper.flipUp().asProxy().withTimeout(3.0))
         .finallyDo((interrupted) -> elevator.off());
   }
 

@@ -45,19 +45,19 @@ public class Intake extends SubsystemBase {
     public Command runIntakeAuton() {
         if (testing)
             return Commands.none();
-        return startEnd(() -> setBothMotors(0.3), () -> setBothMotors(0));
+        return startEnd(() -> setBothMotors(0.3), () -> setBothMotors(0)).asProxy();
     }
 
     public Command extakeAuton() {
         if (testing)
             return Commands.none();
-        return startEnd(() -> setBothMotors(-0.20), () -> setBothMotors(0));
+        return startEnd(() -> setBothMotors(-0.20), () -> setBothMotors(0)).asProxy();
     }
 
     public Command shootAuton() {
         if (testing)
             return Commands.none();
-        return startEnd(() -> setBothMotors(-0.50), () -> setBothMotors(0));
+        return startEnd(() -> setBothMotors(-0.50), () -> setBothMotors(0)).asProxy();
     }
 
     private void setBothMotors(double percent) {

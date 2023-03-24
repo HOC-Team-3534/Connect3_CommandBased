@@ -23,8 +23,7 @@ import org.littletonrobotics.junction.Logger;
 
 public class Vision extends SubsystemBase {
     final Translation2d shiftAway = new Translation2d(
-            Units.inchesToMeters(14.0 + 1.0) + Constants.Drive.Known.TOTAL_ROBOT_LENGTH / 2.0,
-            0);
+            Units.inchesToMeters(14.0 + 1.0) + Constants.Drive.Known.TOTAL_ROBOT_LENGTH / 2.0, 0);
     final Translation2d shiftSideways = new Translation2d(0, Units.inchesToMeters(22.0));
     final Callable<Pose2d> robotPose;
     final BiConsumer<Pose2d, Double> visionPoseUpdate;
@@ -45,19 +44,19 @@ public class Vision extends SubsystemBase {
         try {
             aprilTagFieldLayout = AprilTagFields.k2023ChargedUp.loadAprilTagLayoutField();
             switch (DriverStation.getAlliance()) {
-                case Blue:
-                    aprilTagFieldLayout.setOrigin(AprilTagFieldLayout.OriginPosition.kBlueAllianceWallRightSide);
-                    loadingZonePose = new Pose2d(lengthOfField - 2.105,
-                            widthOfField - Constants.Drive.Known.TOTAL_ROBOT_LENGTH / 2, Rotation2d.fromDegrees(90));
-                    break;
-                case Red:
-                    aprilTagFieldLayout.setOrigin(AprilTagFieldLayout.OriginPosition.kRedAllianceWallRightSide);
-                    loadingZonePose = new Pose2d(lengthOfField - 2.105, Constants.Drive.Known.TOTAL_ROBOT_LENGTH / 2,
-                            Rotation2d.fromDegrees(-90));
-                    break;
-                default:
-                    loadingZonePose = new Pose2d();
-                    break;
+            case Blue:
+                aprilTagFieldLayout.setOrigin(AprilTagFieldLayout.OriginPosition.kBlueAllianceWallRightSide);
+                loadingZonePose = new Pose2d(lengthOfField - 2.105,
+                        widthOfField - Constants.Drive.Known.TOTAL_ROBOT_LENGTH / 2, Rotation2d.fromDegrees(90));
+                break;
+            case Red:
+                aprilTagFieldLayout.setOrigin(AprilTagFieldLayout.OriginPosition.kRedAllianceWallRightSide);
+                loadingZonePose = new Pose2d(lengthOfField - 2.105, Constants.Drive.Known.TOTAL_ROBOT_LENGTH / 2,
+                        Rotation2d.fromDegrees(-90));
+                break;
+            default:
+                loadingZonePose = new Pose2d();
+                break;
             }
         } catch (IOException e) {
             // TODO Auto-generated catch block
@@ -78,6 +77,9 @@ public class Vision extends SubsystemBase {
             visionPoseUpdate.accept(visionData.pose, visionData.estBotPoseTimestampSecs); // TODO switch to timestamp,
                                                                                           // not
                                                                                           // latency
+            SmartDashboard.putNumber("Timestamp Offset in seconds (latency)",
+                    Timer.getFPGATimestamp() - visionData.estBotPoseTimestampSecs);
+
             Logger.getInstance().recordOutput("Vision/Pose", visionData.pose);
             Logger.getInstance().recordOutput("Vision/Timestamp", visionData.estBotPoseTimestampSecs);
             Logger.getInstance().recordOutput("Vision/Latency", visionData.estBotPoseLatencySecs);
@@ -87,29 +89,25 @@ public class Vision extends SubsystemBase {
         }
     }
 
-    public Pose2d getBotPose() {
-        return io.getVisionData().pose;
-    }
+    public Pose2d getBotPose() { return io.getVisionData().pose; }
 
-    public Pose2d getLoadingZonePose() {
-        return loadingZonePose;
-    }
+    public Pose2d getLoadingZonePose() { return loadingZonePose; }
 
     public Pose2d getGridPose(GridPosition position) {
         var id = (int) inputs.aprilTagID;
         if (id <= 0)
             return null;
         switch (DriverStation.getAlliance()) {
-            case Blue:
-                if (!Arrays.asList(6, 7, 8).contains(id))
-                    return null;
-                break;
-            case Red:
-                if (!Arrays.asList(1, 2, 3).contains(id))
-                    return null;
-                break;
-            default:
+        case Blue:
+            if (!Arrays.asList(6, 7, 8).contains(id))
                 return null;
+            break;
+        case Red:
+            if (!Arrays.asList(1, 2, 3).contains(id))
+                return null;
+            break;
+        default:
+            return null;
         }
         var aprilTag = aprilTagFieldLayout.getTagPose(id).get().getTranslation().toTranslation2d();
         var robotCenter = aprilTag.plus(shiftAway);
@@ -120,19 +118,19 @@ public class Vision extends SubsystemBase {
             e.printStackTrace();
         }
         switch (position) {
-            case Center:
-                break;
+        case Center:
+            break;
 
-            case Left:
-                robotCenter = robotCenter.plus(shiftSideways);
-                break;
+        case Left:
+            robotCenter = robotCenter.plus(shiftSideways);
+            break;
 
-            case Right:
-                robotCenter = robotCenter.minus(shiftSideways);
-                break;
+        case Right:
+            robotCenter = robotCenter.minus(shiftSideways);
+            break;
 
-            default:
-                break;
+        default:
+            break;
         }
         return new Pose2d(robotCenter, new Rotation2d());
     }

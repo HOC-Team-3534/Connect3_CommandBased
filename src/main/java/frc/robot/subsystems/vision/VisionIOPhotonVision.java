@@ -19,21 +19,21 @@ public class VisionIOPhotonVision implements VisionIO {
         VisionData visionData;
 
         private final LoggedTunableNumber x_offset = new LoggedTunableNumber("Vision/x_offset",
-                        Units.inchesToMeters(-12.5));
+                        Units.inchesToMeters(-13.5));
         private final LoggedTunableNumber y_offset = new LoggedTunableNumber("Vision/y_offset", 0);
-        private final LoggedTunableNumber z_offset = new LoggedTunableNumber("Vision/x_offset",
-                        Units.inchesToMeters(8));
+        private final LoggedTunableNumber z_offset = new LoggedTunableNumber("Vision/z_offset",
+                        Units.inchesToMeters(10.375));
 
-        private final LoggedTunableNumber roll_offset = new LoggedTunableNumber("Vision/roll_offset", 0);
+        private final LoggedTunableNumber roll_offset = new LoggedTunableNumber("Vision/roll_offset", -0.02);
         private final LoggedTunableNumber pitch_offset = new LoggedTunableNumber("Vision/pitch_offset",
-                        Units.degreesToRadians(3));
-        private final LoggedTunableNumber yaw_offset = new LoggedTunableNumber("Vision/yaw_offset", 0);
+                        Units.degreesToRadians(-11.61));
+        private final LoggedTunableNumber yaw_offset = new LoggedTunableNumber("Vision/yaw_offset", Math.PI);
 
         Transform3d cameraToRobot = new Transform3d(new Translation3d(x_offset.get(), y_offset.get(), z_offset.get()),
                         new Rotation3d(roll_offset.get(), pitch_offset.get(), yaw_offset.get()));
 
         private final LoggedTunableNumber distanceFromTag = new LoggedTunableNumber(
-                        "Vision/DistanceFromTagToCenterRobotMeters", Units.inchesToMeters(43.0));
+                        "Vision/DistanceFromTagToCenterRobotMeters", Units.inchesToMeters(35.5));
 
         final double lengthOfField = 16.542;
 
@@ -51,8 +51,10 @@ public class VisionIOPhotonVision implements VisionIO {
 
                         var tagPose = layout.getTagPose(target.getFiducialId()).get();
 
-                        var robotPose = PhotonUtils.estimateFieldToRobotAprilTag(target.getBestCameraToTarget(),
-                                        tagPose, cameraToRobot);
+                        var cameraToTarget = target.getBestCameraToTarget();
+
+                        var robotPose = PhotonUtils.estimateFieldToRobotAprilTag(cameraToTarget, tagPose,
+                                        cameraToRobot);
                         var latency = result.getLatencyMillis() / 1000;
                         var timestamp = result.getTimestampSeconds();
                         visionData = new VisionData(robotPose.toPose2d(), timestamp, latency);
@@ -61,7 +63,7 @@ public class VisionIOPhotonVision implements VisionIO {
 
                         Logger.getInstance().recordOutput("Vision/RawRobotPose3d", robotPose);
 
-                        System.arraycopy(inputs.pose, 0, getPoseArray(robotPose), 0, 6);
+                        inputs.pose = getPoseArray(robotPose);
 
                         if (Constants.tuningMode) {
 
@@ -76,7 +78,7 @@ public class VisionIOPhotonVision implements VisionIO {
                                 var poseError = robotPose.relativeTo(calibrationDesiredPose);
                                 Logger.getInstance().recordOutput("Vision/CalibrationPoseError", poseError);
 
-                                System.arraycopy(inputs.callibrationPoseError, 0, getPoseArray(poseError), 0, 6);
+                                inputs.callibrationPoseError = getPoseArray(poseError);
 
                                 RobotContainer.getField().getObject("Vision Calibration Desired Robot Pose")
                                                 .setPose(calibrationDesiredPose.toPose2d());
@@ -87,11 +89,15 @@ public class VisionIOPhotonVision implements VisionIO {
                                  * center of the robot and the april tag is set by the tunable number
                                  * "DistanceFromTagToCenterRobotMeters"
                                  */
+                        } else {
+                                inputs.callibrationPoseError = new double[6];
                         }
 
                 } else {
                         inputs.aprilTagID = -1;
                         visionData = null;
+                        inputs.pose = new double[6];
+                        inputs.callibrationPoseError = new double[6];
                 }
         }
 

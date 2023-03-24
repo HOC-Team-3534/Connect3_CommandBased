@@ -20,13 +20,11 @@ import swerve.SDSModuleConfiguration;
 public final class Constants {
   public static RobotType ROBOTTYPE = RobotType.CBOT;
   public static double LOOP_PERIOD_SECS = 0.020;
-  public static final boolean tuningMode = true;
+  public static final boolean tuningMode = false;
   public static final boolean replayMode = false;
 
   public enum RobotType {
-    CBOT,
-    PBOT,
-    TBOT
+    CBOT, PBOT, TBOT
   }
 
   public static final class Drive {
@@ -57,14 +55,10 @@ public final class Constants {
 
     public static final class Calculated {
       public static final SwerveDriveKinematics KINEMATICS = new SwerveDriveKinematics(
-          new Translation2d(Drive.Known.TRACKWIDTH_METERS / 2.0,
-              Drive.Known.WHEELBASE_METERS / 2.0),
-          new Translation2d(Drive.Known.TRACKWIDTH_METERS / 2.0,
-              -Drive.Known.WHEELBASE_METERS / 2.0),
-          new Translation2d(-Drive.Known.TRACKWIDTH_METERS / 2.0,
-              Drive.Known.WHEELBASE_METERS / 2.0),
-          new Translation2d(-Drive.Known.TRACKWIDTH_METERS / 2.0,
-              -Drive.Known.WHEELBASE_METERS / 2.0));
+          new Translation2d(Drive.Known.TRACKWIDTH_METERS / 2.0, Drive.Known.WHEELBASE_METERS / 2.0),
+          new Translation2d(Drive.Known.TRACKWIDTH_METERS / 2.0, -Drive.Known.WHEELBASE_METERS / 2.0),
+          new Translation2d(-Drive.Known.TRACKWIDTH_METERS / 2.0, Drive.Known.WHEELBASE_METERS / 2.0),
+          new Translation2d(-Drive.Known.TRACKWIDTH_METERS / 2.0, -Drive.Known.WHEELBASE_METERS / 2.0));
       // Drivetrain Performance Mechanical limits
       static public final double MAX_FWD_REV_SPEED_MPS_EST = Known.MAX_DRIVE_MOTOR_RPM / 60.0
           / Known.SDS_MODULE_CONFIGURATION.driveGearRatio * Known.SDS_MODULE_CONFIGURATION.wheelCircumference;
@@ -113,8 +107,7 @@ public final class Constants {
       public static final double THETACONTROLLERkP = 10;
       // Constraint for the motion profilied robot angle controller
       public static final TrapezoidProfile.Constraints THETACONTROLLERCONSTRAINTS = new TrapezoidProfile.Constraints(
-          kMaxAngularSpeedRadiansPerSecond,
-          kMaxAngularSpeedRadiansPerSecondSquared);
+          kMaxAngularSpeedRadiansPerSecond, kMaxAngularSpeedRadiansPerSecondSquared);
     }
   }
 
@@ -123,10 +116,7 @@ public final class Constants {
     public static final double kElevatorAcceleration = 80000.0;// Counts per 100ms per second
 
     public static enum Height {
-      HIGH(195000),
-      LOAD(45000),
-      MID(115000),
-      OFF(0.0);
+      HIGH(195000), LOAD(45000), MID(115000), OFF(0.0);
 
       public double height;
 
@@ -138,14 +128,12 @@ public final class Constants {
 
   public static final class EnabledDebugModes {
     public static final boolean CharacterizeEnabled = false;
-    public static final boolean DTMEnabled = false;
+    public static final boolean DTMEnabled = true;
     public static final boolean updatePoseWithVisionEnabled = true;
     public static final boolean testingVoltageControl = true;
   }
 
-  public static Mode getMode() {
-    return Robot.isReal() ? Mode.REAL : replayMode ? Mode.REPLAY : Mode.SIM;
-  }
+  public static Mode getMode() { return Robot.isReal() ? Mode.REAL : replayMode ? Mode.REPLAY : Mode.SIM; }
 
   public static enum Mode {
     REAL, REPLAY, SIM

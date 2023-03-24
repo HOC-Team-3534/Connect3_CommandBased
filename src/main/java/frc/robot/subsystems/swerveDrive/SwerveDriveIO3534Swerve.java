@@ -24,13 +24,13 @@ import swerve.SwerveModule;
 
 public class SwerveDriveIO3534Swerve implements SwerveDriveIO {
     final static double fl_degrees = (Constants.ROBOTTYPE == RobotType.TBOT) ? 86.13
-            : (Constants.ROBOTTYPE == RobotType.PBOT) ? 273.07 : 134.56;
+            : (Constants.ROBOTTYPE == RobotType.PBOT) ? 273.07 : 138.56;
     final static double fr_degrees = (Constants.ROBOTTYPE == RobotType.TBOT) ? 3.86
-            : (Constants.ROBOTTYPE == RobotType.PBOT) ? 304.62 : 36.035;
+            : (Constants.ROBOTTYPE == RobotType.PBOT) ? 304.62 : 31.64;
     final static double bl_degrees = (Constants.ROBOTTYPE == RobotType.TBOT) ? 274.30
-            : (Constants.ROBOTTYPE == RobotType.PBOT) ? 130.86 : 174.19;
+            : (Constants.ROBOTTYPE == RobotType.PBOT) ? 130.86 : 172.35;
     final static double br_degrees = (Constants.ROBOTTYPE == RobotType.TBOT) ? 23.90
-            : (Constants.ROBOTTYPE == RobotType.PBOT) ? 20.39 : 153.37;
+            : (Constants.ROBOTTYPE == RobotType.PBOT) ? 20.39 : 151.37;
     final static boolean loadedConstants = loadSwerveConstants();
     final static WPI_TalonFX FL_drive = new WPI_TalonFX(1);
     final static WPI_TalonFX FL_steer = new WPI_TalonFX(3);
@@ -106,8 +106,7 @@ public class SwerveDriveIO3534Swerve implements SwerveDriveIO {
     }
 
     @Override
-    public Command driveOnPath(PathPlannerTrajectory trajectory, SwerveDrive swerveDrive,
-            boolean resetToInitial) {
+    public Command driveOnPath(PathPlannerTrajectory trajectory, SwerveDrive swerveDrive, boolean resetToInitial) {
         return dt.createCommandForTrajectory(trajectory, swerveDrive, resetToInitial, true);
     }
 
@@ -130,14 +129,10 @@ public class SwerveDriveIO3534Swerve implements SwerveDriveIO {
     }
 
     @Override
-    public Pose2d getPose() {
-        return dt.getPose();
-    }
+    public Pose2d getPose() { return dt.getPose(); }
 
     @Override
-    public SwerveDrivetrainModel getDriveTrainModel() {
-        return dt;
-    }
+    public SwerveDrivetrainModel getDriveTrainModel() { return dt; }
 
     public static boolean loadSwerveConstants() {
         // TODO determine CBOT characterization values
@@ -149,20 +144,12 @@ public class SwerveDriveIO3534Swerve implements SwerveDriveIO {
                 : (Constants.ROBOTTYPE == RobotType.PBOT) ? 0.031 : 0.0;
         var config = Constants.Drive.Known.SDS_MODULE_CONFIGURATION;
         // TODO determine if CBOT wheel diameter differs
-        var newConfig = new SDSModuleConfiguration(Units.inchesToMeters(3.81),
-                config.angleGearRatio,
-                config.driveGearRatio,
-                config.angleKP,
-                config.angleKI,
-                config.angleKD,
-                config.angleKF,
-                config.driveMotorInvert,
-                config.angleMotorInvert,
-                config.canCoderInvert);
+        var newConfig = new SDSModuleConfiguration(Units.inchesToMeters(3.81), config.angleGearRatio,
+                config.driveGearRatio, config.angleKP, config.angleKI, config.angleKD, config.angleKF,
+                config.driveMotorInvert, config.angleMotorInvert, config.canCoderInvert);
         SwerveConstants.fillNecessaryConstantsForFalcon(Drive.Calculated.MAX_FWD_REV_SPEED_MPS_EST,
-                Drive.Calculated.MAX_ROTATE_SPEED_RAD_PER_SEC_EST, 2 * Math.PI,
-                Drive.Calculated.KINEMATICS, newConfig,
-                0.1, ks / 12.0, kv / 12.0, ka / 12.0, 3.0, 3.0, 1, 1, 0.25, 0.25);
+                Drive.Calculated.MAX_ROTATE_SPEED_RAD_PER_SEC_EST, 2 * Math.PI, Drive.Calculated.KINEMATICS, newConfig,
+                0.1, ks / 12.0, kv / 12.0, ka / 12.0, 3.0, 5.0, 1, 1, 0.25, 0.25);
         SwerveConstants.createSwerveConstants();
         SwerveConstants.modulePoseEstXStdDev = 0.1;
         SwerveConstants.modulePoseEstYStdDev = 0.1;

@@ -23,6 +23,7 @@ import frc.robot.RobotContainer.AXS;
 import frc.robot.RobotContainer.TGR;
 import frc.robot.Constants;
 import frc.robot.Path;
+import frc.robot.Robot;
 import frc.robot.RobotContainer;
 import swerve.SwerveInput;
 import swerve.SwerveSubsystem;
@@ -40,9 +41,9 @@ public class SwerveDrive extends SwerveSubsystem {
         super(io.getDriveTrainModel());
         this.io = io;
 
-        xController = new ProfiledPIDController(1.75, 0, 17.5, new TrapezoidProfile.Constraints(3.5, 2.0));
-        yController = new ProfiledPIDController(1.75, 0, 17.5, new TrapezoidProfile.Constraints(3.5, 2.0));
-        thetaController = new ProfiledPIDController(3, 0, 30,
+        xController = new ProfiledPIDController(1.5, 0, 50, new TrapezoidProfile.Constraints(3.5, 2.0));
+        yController = new ProfiledPIDController(1.5, 0, 50, new TrapezoidProfile.Constraints(3.5, 2.0));
+        thetaController = new ProfiledPIDController(3, 0, 150,
                 new TrapezoidProfile.Constraints(3.0 * Math.PI, 2.0 * Math.PI));
         thetaController.enableContinuousInput(0, Units.degreesToRadians(360.0));
     }
@@ -58,14 +59,15 @@ public class SwerveDrive extends SwerveSubsystem {
         if (pose != null) {
             Logger.getInstance().recordOutput("SwerveDrive/Pose", pose);
             RobotContainer.getField().setRobotPose(pose);
-
         }
-        var gridPose = RobotContainer.visionGridPose();
-        if (gridPose != null)
-            RobotContainer.getField().getObject("Grid Pose").setPose(gridPose);
-        var loadingPose = RobotContainer.visionLoadingPose();
-        if (loadingPose != null)
-            RobotContainer.getField().getObject("Loading Pose").setPose(loadingPose);
+        if (Constants.tuningMode) {
+            var gridPose = RobotContainer.visionGridPose();
+            if (gridPose != null)
+                RobotContainer.getField().getObject("Grid Pose").setPose(gridPose);
+            var loadingPose = RobotContainer.visionLoadingPose();
+            if (loadingPose != null)
+                RobotContainer.getField().getObject("Loading Pose").setPose(loadingPose);
+        }
     }
 
     public Command balance(Direction facingDirection, Direction driveDirection) {
@@ -86,9 +88,9 @@ public class SwerveDrive extends SwerveSubsystem {
 
         return runOnce(io::DriveInBrake).andThen(run(() -> {
             if (getSlope() > 5)
-                driveStraightWithPower(driveSign * -0.08, facingDirection);
+                driveStraightWithPower(driveSign * -0.06, facingDirection);
             else if (getSlope() < -5)
-                driveStraightWithPower(driveSign * 0.08, facingDirection);
+                driveStraightWithPower(driveSign * 0.06, facingDirection);
             else
                 driveStraightWithPower(0.0, facingDirection);
         }));
@@ -121,7 +123,7 @@ public class SwerveDrive extends SwerveSubsystem {
     public double getSlope() { return inputs.pitchDegs + ((RobotType.PBOT == Constants.ROBOTTYPE) ? -3.0 : -0.5); }
 
     public boolean isFacingDirection(Direction direction) {
-        return Math.abs(inputs.headingDegs - direction.rot.getDegrees() % 360) < 2.0;
+        return Math.abs(inputs.headingDegs - direction.rot.getDegrees() % 360) < 5.0;
     }
 
     public Command driveOnPath(Path path, boolean resetToInitial, String eventName, Command eventCommand) {
