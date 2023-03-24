@@ -11,8 +11,10 @@ import com.pathplanner.lib.commands.FollowPathWithEvents;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
+import edu.wpi.first.math.trajectory.TrapezoidProfile.Constraints;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
@@ -123,7 +125,7 @@ public class SwerveDrive extends SwerveSubsystem {
     public double getSlope() { return inputs.pitchDegs + ((RobotType.PBOT == Constants.ROBOTTYPE) ? -3.0 : -0.5); }
 
     public boolean isFacingDirection(Direction direction) {
-        return Math.abs(inputs.headingDegs - direction.rot.getDegrees() % 360) < 5.0;
+        return Math.abs(getPose().getRotation().minus(direction.rot).getDegrees()) < 2.0;
     }
 
     public Command driveOnPath(Path path, boolean resetToInitial, String eventName, Command eventCommand) {
@@ -251,20 +253,10 @@ public class SwerveDrive extends SwerveSubsystem {
     }
 
     private Command followToPose(Pose2d desiredPose) {
-
-        xController.reset(getPose().getX());
-        yController.reset(getPose().getY());
-        thetaController.reset(getPose().getRotation().getRadians());
-        xController.setGoal(desiredPose.getX());
-        yController.setGoal(desiredPose.getY());
-        thetaController.setGoal(desiredPose.getRotation().getRadians());
-        return run(() -> {
-            var speeds = new ChassisSpeeds(xController.calculate(getPose().getX()),
-                    yController.calculate(getPose().getY()),
-                    thetaController.calculate(getPose().getRotation().getRadians()));
-            io.setChassisSpeeds(speeds, false);
-
-        });
+        TrapezoidProfile.Constraints constraints = new Constraints(2.0, 1.5);
+        var drivetolerance = new Translation2d(0.03, 0.03);
+        var rotTolerance = Rotation2d.fromDegrees(2);
+        return io.driveToPose(desiredPose, constraints, drivetolerance, rotTolerance, this);
     }
 
     public Command stop() {

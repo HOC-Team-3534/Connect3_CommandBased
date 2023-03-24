@@ -8,7 +8,9 @@ import com.pathplanner.lib.PathPlannerTrajectory;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
+import edu.wpi.first.math.trajectory.TrapezoidProfile.Constraints;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.Constants;
@@ -134,6 +136,12 @@ public class SwerveDriveIO3534Swerve implements SwerveDriveIO {
     @Override
     public SwerveDrivetrainModel getDriveTrainModel() { return dt; }
 
+    @Override
+    public Command driveToPose(Pose2d desiredPose, Constraints constraints, Translation2d drivetolerance,
+            Rotation2d rotTolerance, SwerveDrive swerveDrive) {
+        return dt.alignWithPose(desiredPose, drivetolerance, rotTolerance, constraints, swerveDrive);
+    }
+
     public static boolean loadSwerveConstants() {
         // TODO determine CBOT characterization values
         double ks = (Constants.ROBOTTYPE == RobotType.TBOT) ? 0.293
@@ -159,4 +167,5 @@ public class SwerveDriveIO3534Swerve implements SwerveDriveIO {
         SwerveConstants.visionPoseEstAngleStdDev = Rotation2d.fromDegrees(0.25);
         return true;
     }
+
 }

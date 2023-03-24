@@ -6,7 +6,6 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.ELEVATOR.Height;
-import frc.robot.RobotContainer.TGR;
 
 public class Elevator extends SubsystemBase {
     final ElevatorIO io;
@@ -19,6 +18,7 @@ public class Elevator extends SubsystemBase {
         this.io = io;
     }
 
+    /* TODO Determine if necessary to create elevator position reset method */
     public void periodic() {
         io.updateInputs(inputs);
         Logger.getInstance().processInputs("Elevator", inputs);
@@ -31,13 +31,10 @@ public class Elevator extends SubsystemBase {
 
         if (height == Height.OFF)
             return command.andThen(runOnce(() -> off()));
-        return command.andThen(runOnce(() -> setHeight(height)),
-                Commands.waitUntil(() -> isCorrectElevatorHeight()));
+        return command.andThen(runOnce(() -> setHeight(height)), Commands.waitUntil(() -> isCorrectElevatorHeight()));
     }
 
-    private boolean isCorrectElevatorHeight() {
-        return Math.abs(targetHeight.height - inputs.position) < 4000;
-    }
+    private boolean isCorrectElevatorHeight() { return Math.abs(targetHeight.height - inputs.position) < 4000; }
 
     public void off() {
         set(0);
