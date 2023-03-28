@@ -36,6 +36,7 @@ public class SwerveDrive extends SwerveSubsystem {
 
     double timeCharacterizing;
     final ProfiledPIDController xController, yController, thetaController;
+    int fineTuneCounter = 0;
 
     Field2d field = new Field2d();
 
@@ -77,8 +78,8 @@ public class SwerveDrive extends SwerveSubsystem {
 
         var command = (driveInX(0, facingDirection).until(() -> isFacingDirection(facingDirection))).andThen(
                 driveInX(0.25 * driveSign, facingDirection).until(() -> Math.abs(getSlope()) > 13.25),
-                driveInX(0.25 * driveSign, facingDirection).until(() -> Math.abs(getSlope()) < 13.0),
-                fineTuneBalance(facingDirection));
+                driveInX(0.3 * driveSign, facingDirection).until(() -> Math.abs(getSlope()) < 13.15),
+                driveInX(0.2 * driveSign, facingDirection).withTimeout(0.75), fineTuneBalance(facingDirection));
 
         command.setName("Balance");
         return command;
@@ -89,10 +90,14 @@ public class SwerveDrive extends SwerveSubsystem {
         var driveSign = facingDirection.equals(Direction.Forward) ? 1 : -1;
 
         return runOnce(io::DriveInBrake).andThen(run(() -> {
-            if (getSlope() > 5)
+            if (getSlope() > 10)
                 driveStraightWithPower(driveSign * -0.06, facingDirection);
-            else if (getSlope() < -5)
+            else if (getSlope() > 5)
+                driveStraightWithPower(driveSign * -0.03, facingDirection);
+            else if (getSlope() < -10)
                 driveStraightWithPower(driveSign * 0.06, facingDirection);
+            else if (getSlope() < -5)
+                driveStraightWithPower(driveSign * 0.03, facingDirection);
             else
                 driveStraightWithPower(0.0, facingDirection);
         }));

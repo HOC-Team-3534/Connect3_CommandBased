@@ -35,9 +35,10 @@ public final class Autos {
       Path path1, Path path2) {
 
     var command = moveElevatorAndPlace(RobotContainer.getHeightAutonomous(), elevator, flipper)
-        .andThen(driveWithIntake(path1, intake, swerve, true), intake.extakeAuton().withTimeout(1.0));
+        .andThen(driveWithIntake(path1, intake, swerve, true), intake.shootAuton().withTimeout(0.4));
     if (path2 != null)
-      command = command.andThen(driveWithIntake(path2, intake, swerve, false));
+      command = command.andThen(driveWithIntake(path2, intake, swerve, false, 3.85),
+          intake.shootAuton().withTimeout(1.0));
     return command;
   }
 
@@ -113,7 +114,14 @@ public final class Autos {
    *         the intake
    */
   private static Command driveWithIntake(Path path, Intake intake, SwerveDrive swerve, boolean resetToIntial) {
-    return Commands.deadline(swerve.driveOnPath(path, resetToIntial), intake.runIntakeAuton().asProxy());
+    return Commands.deadline(swerve.driveOnPath(path, resetToIntial),
+        intake.runIntakeAuton().asProxy().withTimeout(3.5));
+  }
+
+  private static Command driveWithIntake(Path path, Intake intake, SwerveDrive swerve, boolean resetToIntial,
+      double time) {
+    return Commands.deadline(swerve.driveOnPath(path, resetToIntial),
+        intake.runIntakeAuton().asProxy().withTimeout(time));
   }
 
   private Autos() {

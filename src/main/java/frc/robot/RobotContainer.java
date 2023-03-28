@@ -77,7 +77,7 @@ public class RobotContainer {
 			elevator = new Elevator(new ElevatorIOFalcon500());
 			flipper = new Flipper(new FlipperIOTalonSRX());
 			lights = new Lights(new LightsIORevBlinkin());
-			vision = new Vision(swerveDrive::getPose, swerveDrive::updatePoseWithVision, new VisionIOPhotonVision());
+			vision = new Vision(swerveDrive::getPose, swerveDrive::updatePoseWithVision, new VisionIOLimelight());
 		}
 
 		// Configure the trigger bindings
@@ -99,8 +99,10 @@ public class RobotContainer {
 				intake, elevator, flipper, Path.LoadingZone_PickUp_PlaceSecond, Path.LoadingZone_PickUp_Third));
 		autonChooser.addOption("Loading Zone Place Pickup Second and Balance", () -> Autos
 				.place2andBalanceFromSides(swerveDrive, intake, elevator, flipper, Path.LoadingZone_PickUp_Balance));
-		autonChooser.addOption("Loading Zone Place and Drive Forward", () -> Autos
-				.place1AndDriveForwardFromSides(swerveDrive, elevator, flipper, Path.LoadingZone_DriveForward));
+		autonChooser.addOption("Loading Zone Place Cone and Drive Forward", () -> Autos
+				.place1AndDriveForwardFromSides(swerveDrive, elevator, flipper, Path.LoadingZone_DriveForwardCone));
+		autonChooser.addOption("Loading Zone Place Cube and Drive Forward ", () -> Autos
+				.place1AndDriveForwardFromSides(swerveDrive, elevator, flipper, Path.LoadingZone_DriveForwardCube));
 
 		// Autonomous Bump Side Paths
 		autonChooser.addOption("Bump Side Place 2", () -> Autos.place2FromSides(swerveDrive, intake, elevator, flipper,
@@ -109,8 +111,10 @@ public class RobotContainer {
 				elevator, flipper, Path.BumpSide_PickUp_PlaceSecond, Path.BumpSide_PickUp_Third));
 		autonChooser.addOption("Bump Side Place Pickup Second and Balance", () -> Autos
 				.place2andBalanceFromSides(swerveDrive, intake, elevator, flipper, Path.BumpSide_PickUp_Balance));
-		autonChooser.addOption("Bump Side Place and Drive Forward",
-				() -> Autos.place1AndDriveForwardFromSides(swerveDrive, elevator, flipper, Path.BumpSide_DriveForward));
+		autonChooser.addOption("Bump Side Place Cone and Drive Forward", () -> Autos
+				.place1AndDriveForwardFromSides(swerveDrive, elevator, flipper, Path.BumpSide_DriveForwardCone));
+		autonChooser.addOption("Bump Side Place Cube and Drive Forward", () -> Autos
+				.place1AndDriveForwardFromSides(swerveDrive, elevator, flipper, Path.BumpSide_DriveForwardCube));
 
 		// Autonomous Center Paths
 		autonChooser.addOption("Center Place Drive Across and Back",

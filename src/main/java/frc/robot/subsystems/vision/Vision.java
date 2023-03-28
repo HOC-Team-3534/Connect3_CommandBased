@@ -69,24 +69,28 @@ public class Vision extends SubsystemBase {
     @Override
     public void periodic() {
         io.updateInputs(aprilTagFieldLayout, inputs);
-        Logger.getInstance().processInputs("Vision", inputs);
+        // Logger.getInstance().processInputs("Vision", inputs);
 
         var visionData = io.getVisionData();
 
-        if (Constants.EnabledDebugModes.updatePoseWithVisionEnabled && visionData != null) {
-            visionPoseUpdate.accept(visionData.pose, visionData.estBotPoseTimestampSecs); // TODO switch to timestamp,
-                                                                                          // not
-                                                                                          // latency
-            SmartDashboard.putNumber("Timestamp Offset in seconds (latency)",
-                    Timer.getFPGATimestamp() - visionData.estBotPoseTimestampSecs);
+        // if (Constants.EnabledDebugModes.updatePoseWithVisionEnabled && visionData !=
+        // null) {
+        // visionPoseUpdate.accept(visionData.pose, visionData.estBotPoseTimestampSecs);
+        // // TODO switch to timestamp,
+        // // not
+        // // latency
+        // SmartDashboard.putNumber("Timestamp Offset in seconds (latency)",
+        // Timer.getFPGATimestamp() - visionData.estBotPoseTimestampSecs);
 
-            Logger.getInstance().recordOutput("Vision/Pose", visionData.pose);
-            Logger.getInstance().recordOutput("Vision/Timestamp", visionData.estBotPoseTimestampSecs);
-            Logger.getInstance().recordOutput("Vision/Latency", visionData.estBotPoseLatencySecs);
+        // Logger.getInstance().recordOutput("Vision/Pose", visionData.pose);
+        // Logger.getInstance().recordOutput("Vision/Timestamp",
+        // visionData.estBotPoseTimestampSecs);
+        // Logger.getInstance().recordOutput("Vision/Latency",
+        // visionData.estBotPoseLatencySecs);
 
-            Logger.getInstance().recordOutput("Vision/Timestamp Based Latency Calculated",
-                    Timer.getFPGATimestamp() - visionData.estBotPoseTimestampSecs);
-        }
+        // Logger.getInstance().recordOutput("Vision/Timestamp Based Latency
+        // Calculated",
+        // Timer.getFPGATimestamp() - visionData.estBotPoseTimestampSecs);
     }
 
     public Pose2d getBotPose() { return io.getVisionData().pose; }

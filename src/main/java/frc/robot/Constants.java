@@ -98,7 +98,7 @@ public final class Constants {
     }
 
     public static final class AUTO {
-      public static final double kMaxSpeedMetersPerSecond = 3.5;
+      public static final double kMaxSpeedMetersPerSecond = 4.0;
       public static final double kMaxAccelerationMetersPerSecondSquared = 2.0;
       public static final double kMaxAngularSpeedRadiansPerSecond = Math.PI;
       public static final double kMaxAngularSpeedRadiansPerSecondSquared = Math.PI;
@@ -116,7 +116,7 @@ public final class Constants {
     public static final double kElevatorAcceleration = 80000.0;// Counts per 100ms per second
 
     public static enum Height {
-      HIGH(195000), LOAD(45000), MID(115000), OFF(0.0);
+      HIGH(208000), LOAD(45000), MID(124000), OFF(0.0);
 
       public double height;
 
@@ -128,9 +128,9 @@ public final class Constants {
 
   public static final class EnabledDebugModes {
     public static final boolean CharacterizeEnabled = false;
-    public static final boolean DTMEnabled = true;
-    public static final boolean updatePoseWithVisionEnabled = true;
-    public static final boolean testingVoltageControl = true;
+    public static final boolean DTMEnabled = false;
+    public static final boolean updatePoseWithVisionEnabled = false;
+    public static final boolean testingVoltageControl = false;
   }
 
   public static Mode getMode() { return Robot.isReal() ? Mode.REAL : replayMode ? Mode.REPLAY : Mode.SIM; }
