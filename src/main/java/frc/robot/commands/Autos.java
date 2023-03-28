@@ -42,6 +42,17 @@ public final class Autos {
     return command;
   }
 
+  public static Command place2FromSides(SwerveDrive swerve, Intake intake, Elevator elevator, Flipper flipper,
+      Path path1, Path path2, double intakeTime) {
+
+    var command = moveElevatorAndPlace(RobotContainer.getHeightAutonomous(), elevator, flipper)
+        .andThen(driveWithIntake(path1, intake, swerve, true), intake.shootAuton().withTimeout(0.4));
+    if (path2 != null)
+      command = command.andThen(driveWithIntake(path2, intake, swerve, false, intakeTime),
+          intake.shootAuton().withTimeout(1.0));
+    return command;
+  }
+
   /**
    * 
    * @param swerve   the swerve drive subsystem
@@ -56,9 +67,9 @@ public final class Autos {
    */
   public static Command place2andBalanceFromSides(SwerveDrive swerve, Intake intake, Elevator elevator, Flipper flipper,
       Path path1) {
-    return moveElevatorAndPlace(RobotContainer.getHeightAutonomous(), elevator, flipper).andThen(
-        driveWithIntake(path1, intake, swerve, true), swerve.balance(Direction.Backward, Direction.Backward),
-        intake.shootAuton().withTimeout(1.0));
+    return moveElevatorAndPlace(RobotContainer.getHeightAutonomous(), elevator, flipper)
+        .andThen(driveWithIntake(path1, intake, swerve, true), swerve.balance(Direction.Backward, Direction.Backward)
+            .alongWith(Commands.waitSeconds(3.0).andThen(intake.shootAuton(0.7).withTimeout(1.0))));
   }
 
   public static Command place1AndDriveForwardFromSides(SwerveDrive swerve, Elevator elevator, Flipper flipper,

@@ -9,11 +9,13 @@ public enum Path {
     BumpSide_PickUp_Third("Bump Side PickUp Third"), BumpSide_PickUp_PlaceSecond("Bump Side Pickup PlaceSecond"),
     BumpSide_PickUp_Balance("Bump Side PickUp Balance"), BumpSide_DriveForwardCone("Bump Side Drive Forward"),
     BumpSide_DriveForwardCube("Bump Side Place Cube Drive Forward"),
+    BumpSide_Cube_PickUp_Balance("Bump Side Cube PickUp Balance"),
     LoadingZone_PickUp_Third("Loading Zone PickUp Third"),
     LoadingZone_PickUp_PlaceSecond("Loading Zone PickUp PlaceSecond"),
     LoadingZone_PickUp_Balance("Loading Zone PickUp Balance"),
     LoadingZone_DriveForwardCone("Loading Zone Drive Forward"),
-    LoadingZone_DriveForwardCube("Loading Zone Place Cube Drive Forward");
+    LoadingZone_DriveForwardCube("Loading Zone Place Cube Drive Forward"),
+    LoadingZone_PlaceCube_PickUp_Balance("Loading Zone Cube PickUp Balance");
 
     String pathName;
     PathPlannerTrajectory path;

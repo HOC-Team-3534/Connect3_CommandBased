@@ -130,7 +130,7 @@ public class SwerveDrive extends SwerveSubsystem {
     public double getSlope() { return inputs.pitchDegs + ((RobotType.PBOT == Constants.ROBOTTYPE) ? -3.0 : -0.5); }
 
     public boolean isFacingDirection(Direction direction) {
-        return Math.abs(getPose().getRotation().minus(direction.rot).getDegrees()) < 2.0;
+        return Math.abs(getPose().getRotation().minus(direction.rot).getDegrees()) < 5.0;
     }
 
     public Command driveOnPath(Path path, boolean resetToInitial, String eventName, Command eventCommand) {

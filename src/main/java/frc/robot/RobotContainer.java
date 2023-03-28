@@ -103,19 +103,23 @@ public class RobotContainer {
 				.place1AndDriveForwardFromSides(swerveDrive, elevator, flipper, Path.LoadingZone_DriveForwardCone));
 		autonChooser.addOption("Loading Zone Place Cube and Drive Forward ", () -> Autos
 				.place1AndDriveForwardFromSides(swerveDrive, elevator, flipper, Path.LoadingZone_DriveForwardCube));
+		autonChooser.addOption("Loading Zone Place Cube Pickup Second and Balance",
+				() -> Autos.place2andBalanceFromSides(swerveDrive, intake, elevator, flipper,
+						Path.LoadingZone_PlaceCube_PickUp_Balance));
 
 		// Autonomous Bump Side Paths
 		autonChooser.addOption("Bump Side Place 2", () -> Autos.place2FromSides(swerveDrive, intake, elevator, flipper,
 				Path.BumpSide_PickUp_PlaceSecond, null));
-		autonChooser.addOption("Bump Side Place 2 Pick Up Third", () -> Autos.place2FromSides(swerveDrive, intake,
-				elevator, flipper, Path.BumpSide_PickUp_PlaceSecond, Path.BumpSide_PickUp_Third));
-		autonChooser.addOption("Bump Side Place Pickup Second and Balance", () -> Autos
+		autonChooser.addOption("Bump Side Place 3", () -> Autos.place2FromSides(swerveDrive, intake, elevator, flipper,
+				Path.BumpSide_PickUp_PlaceSecond, Path.BumpSide_PickUp_Third, 2.5));
+		autonChooser.addOption("Bump Side Place Cone Pickup Second and Balance", () -> Autos
 				.place2andBalanceFromSides(swerveDrive, intake, elevator, flipper, Path.BumpSide_PickUp_Balance));
 		autonChooser.addOption("Bump Side Place Cone and Drive Forward", () -> Autos
 				.place1AndDriveForwardFromSides(swerveDrive, elevator, flipper, Path.BumpSide_DriveForwardCone));
 		autonChooser.addOption("Bump Side Place Cube and Drive Forward", () -> Autos
 				.place1AndDriveForwardFromSides(swerveDrive, elevator, flipper, Path.BumpSide_DriveForwardCube));
-
+		autonChooser.addOption("Bump Side Place Cube Pickup Second and Balance", () -> Autos
+				.place2andBalanceFromSides(swerveDrive, intake, elevator, flipper, Path.BumpSide_Cube_PickUp_Balance));
 		// Autonomous Center Paths
 		autonChooser.addOption("Center Place Drive Across and Back",
 				() -> Autos.place1andBalanceFromCenter(swerveDrive, intake, elevator, flipper));
@@ -133,9 +137,9 @@ public class RobotContainer {
 			new Alert("Tuning mode active, expect decreased network performance.", AlertType.INFO).set(true);
 		}
 
-		heightChooser.addDefaultOption("Low", Height.OFF);
+		heightChooser.addDefaultOption("High", Height.HIGH);
 		heightChooser.addOption("Mid", Height.MID);
-		heightChooser.addOption("High", Height.HIGH);
+		heightChooser.addOption("Low", Height.OFF);
 
 		SmartDashboard.putData(field);
 	}

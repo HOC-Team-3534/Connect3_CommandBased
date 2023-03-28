@@ -60,6 +60,12 @@ public class Intake extends SubsystemBase {
         return startEnd(() -> setBothMotors(-0.40), () -> setBothMotors(0)).asProxy();
     }
 
+    public Command shootAuton(double power) {
+        if (testing)
+            return Commands.none();
+        return startEnd(() -> setBothMotors(power * -1), () -> setBothMotors(0)).asProxy();
+    }
+
     private void setBothMotors(double percent) {
         setTop(percent);
         setBottom(percent);
