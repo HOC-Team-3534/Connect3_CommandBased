@@ -7,7 +7,7 @@ import frc.robot.Constants.Drive.AUTO;
 
 public enum Path {
     BumpSide_PlaceCone_ExtakeCube("Bump Side Place Cone Extake"),
-    BumpSide_PlaceCube_ExtakeCube("Bump Side Place Cube Extake"), BumpSide_ExtakeThird("Bump Side Extake Third"),
+    BumpSide_PlaceCube_ExtakeCube("Bump Side Place Cube Extake"), BumpSide_ExtakeThird("Bump Side PickUp Third"),
     BumpSide_PlaceCone_Balance("Bump Side Cone Balance"), BumpSide_PlaceCube_Balance("Bump Side Cube Balance"),
     BumpSide_DriveForwardCone("Bump Side Drive Forward"),
     BumpSide_DriveForwardCube("Bump Side Place Cube Drive Forward"),

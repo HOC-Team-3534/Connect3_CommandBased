@@ -114,11 +114,11 @@ public class RobotContainer {
 		autonChooser.addOption("Bump Side Place Cone Extake 1", () -> Autos.place2FromSides(swerveDrive, intake,
 				elevator, flipper, Path.BumpSide_PlaceCone_ExtakeCube, null));
 		autonChooser.addOption("Bump Side Place Cone Extake 2", () -> Autos.place2FromSides(swerveDrive, intake,
-				elevator, flipper, Path.BumpSide_PlaceCone_ExtakeCube, Path.BumpSide_ExtakeThird, 2.5));
+				elevator, flipper, Path.BumpSide_PlaceCone_ExtakeCube, Path.BumpSide_ExtakeThird, 2.8));
 		autonChooser.addOption("Bump Side Place Cube Extake 1", () -> Autos.place2FromSides(swerveDrive, intake,
 				elevator, flipper, Path.BumpSide_PlaceCube_ExtakeCube, null));
 		autonChooser.addOption("Bump Side Place Cube Extake 2", () -> Autos.place2FromSides(swerveDrive, intake,
-				elevator, flipper, Path.BumpSide_PlaceCube_ExtakeCube, Path.BumpSide_ExtakeThird, 2.5));
+				elevator, flipper, Path.BumpSide_PlaceCube_ExtakeCube, Path.BumpSide_ExtakeThird, 2.8));
 		autonChooser.addOption("Bump Side Place Cone Balance", () -> Autos.place2andBalanceFromSides(swerveDrive,
 				intake, elevator, flipper, Path.BumpSide_PlaceCone_Balance));
 		autonChooser.addOption("Bump Side Place Cube Balance", () -> Autos.place2andBalanceFromSides(swerveDrive,

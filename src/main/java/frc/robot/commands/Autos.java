@@ -35,10 +35,10 @@ public final class Autos {
       Path path1, Path path2) {
 
     var command = moveElevatorAndPlace(RobotContainer.getHeightAutonomous(), elevator, flipper)
-        .andThen(driveWithIntake(path1, intake, swerve, true, true), intake.shootAuton().withTimeout(0.4));
+        .andThen(driveWithIntake(path1, intake, swerve, true, true), intake.shootAuton().withTimeout(0.3));
     if (path2 != null)
-      command = command.andThen(driveWithIntake(path2, intake, swerve, false, 3.85),
-          intake.shootAuton().withTimeout(1.0));
+      command = command.andThen(driveWithIntake(path2, intake, swerve, false, 3.45),
+          intake.shootAuton(0.8).withTimeout(1.0));
     return command;
   }
 
@@ -46,10 +46,10 @@ public final class Autos {
       Path path1, Path path2, double intakeTime) {
 
     var command = moveElevatorAndPlace(RobotContainer.getHeightAutonomous(), elevator, flipper)
-        .andThen(driveWithIntake(path1, intake, swerve, true, true), intake.shootAuton().withTimeout(0.4));
+        .andThen(driveWithIntake(path1, intake, swerve, true, true), intake.shootAuton(0.7).withTimeout(0.4));
     if (path2 != null)
       command = command.andThen(driveWithIntake(path2, intake, swerve, false, intakeTime),
-          intake.shootAuton().withTimeout(1.0));
+          intake.shootAuton(0.8).withTimeout(1.0));
     return command;
   }
 
@@ -128,7 +128,7 @@ public final class Autos {
       boolean firstRun) {
     if (firstRun)
       return Commands.deadline(swerve.driveOnPath(path, resetToIntial),
-          Commands.waitSeconds(1.5).andThen(intake.runIntakeAuton().asProxy().withTimeout(3.5)));
+          Commands.waitSeconds(1.8).andThen(intake.runIntakeAuton().asProxy().withTimeout(1.8)));
     else
       return Commands.deadline(swerve.driveOnPath(path, resetToIntial),
           intake.runIntakeAuton().asProxy().withTimeout(3.5));
