@@ -93,33 +93,40 @@ public class RobotContainer {
 		autonChooser.addDefaultOption("No Auton", () -> Commands.none());
 
 		// Autonomous Loading Zone Paths
-		autonChooser.addOption("Loading Zone Place 2", () -> Autos.place2FromSides(swerveDrive, intake, elevator,
-				flipper, Path.LoadingZone_PickUp_PlaceSecond, null));
-		autonChooser.addOption("Loading Zone Place 2 And Pick Up Third", () -> Autos.place2FromSides(swerveDrive,
-				intake, elevator, flipper, Path.LoadingZone_PickUp_PlaceSecond, Path.LoadingZone_PickUp_Third));
-		autonChooser.addOption("Loading Zone Place Pickup Second and Balance", () -> Autos
-				.place2andBalanceFromSides(swerveDrive, intake, elevator, flipper, Path.LoadingZone_PickUp_Balance));
+		autonChooser.addOption("Loading Zone Place Cone Extake 1", () -> Autos.place2FromSides(swerveDrive, intake,
+				elevator, flipper, Path.LoadingZone_PlaceCone_ExtakeCube, null));
+		autonChooser.addOption("Loading Zone Place Cube Extake 1", () -> Autos.place2FromSides(swerveDrive, intake,
+				elevator, flipper, Path.LoadingZone_PlaceCube_ExtakeCube, null));
+		autonChooser.addOption("Loading Zone Place Cone Extake 2", () -> Autos.place2FromSides(swerveDrive, intake,
+				elevator, flipper, Path.LoadingZone_PlaceCone_ExtakeCube, Path.LoadingZone_ExtakeThird));
+		autonChooser.addOption("Loading Zone Place Cube Extake 2", () -> Autos.place2FromSides(swerveDrive, intake,
+				elevator, flipper, Path.LoadingZone_PlaceCube_ExtakeCube, Path.LoadingZone_ExtakeThird));
+		autonChooser.addOption("Loading Zone Place Cone and Balance", () -> Autos.place2andBalanceFromSides(swerveDrive,
+				intake, elevator, flipper, Path.LoadingZone_PlaceCone_Balance));
+		autonChooser.addOption("Loading Zone Place Cube and Balance", () -> Autos.place2andBalanceFromSides(swerveDrive,
+				intake, elevator, flipper, Path.LoadingZone_PlaceCube_Balance));
 		autonChooser.addOption("Loading Zone Place Cone and Drive Forward", () -> Autos
 				.place1AndDriveForwardFromSides(swerveDrive, elevator, flipper, Path.LoadingZone_DriveForwardCone));
 		autonChooser.addOption("Loading Zone Place Cube and Drive Forward ", () -> Autos
 				.place1AndDriveForwardFromSides(swerveDrive, elevator, flipper, Path.LoadingZone_DriveForwardCube));
-		autonChooser.addOption("Loading Zone Place Cube Pickup Second and Balance",
-				() -> Autos.place2andBalanceFromSides(swerveDrive, intake, elevator, flipper,
-						Path.LoadingZone_PlaceCube_PickUp_Balance));
 
 		// Autonomous Bump Side Paths
-		autonChooser.addOption("Bump Side Place 2", () -> Autos.place2FromSides(swerveDrive, intake, elevator, flipper,
-				Path.BumpSide_PickUp_PlaceSecond, null));
-		autonChooser.addOption("Bump Side Place 3", () -> Autos.place2FromSides(swerveDrive, intake, elevator, flipper,
-				Path.BumpSide_PickUp_PlaceSecond, Path.BumpSide_PickUp_Third, 2.5));
-		autonChooser.addOption("Bump Side Place Cone Pickup Second and Balance", () -> Autos
-				.place2andBalanceFromSides(swerveDrive, intake, elevator, flipper, Path.BumpSide_PickUp_Balance));
+		autonChooser.addOption("Bump Side Place Cone Extake 1", () -> Autos.place2FromSides(swerveDrive, intake,
+				elevator, flipper, Path.BumpSide_PlaceCone_ExtakeCube, null));
+		autonChooser.addOption("Bump Side Place Cone Extake 2", () -> Autos.place2FromSides(swerveDrive, intake,
+				elevator, flipper, Path.BumpSide_PlaceCone_ExtakeCube, Path.BumpSide_ExtakeThird, 2.5));
+		autonChooser.addOption("Bump Side Place Cube Extake 1", () -> Autos.place2FromSides(swerveDrive, intake,
+				elevator, flipper, Path.BumpSide_PlaceCube_ExtakeCube, null));
+		autonChooser.addOption("Bump Side Place Cube Extake 2", () -> Autos.place2FromSides(swerveDrive, intake,
+				elevator, flipper, Path.BumpSide_PlaceCube_ExtakeCube, Path.BumpSide_ExtakeThird, 2.5));
+		autonChooser.addOption("Bump Side Place Cone Balance", () -> Autos.place2andBalanceFromSides(swerveDrive,
+				intake, elevator, flipper, Path.BumpSide_PlaceCone_Balance));
+		autonChooser.addOption("Bump Side Place Cube Balance", () -> Autos.place2andBalanceFromSides(swerveDrive,
+				intake, elevator, flipper, Path.BumpSide_PlaceCube_Balance));
 		autonChooser.addOption("Bump Side Place Cone and Drive Forward", () -> Autos
 				.place1AndDriveForwardFromSides(swerveDrive, elevator, flipper, Path.BumpSide_DriveForwardCone));
 		autonChooser.addOption("Bump Side Place Cube and Drive Forward", () -> Autos
 				.place1AndDriveForwardFromSides(swerveDrive, elevator, flipper, Path.BumpSide_DriveForwardCube));
-		autonChooser.addOption("Bump Side Place Cube Pickup Second and Balance", () -> Autos
-				.place2andBalanceFromSides(swerveDrive, intake, elevator, flipper, Path.BumpSide_Cube_PickUp_Balance));
 		// Autonomous Center Paths
 		autonChooser.addOption("Center Place Drive Across and Back",
 				() -> Autos.place1andBalanceFromCenter(swerveDrive, intake, elevator, flipper));
