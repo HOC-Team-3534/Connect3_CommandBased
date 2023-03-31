@@ -77,8 +77,8 @@ public class SwerveDrive extends SwerveSubsystem {
         var driveSign = driveDirection.equals(Direction.Forward) ? 1 : -1;
 
         var command = (driveInX(0, facingDirection).until(() -> isFacingDirection(facingDirection))).andThen(
-                driveInX(0.25 * driveSign, facingDirection).until(() -> Math.abs(getSlope()) > 13.25),
-                driveInX(0.3 * driveSign, facingDirection).until(() -> Math.abs(getSlope()) < 13.15),
+                driveInX(0.2 * driveSign, facingDirection).until(() -> Math.abs(getSlope()) > 13.25),
+                driveInX(0.2 * driveSign, facingDirection).until(() -> Math.abs(getSlope()) < 13.15),
                 fineTuneBalance(facingDirection));
 
         // driveInX(0.2 * driveSign, facingDirection).withTimeout(0.75), this was
@@ -94,13 +94,13 @@ public class SwerveDrive extends SwerveSubsystem {
 
         return runOnce(io::DriveInBrake).andThen(run(() -> {
             if (getSlope() > 10)
-                driveStraightWithPower(driveSign * -0.09, facingDirection);
-            else if (getSlope() > 5)
                 driveStraightWithPower(driveSign * -0.04, facingDirection);
+            else if (getSlope() > 5)
+                driveStraightWithPower(driveSign * -0.02, facingDirection);
             else if (getSlope() < -10)
-                driveStraightWithPower(driveSign * 0.09, facingDirection);
-            else if (getSlope() < -5)
                 driveStraightWithPower(driveSign * 0.04, facingDirection);
+            else if (getSlope() < -5)
+                driveStraightWithPower(driveSign * 0.02, facingDirection);
             else
                 driveStraightWithPower(0.0, facingDirection);
         }));

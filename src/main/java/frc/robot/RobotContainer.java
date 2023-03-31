@@ -162,15 +162,15 @@ public class RobotContainer {
 	 * Flight joysticks}.
 	 */
 	private void configureBindings() {
-		TGR.DTM.tgr().whileTrue(new ProxyCommand(swerveDrive::DTMFollowToPose));
+		// TGR.DTM.tgr().whileTrue(new ProxyCommand(swerveDrive::DTMFollowToPose));
 
 		// TODO create DTM that aligns so the front can extake
 
 		TGR.PrepareBalance.tgr().whileTrue(new ProxyCommand(() -> swerveDrive.squareUp()));
 
-		TGR.ResetWithLimelight.tgr().onTrue(new ProxyCommand(() -> {
-			return swerveDrive.resetPoseToVisionPose(vision.getBotPose());
-		}));
+		// TGR.ResetWithLimelight.tgr().onTrue(new ProxyCommand(() -> {
+		// return swerveDrive.resetPoseToVisionPose(vision.getBotPose());
+		// }));
 
 		TGR.PlaceHigh.tgr().onTrue(elevator.goToDesiredHeight(Height.HIGH))
 				.onFalse(elevator.goToDesiredHeight(Height.OFF));
@@ -191,10 +191,6 @@ public class RobotContainer {
 
 		new Trigger(() -> DriverStation.getMatchTime() < 2.0 && Robot.isTeleopEnabled).onTrue(swerveDrive.brake());
 
-	}
-
-	public static Command updatePoseWithVisionAuton() {
-		return swerveDrive.resetPoseToVisionPose(vision.getBotPose());
 	}
 
 	public static Pose2d visionGridPose() {
@@ -230,11 +226,12 @@ public class RobotContainer {
 	public static Height getHeightAutonomous() { return heightChooser.get(); }
 
 	public enum TGR {
-		DTM(driverController.leftTrigger(0.15).and(() -> EnabledDebugModes.DTMEnabled)),
-		Creep(driverController.leftBumper().or(() -> elevator.getCurrentCommand() != null)),
+		// DTM(driverController.leftTrigger(0.15).and(() ->
+		// EnabledDebugModes.DTMEnabled)),
+		Creep(driverController.leftTrigger().or(() -> elevator.getCurrentCommand() != null)),
 		PrepareBalance(driverController.a().and(() -> !EnabledDebugModes.CharacterizeEnabled)),
 		Characterize(driverController.a().and(() -> EnabledDebugModes.CharacterizeEnabled)),
-		ResetWithLimelight(driverController.leftStick().and(() -> !DTM.bool())),
+		// ResetWithLimelight(driverController.leftStick().and(() -> !DTM.bool())),
 
 		Intake(driverController.rightTrigger(0.15)), Extake(driverController.rightBumper()),
 		ConeAtStation(driverController.x()),

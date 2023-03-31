@@ -4,7 +4,8 @@ import edu.wpi.first.math.geometry.Pose2d;
 
 public class VisionData {
     final public Pose2d pose;
-    final public double estBotPoseTimestampSecs, estBotPoseLatencySecs;
+    final public double estBotPoseTimestampSecs;
+    public final double estBotPoseLatencySecs;
 
     public VisionData(Pose2d pose, double timestamp, double latency) {
         this.pose = pose;

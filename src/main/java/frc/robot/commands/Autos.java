@@ -57,6 +57,7 @@ public final class Autos {
   public static Command place2FromBumpSide(SwerveDrive swerve, Intake intake, Elevator elevator, Flipper flipper,
       Path path1, Path path2, double intakeTime) {
     var command = moveElevatorAndPlace(RobotContainer.getHeightAutonomous(), elevator, flipper)
+
         .andThen(driveWithIntake(path1, intake, swerve, true, true), intake.shootAuton(0.7).withTimeout(0.4));
     if (path2 != null)
       command = command.andThen(driveWithIntake(path2, intake, swerve, false, intakeTime),
@@ -151,16 +152,16 @@ public final class Autos {
         intake.runIntakeAuton().asProxy().withTimeout(time));
   }
 
-  private static Command driveWithIntake(Path path, Intake intake, SwerveDrive swerve, boolean resetToIntial,
-      boolean firstRun, boolean bumpside) {
-    if (firstRun)
-      return Commands.deadline(
-          swerve.driveOnPath(path, resetToIntial).alongWith(RobotContainer.updatePoseWithVisionAuton()),
-          Commands.waitSeconds(1.8).andThen(intake.runIntakeAuton().asProxy().withTimeout(1.8)));
-    else
-      return Commands.deadline(swerve.driveOnPath(path, resetToIntial),
-          intake.runIntakeAuton().asProxy().withTimeout(3.5));
-  }
+  // private static Command driveWithIntake(Path path, Intake intake, SwerveDrive
+  // swerve, boolean resetToIntial,
+  // boolean firstRun, boolean bumpside) {
+  // if (firstRun)
+  // return Commands.deadline(swerve.driveOnPath(path, resetToIntial),
+  // Commands.waitSeconds(1.8).andThen(intake.runIntakeAuton().asProxy().withTimeout(1.8)));
+  // else
+  // return Commands.deadline(swerve.driveOnPath(path, resetToIntial),
+  // intake.runIntakeAuton().asProxy().withTimeout(3.5));
+  // }
 
   private Autos() {
     throw new UnsupportedOperationException("This is a utility class!");

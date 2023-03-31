@@ -34,17 +34,17 @@ public class VisionIOLimelight implements VisionIO {
         }
         double[] botPoseArray;
         switch (DriverStation.getAlliance()) {
-            case Blue:
-                botPoseArray = (table.getEntry("botpose_wpiblue").getDoubleArray(new double[7]));
-                break;
+        case Blue:
+            botPoseArray = (table.getEntry("botpose_wpiblue").getDoubleArray(new double[7]));
+            break;
 
-            case Red:
-                botPoseArray = (table.getEntry("botpose_wpired").getDoubleArray(new double[7]));
-                break;
+        case Red:
+            botPoseArray = (table.getEntry("botpose_wpired").getDoubleArray(new double[7]));
+            break;
 
-            default:
-                visionData = null;
-                return;
+        default:
+            visionData = null;
+            return;
         }
         var cameraPoseArray = table.getEntry("camerapose_targetspace").getDoubleArray(new double[6]);
         var distanceAway = new Translation2d(cameraPoseArray[0], cameraPoseArray[2]).getNorm();
@@ -60,8 +60,5 @@ public class VisionIOLimelight implements VisionIO {
     }
 
     @Override
-    public VisionData getVisionData() {
-        return visionData;
-    }
-
+    public VisionData getVisionData() { return visionData; }
 }

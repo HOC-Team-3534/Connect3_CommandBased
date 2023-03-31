@@ -28,8 +28,8 @@ public class Lights extends SubsystemBase {
                 set(0.69); // YELLOW
             else if (TGR.CubeLights.bool())
                 set(0.91); // PURPLE
-            else if (TGR.DTM.bool())
-                set(0.77); // GREEN
+            // else if (TGR.DTM.bool())
+            // set(0.77); // GREEN
             else
                 neutral();
         });
@@ -45,17 +45,17 @@ public class Lights extends SubsystemBase {
         // what
         // color we are
         switch (DriverStation.getAlliance()) {
-            case Blue:
-                set(0.87);
-                break;
+        case Blue:
+            set(0.87);
+            break;
 
-            case Red:
-                set(0.61);
-                break;
+        case Red:
+            set(0.61);
+            break;
 
-            default:
-                set(0.0);
-                break;
+        default:
+            set(0.0);
+            break;
         }
     }
 }
