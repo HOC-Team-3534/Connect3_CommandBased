@@ -12,6 +12,7 @@ import frc.robot.subsystems.flipper.Flipper;
 import frc.robot.subsystems.intake.Intake;
 import frc.robot.subsystems.swerveDrive.SwerveDrive;
 import frc.robot.subsystems.swerveDrive.SwerveDrive.Direction;
+import frc.robot.subsystems.vision.Vision;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 
@@ -53,6 +54,16 @@ public final class Autos {
     return command;
   }
 
+  public static Command place2FromBumpSide(SwerveDrive swerve, Intake intake, Elevator elevator, Flipper flipper,
+      Path path1, Path path2, double intakeTime) {
+    var command = moveElevatorAndPlace(RobotContainer.getHeightAutonomous(), elevator, flipper)
+        .andThen(driveWithIntake(path1, intake, swerve, true, true), intake.shootAuton(0.7).withTimeout(0.4));
+    if (path2 != null)
+      command = command.andThen(driveWithIntake(path2, intake, swerve, false, intakeTime),
+          intake.shootAuton(0.8).withTimeout(1.0));
+    return command;
+  }
+
   /**
    * 
    * @param swerve   the swerve drive subsystem
@@ -69,7 +80,7 @@ public final class Autos {
       Path path1) {
     return moveElevatorAndPlace(RobotContainer.getHeightAutonomous(), elevator, flipper).andThen(
         driveWithIntake(path1, intake, swerve, true, true), swerve.balance(Direction.Backward, Direction.Backward)
-            .alongWith(Commands.waitSeconds(3.0).andThen(intake.shootAuton(0.7).withTimeout(1.0))));
+            .alongWith(Commands.waitSeconds(3.0).andThen(intake.shootAuton(0.5).withTimeout(1.0))));
   }
 
   public static Command place1AndDriveForwardFromSides(SwerveDrive swerve, Elevator elevator, Flipper flipper,
@@ -138,6 +149,17 @@ public final class Autos {
       double time) {
     return Commands.deadline(swerve.driveOnPath(path, resetToIntial),
         intake.runIntakeAuton().asProxy().withTimeout(time));
+  }
+
+  private static Command driveWithIntake(Path path, Intake intake, SwerveDrive swerve, boolean resetToIntial,
+      boolean firstRun, boolean bumpside) {
+    if (firstRun)
+      return Commands.deadline(
+          swerve.driveOnPath(path, resetToIntial).alongWith(RobotContainer.updatePoseWithVisionAuton()),
+          Commands.waitSeconds(1.8).andThen(intake.runIntakeAuton().asProxy().withTimeout(1.8)));
+    else
+      return Commands.deadline(swerve.driveOnPath(path, resetToIntial),
+          intake.runIntakeAuton().asProxy().withTimeout(3.5));
   }
 
   private Autos() {

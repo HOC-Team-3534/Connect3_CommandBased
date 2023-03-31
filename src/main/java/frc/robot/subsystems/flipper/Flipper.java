@@ -41,7 +41,7 @@ public class Flipper extends SubsystemBase {
 
     public Command makeLevel() {
         return flipDown().andThen(
-                flipperVoltage(FlipperPosition.Up.voltage).withTimeout(0.25).beforeStarting(() -> isDown = false));
+                flipperVoltage(FlipperPosition.Up.voltage).withTimeout(0.26).beforeStarting(() -> isDown = false));
     }
 
     public Command flipDownOrLevel() {
@@ -85,8 +85,7 @@ public class Flipper extends SubsystemBase {
     }
 
     enum FlipperPosition {
-        Down(-1.0, 10.0),
-        Up(1.0, 10.0);
+        Down(-1.0, 10.0), Up(1.0, 10.0);
 
         public double voltage, currentShutoff;
 

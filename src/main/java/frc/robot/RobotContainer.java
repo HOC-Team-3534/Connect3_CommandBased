@@ -111,13 +111,13 @@ public class RobotContainer {
 				.place1AndDriveForwardFromSides(swerveDrive, elevator, flipper, Path.LoadingZone_DriveForwardCube));
 
 		// Autonomous Bump Side Paths
-		autonChooser.addOption("Bump Side Place Cone Extake 1", () -> Autos.place2FromSides(swerveDrive, intake,
-				elevator, flipper, Path.BumpSide_PlaceCone_ExtakeCube, null));
-		autonChooser.addOption("Bump Side Place Cone Extake 2", () -> Autos.place2FromSides(swerveDrive, intake,
-				elevator, flipper, Path.BumpSide_PlaceCone_ExtakeCube, Path.BumpSide_ExtakeThird, 2.8));
-		autonChooser.addOption("Bump Side Place Cube Extake 1", () -> Autos.place2FromSides(swerveDrive, intake,
-				elevator, flipper, Path.BumpSide_PlaceCube_ExtakeCube, null));
-		autonChooser.addOption("Bump Side Place Cube Extake 2", () -> Autos.place2FromSides(swerveDrive, intake,
+		autonChooser.addOption("Bump Side Place Cone Extake 1", () -> Autos.place2FromBumpSide(swerveDrive, intake,
+				elevator, flipper, Path.BumpSide_PlaceCone_ExtakeCube, null, 0));
+		autonChooser.addOption("Bump Side Place Cone Extake 2", () -> Autos.place2FromBumpSide(swerveDrive, intake,
+				elevator, flipper, Path.BumpSide_PlaceCone_ExtakeCube, Path.BumpSide_ExtakeThird, 3.0));
+		autonChooser.addOption("Bump Side Place Cube Extake 1", () -> Autos.place2FromBumpSide(swerveDrive, intake,
+				elevator, flipper, Path.BumpSide_PlaceCube_ExtakeCube, null, 0));
+		autonChooser.addOption("Bump Side Place Cube Extake 2", () -> Autos.place2FromBumpSide(swerveDrive, intake,
 				elevator, flipper, Path.BumpSide_PlaceCube_ExtakeCube, Path.BumpSide_ExtakeThird, 2.8));
 		autonChooser.addOption("Bump Side Place Cone Balance", () -> Autos.place2andBalanceFromSides(swerveDrive,
 				intake, elevator, flipper, Path.BumpSide_PlaceCone_Balance));
@@ -191,6 +191,10 @@ public class RobotContainer {
 
 		new Trigger(() -> DriverStation.getMatchTime() < 2.0 && Robot.isTeleopEnabled).onTrue(swerveDrive.brake());
 
+	}
+
+	public static Command updatePoseWithVisionAuton() {
+		return swerveDrive.resetPoseToVisionPose(vision.getBotPose());
 	}
 
 	public static Pose2d visionGridPose() {
