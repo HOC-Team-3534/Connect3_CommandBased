@@ -115,7 +115,7 @@ public class SwerveDrive extends SwerveSubsystem {
                 driveInX(0.35, Direction.Forward).until(() -> getSlope() < -12.25),
                 driveInX(0.35, Direction.Forward).until(() -> getSlope() > 12.0),
                 driveInX(0.35, Direction.Forward).until(() -> getSlope() < 5),
-                driveInX(0.15, Direction.Forward).withTimeout(1.5));
+                driveInX(0.15, Direction.Forward).withTimeout(0.5));
     }
 
     public Command brake() {
