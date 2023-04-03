@@ -25,7 +25,6 @@ import frc.robot.RobotContainer.AXS;
 import frc.robot.RobotContainer.TGR;
 import frc.robot.Constants;
 import frc.robot.Path;
-import frc.robot.Robot;
 import frc.robot.RobotContainer;
 import swerve.SwerveInput;
 import swerve.SwerveSubsystem;
@@ -77,7 +76,7 @@ public class SwerveDrive extends SwerveSubsystem {
         var driveSign = driveDirection.equals(Direction.Forward) ? 1 : -1;
 
         var command = (driveInX(0, facingDirection).until(() -> isFacingDirection(facingDirection))).andThen(
-                driveInX(0.2 * driveSign, facingDirection).until(() -> Math.abs(getSlope()) > 13.25),
+                driveInX(0.30 * driveSign, facingDirection).until(() -> Math.abs(getSlope()) > 13.25),
                 driveInX(0.2 * driveSign, facingDirection).until(() -> Math.abs(getSlope()) < 13.15),
                 fineTuneBalance(facingDirection));
 
@@ -115,7 +114,7 @@ public class SwerveDrive extends SwerveSubsystem {
                 driveInX(0.35, Direction.Forward).until(() -> getSlope() < -12.25),
                 driveInX(0.35, Direction.Forward).until(() -> getSlope() > 12.0),
                 driveInX(0.35, Direction.Forward).until(() -> getSlope() < 5),
-                driveInX(0.15, Direction.Forward).withTimeout(0.5));
+                driveInX(0.15, Direction.Forward).withTimeout(1.25));
     }
 
     public Command brake() {

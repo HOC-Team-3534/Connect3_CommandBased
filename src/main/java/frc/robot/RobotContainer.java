@@ -129,7 +129,8 @@ public class RobotContainer {
 				.place1AndDriveForwardFromSides(swerveDrive, elevator, flipper, Path.BumpSide_DriveForwardCube));
 		// Autonomous Center Paths
 		autonChooser.addOption("Center Place Drive Across and Back",
-				() -> Autos.place1andBalanceFromCenter(swerveDrive, intake, elevator, flipper));
+				() -> Autos.place1andBalanceFromCenter(swerveDrive, intake, elevator, flipper)
+						.alongWith(Commands.waitSeconds(6.0).andThen(intake.runIntakeAuton().withTimeout(2.5))));
 
 		// Autonomous Testing Paths
 		// autonChooser.addOption("Test Auto Balance Forward", () ->

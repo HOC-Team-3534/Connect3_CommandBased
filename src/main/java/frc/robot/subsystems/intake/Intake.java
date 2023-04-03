@@ -34,7 +34,7 @@ public class Intake extends SubsystemBase {
                     setBothMotors(0.85);
             else if (TGR.Extake.bool())
                 if (TGR.CubeLights.bool())
-                    setBothMotors(-0.3);
+                    setBothMotors(-0.20);
                 else
                     setBothMotors(-0.8);
             else
