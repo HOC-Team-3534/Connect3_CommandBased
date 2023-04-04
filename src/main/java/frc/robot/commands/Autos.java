@@ -106,6 +106,13 @@ public final class Autos {
         .andThen(swerve.balanceAcrossAndBack());
   }
 
+  public static Command place1andBalanceFromCenterWithoutDrivingAcross(SwerveDrive swerve, Intake intake,
+      Elevator elevator, Flipper flipper) {
+
+    return moveElevatorAndPlace(RobotContainer.getHeightAutonomous(), elevator, flipper)
+        .andThen(swerve.balance(Direction.Forward, Direction.Backward));
+  }
+
   public static Command place2andBalanceFromCenter(SwerveDrive swerve, Intake intake, Elevator elevator,
       Flipper flipper, Path cubePath) {
     return moveElevatorAndPlace(RobotContainer.getHeightAutonomous(), elevator, flipper).andThen(swerve.driveAcross(),

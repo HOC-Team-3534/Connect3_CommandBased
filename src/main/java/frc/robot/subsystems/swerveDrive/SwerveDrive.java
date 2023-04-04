@@ -35,7 +35,7 @@ public class SwerveDrive extends SwerveSubsystem {
 
     double timeCharacterizing;
     final ProfiledPIDController xController, yController, thetaController;
-    int fineTuneCounter = 0;
+
 
     Field2d field = new Field2d();
 

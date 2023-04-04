@@ -131,6 +131,8 @@ public class RobotContainer {
 		autonChooser.addOption("Center Place Drive Across and Back",
 				() -> Autos.place1andBalanceFromCenter(swerveDrive, intake, elevator, flipper)
 						.alongWith(Commands.waitSeconds(6.0).andThen(intake.runIntakeAuton().withTimeout(2.5))));
+		autonChooser.addOption("Center Place Balance without driving across",
+				() -> Autos.place1andBalanceFromCenterWithoutDrivingAcross(swerveDrive, intake, elevator, flipper));
 
 		// Autonomous Testing Paths
 		// autonChooser.addOption("Test Auto Balance Forward", () ->

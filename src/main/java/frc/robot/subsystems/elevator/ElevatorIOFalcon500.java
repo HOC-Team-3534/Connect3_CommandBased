@@ -21,11 +21,8 @@ public class ElevatorIOFalcon500 implements ElevatorIO {
         elevatorMotor.setInverted(elevatorInverted);
         elevatorMotor.setSensorPhase(false);
         elevatorMotor.setSelectedSensorPosition(0);
-        elevatorMotor
-                .configMotionCruiseVelocity(
-                        ELEVATOR.kElevatorCruiseVelocity);
-        elevatorMotor
-                .configMotionAcceleration(ELEVATOR.kElevatorAcceleration);
+        elevatorMotor.configMotionCruiseVelocity(ELEVATOR.kElevatorCruiseVelocity);
+        elevatorMotor.configMotionAcceleration(ELEVATOR.kElevatorAcceleration);
         elevatorMotor.configMotionSCurveStrength(2);
         elevatorMotor.config_kP(0, 0.05);
         elevatorMotor.config_kI(0, 0);
