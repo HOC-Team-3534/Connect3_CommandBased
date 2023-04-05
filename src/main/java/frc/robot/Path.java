@@ -11,6 +11,8 @@ public enum Path {
     BumpSide_PlaceCone_Balance("Bump Side Cone Balance"), BumpSide_PlaceCube_Balance("Bump Side Cube Balance"),
     BumpSide_DriveForwardCone("Bump Side Drive Forward"),
     BumpSide_DriveForwardCube("Bump Side Place Cube Drive Forward"),
+    BumpSide_GetFirstPieceAfterBump("Bump Side Extake PickUp First"),
+    BumpSide_GetSecondPieceAfterBump("Bump Side Extake PickUp Second"),
     // Loading Zone Paths
     LoadingZone_PlaceCone_ExtakeCube("Loading Zone Place Cone Extake 2"),
     LoadingZone_PlaceCube_ExtakeCube("Loading Zone Place Cube Get Second"),
