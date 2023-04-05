@@ -127,6 +127,8 @@ public class RobotContainer {
 				.place1AndDriveForwardFromSides(swerveDrive, elevator, flipper, Path.BumpSide_DriveForwardCone));
 		autonChooser.addOption("Bump Side Place Cube and Drive Forward", () -> Autos
 				.place1AndDriveForwardFromSides(swerveDrive, elevator, flipper, Path.BumpSide_DriveForwardCube));
+		autonChooser.addOption("Bump Side Start After Bump Extake 3 Cubes", () -> Autos.bumpSideExtakeThree(swerveDrive,
+				intake, Path.BumpSide_GetFirstPieceAfterBump, Path.BumpSide_GetSecondPieceAfterBump));
 		// Autonomous Center Paths
 		autonChooser.addOption("Center Place Drive Across and Back",
 				() -> Autos.place1andBalanceFromCenter(swerveDrive, intake, elevator, flipper)

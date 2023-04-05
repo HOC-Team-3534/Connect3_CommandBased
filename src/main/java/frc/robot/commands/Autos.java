@@ -64,6 +64,11 @@ public final class Autos {
     return command;
   }
 
+  public static Command bumpSideExtakeThree(SwerveDrive swerve, Intake intake, Path cubePath, Path cubePath2) {
+    return intake.shootAuton().withTimeout(0.5).andThen(driveWithIntake(cubePath, intake, swerve, false, 1.5),
+        intake.shootAuton(), driveWithIntake(cubePath2, intake, swerve, false, 1.0), intake.shootAuton());
+  }
+
   /**
    * 
    * @param swerve   the swerve drive subsystem
