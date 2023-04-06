@@ -44,6 +44,11 @@ public class Flipper extends SubsystemBase {
                 flipperVoltage(FlipperPosition.Up.voltage).withTimeout(0.26).beforeStarting(() -> isDown = false));
     }
 
+    public Command getReadyToPlace() {
+        return flipDown().andThen(
+                flipperVoltage(FlipperPosition.Up.voltage).withTimeout(0.08).beforeStarting(() -> isDown = false));
+    }
+
     public Command flipDownOrLevel() {
         if (testing)
             return Commands.none();

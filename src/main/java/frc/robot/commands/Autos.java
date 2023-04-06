@@ -65,9 +65,14 @@ public final class Autos {
   }
 
   public static Command bumpSideExtakeThree(SwerveDrive swerve, Intake intake, Path cubePath, Path cubePath2) {
-    return intake.shootAuton().withTimeout(0.5).andThen(driveWithIntake(cubePath, intake, swerve, false, 1.5),
-        intake.shootAuton().withTimeout(0.5), driveWithIntake(cubePath2, intake, swerve, false, 2.5),
-        intake.shootAuton().withTimeout(0.5));
+    return intake.shootAuton(0.75).withTimeout(0.5).andThen(driveWithIntake(cubePath, intake, swerve, true, 3.0),
+        intake.shootAuton(0.75).withTimeout(0.5), driveWithIntake(cubePath2, intake, swerve, false, 4.0),
+        intake.shootAuton(0.75).withTimeout(0.5));
+  }
+
+  public static Command bumpSideExtakeTwo(SwerveDrive swerve, Intake intake, Path cubePath) {
+    return intake.shootAuton(0.75).withTimeout(0.5).andThen(driveWithIntake(cubePath, intake, swerve, true, 3.0),
+        intake.shootAuton(0.75).withTimeout(0.5));
   }
 
   /**
@@ -116,7 +121,7 @@ public final class Autos {
       Elevator elevator, Flipper flipper) {
 
     return moveElevatorAndPlace(RobotContainer.getHeightAutonomous(), elevator, flipper)
-        .andThen(swerve.balance(Direction.Forward, Direction.Backward));
+        .andThen(swerve.balance(Direction.Forward, Direction.Forward));
   }
 
   public static Command place2andBalanceFromCenter(SwerveDrive swerve, Intake intake, Elevator elevator,
@@ -127,6 +132,7 @@ public final class Autos {
   }
 
   /**
+   * 
    * 
    * @param height   the desired height to place the game element
    * @param elevator the elevator subsystem

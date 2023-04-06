@@ -129,6 +129,8 @@ public class RobotContainer {
 				.place1AndDriveForwardFromSides(swerveDrive, elevator, flipper, Path.BumpSide_DriveForwardCube));
 		autonChooser.addOption("Bump Side Start After Bump Extake 3 Cubes", () -> Autos.bumpSideExtakeThree(swerveDrive,
 				intake, Path.BumpSide_GetFirstPieceAfterBump, Path.BumpSide_GetSecondPieceAfterBump));
+		autonChooser.addOption("Bump Side Start After Bump Extake 2 Cubes",
+				() -> Autos.bumpSideExtakeTwo(swerveDrive, intake, Path.BumpSide_GetFirstPieceAfterBump));
 		// Autonomous Center Paths
 		autonChooser.addOption("Center Place Drive Across and Back",
 				() -> Autos.place1andBalanceFromCenter(swerveDrive, intake, elevator, flipper)
@@ -177,9 +179,9 @@ public class RobotContainer {
 		// return swerveDrive.resetPoseToVisionPose(vision.getBotPose());
 		// }));
 
-		TGR.PlaceHigh.tgr().onTrue(elevator.goToDesiredHeight(Height.HIGH))
+		TGR.PlaceHigh.tgr().onTrue(flipper.getReadyToPlace().andThen(elevator.goToDesiredHeight(Height.HIGH)))
 				.onFalse(elevator.goToDesiredHeight(Height.OFF));
-		TGR.PlaceMid.tgr().onTrue(elevator.goToDesiredHeight(Height.MID))
+		TGR.PlaceMid.tgr().onTrue(flipper.getReadyToPlace().andThen(elevator.goToDesiredHeight(Height.MID)))
 				.onFalse(elevator.goToDesiredHeight(Height.OFF));
 
 		TGR.FlipUp.tgr().onTrue(flipper.flipUp());
