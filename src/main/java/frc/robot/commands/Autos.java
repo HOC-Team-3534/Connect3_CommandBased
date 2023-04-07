@@ -65,9 +65,9 @@ public final class Autos {
   }
 
   public static Command bumpSideExtakeThree(SwerveDrive swerve, Intake intake, Path cubePath, Path cubePath2) {
-    return intake.shootAuton(0.75).withTimeout(0.5).andThen(driveWithIntake(cubePath, intake, swerve, true, 3.0),
-        intake.shootAuton(0.75).withTimeout(0.5), driveWithIntake(cubePath2, intake, swerve, false, 4.0),
-        intake.shootAuton(0.75).withTimeout(0.5));
+    return intake.shootAuton(0.7).withTimeout(0.5).andThen(driveWithIntake(cubePath, intake, swerve, true, 3.0),
+        intake.shootAuton(0.75).withTimeout(0.5), driveWithIntake(cubePath2, intake, swerve, false, 3.25),
+        intake.shootAuton(0.7).withTimeout(0.5));
   }
 
   public static Command bumpSideExtakeTwo(SwerveDrive swerve, Intake intake, Path cubePath) {
