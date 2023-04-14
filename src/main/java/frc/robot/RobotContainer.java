@@ -193,8 +193,8 @@ public class RobotContainer {
 		// The following triggered commands are for debug purposes only
 		TGR.Characterize.tgr().whileTrue(swerveDrive.characterizeDrive(DriveCharacterization.QUASIASTIC_VOLTAGE,
 				DriveCharacterization.QUASIASTIC_DURATION));
-		TGR.PositiveVoltage.tgr().whileTrue(flipper.flipperVoltage(1.0));
-		TGR.NegativeVoltage.tgr().whileTrue(flipper.flipperVoltage(-1.0));
+		TGR.PositiveVoltage.tgr().whileTrue(flipper.gripperVoltage(0.50));
+		TGR.NegativeVoltage.tgr().whileTrue(flipper.gripperVoltage(-0.5));
 
 		new Trigger(() -> DriverStation.getMatchTime() < 2.0 && Robot.isTeleopEnabled).onTrue(swerveDrive.brake());
 

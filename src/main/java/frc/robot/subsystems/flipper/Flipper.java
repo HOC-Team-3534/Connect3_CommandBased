@@ -4,6 +4,7 @@ import org.littletonrobotics.junction.Logger;
 
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.RobotContainer;
 import edu.wpi.first.wpilibj2.command.Commands;
 
 public class Flipper extends SubsystemBase {
@@ -13,6 +14,7 @@ public class Flipper extends SubsystemBase {
 
     boolean isDown;
     boolean level;
+    boolean isGripped;
 
     public Flipper(FlipperIO io) {
         this.io = io;
@@ -28,14 +30,22 @@ public class Flipper extends SubsystemBase {
     public Command flipUp() {
         if (testing)
             return Commands.none();
-        return flipAndCheck(FlipperPosition.Up).andThen(stopFlipper(), Commands.waitSeconds(0.25))
-                .finallyDo((interrupt) -> set(0)).beforeStarting(() -> level = true);
+        return ungrip().andThen(flipAndCheck(FlipperPosition.Up).andThen(stopFlipper(), Commands.waitSeconds(0.25))
+                .finallyDo((interrupt) -> set(0)).beforeStarting(() -> level = true));
     }
 
     public Command flipDown() {
         if (testing)
             return Commands.none();
         return flipAndCheck(FlipperPosition.Down).andThen(stopFlipper(), Commands.waitSeconds(0.25))
+                .beforeStarting(() -> isDown = true);
+    }
+
+    public Command flipDownWithGrip() {
+        if (testing)
+            return Commands.none();
+        return flipAndCheck(FlipperPosition.Down)
+                .andThen(stopFlipper(), Commands.waitSeconds(0.5), grip(), Commands.waitSeconds(0.25))
                 .beforeStarting(() -> isDown = true);
     }
 
@@ -54,6 +64,8 @@ public class Flipper extends SubsystemBase {
             return Commands.none();
         if (isDown)
             return makeLevel();
+        else if (RobotContainer.TGR.ConeLights.bool())
+            return flipDownWithGrip();
         else
             return flipDown();
     }
@@ -89,6 +101,28 @@ public class Flipper extends SubsystemBase {
         Logger.getInstance().recordOutput("Flipper/PercentOutput_SetPoint", percent);
     }
 
+    private Command grip() {
+        isGripped = true;
+        if (testing)
+            return Commands.none();
+        return runOnce(() -> setGripper(GripperPosition.Gripped.gripVoltage));
+    }
+
+    private Command ungrip() {
+        isGripped = false;
+        if (testing)
+            return Commands.none();
+        return runOnce(() -> setGripper(GripperPosition.UnGripped.gripVoltage));
+    }
+
+    private void setGripper(double ungripped) {
+        io.setGripper(ungripped);
+    }
+
+    public Command gripperVoltage(double percent) {
+        return startEnd(() -> setGripper(percent), () -> setGripper(0));
+    }
+
     enum FlipperPosition {
         Down(-1.0, 10.0), Up(1.0, 10.0);
 
@@ -98,6 +132,18 @@ public class Flipper extends SubsystemBase {
             this.voltage = voltage;
             this.currentShutoff = currentShutoff;
         }
+    }
+
+    enum GripperPosition {
+        Gripped(1.0, 10.0), UnGripped(-1.0, 10.0);
+
+        public double gripVoltage, gripCurentShutoff;
+
+        GripperPosition(double voltage, double currentShutoff) {
+            this.gripCurentShutoff = currentShutoff;
+            this.gripVoltage = voltage;
+        }
+
     }
 
 }

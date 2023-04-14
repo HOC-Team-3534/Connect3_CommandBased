@@ -8,13 +8,13 @@ public interface IntakeIO {
 
     }
 
-    public default void updateInputs(IntakeIOInputs inputs) {
-    }
+    public default void updateInputs(IntakeIOInputs inputs) {}
 
-    public default void setTop(double percent) {
-    }
+    public default void setTop(double percent) {}
 
     public default void setBottom(double percent) {
 
     }
+
+    public default void intakeIntoChassis() {}
 }
