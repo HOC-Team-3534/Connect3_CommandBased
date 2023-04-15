@@ -4,7 +4,7 @@ import org.littletonrobotics.junction.Logger;
 
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.RobotContainer;
+import frc.robot.RobotContainer.TGR;
 import edu.wpi.first.wpilibj2.command.Commands;
 
 public class Flipper extends SubsystemBase {
@@ -44,14 +44,13 @@ public class Flipper extends SubsystemBase {
     public Command flipDownWithGrip() {
         if (testing)
             return Commands.none();
-        return flipAndCheck(FlipperPosition.Down)
-                .andThen(stopFlipper(), Commands.waitSeconds(0.5), grip(), Commands.waitSeconds(0.25))
+        return flipAndCheck(FlipperPosition.Down).andThen(grip(), stopFlipper(), Commands.waitSeconds(0.25))
                 .beforeStarting(() -> isDown = true);
     }
 
     public Command makeLevel() {
-        return flipDown().andThen(
-                flipperVoltage(FlipperPosition.Up.voltage).withTimeout(0.26).beforeStarting(() -> isDown = false));
+        return ungrip().andThen(flipDown().andThen(
+                flipperVoltage(FlipperPosition.Up.voltage).withTimeout(0.26).beforeStarting(() -> isDown = false)));
     }
 
     public Command getReadyToPlace() {
@@ -64,7 +63,16 @@ public class Flipper extends SubsystemBase {
             return Commands.none();
         if (isDown)
             return makeLevel();
-        else if (RobotContainer.TGR.ConeLights.bool())
+        else if (TGR.ConeLights.bool())
+            return flipDownWithGrip();
+        else
+            return flipDown();
+    }
+
+    public Command flipDownGripChoice() {
+        if (testing)
+            return Commands.none();
+        if (TGR.ConeLights.bool())
             return flipDownWithGrip();
         else
             return flipDown();
@@ -86,7 +94,10 @@ public class Flipper extends SubsystemBase {
         return run(() -> {
             if (level) {
                 level = false;
-                makeLevel().schedule();
+                flipDown().schedule();
+            }
+            if (isGripped) {
+                gripperVoltage(0.10);
             }
         });
 
@@ -135,7 +146,7 @@ public class Flipper extends SubsystemBase {
     }
 
     enum GripperPosition {
-        Gripped(1.0, 10.0), UnGripped(-1.0, 10.0);
+        Gripped(0.3, 0.11), UnGripped(-0.3, 0.25);
 
         public double gripVoltage, gripCurentShutoff;
 

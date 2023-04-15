@@ -185,7 +185,8 @@ public class RobotContainer {
 				.onFalse(elevator.goToDesiredHeight(Height.OFF));
 
 		TGR.FlipUp.tgr().onTrue(flipper.flipUp());
-		TGR.FlipDown.tgr().onTrue(new ProxyCommand(flipper::flipDownOrLevel));
+		TGR.FlipDown.tgr().whileTrue(new ProxyCommand(flipper::makeLevel))
+				.onFalse(new ProxyCommand(flipper::flipDownGripChoice));
 
 		TGR.ConeAtStation.tgr().onTrue(elevator.goToDesiredHeight(Height.LOAD))
 				.onFalse(elevator.goToDesiredHeight(Height.OFF));
@@ -193,8 +194,8 @@ public class RobotContainer {
 		// The following triggered commands are for debug purposes only
 		TGR.Characterize.tgr().whileTrue(swerveDrive.characterizeDrive(DriveCharacterization.QUASIASTIC_VOLTAGE,
 				DriveCharacterization.QUASIASTIC_DURATION));
-		TGR.PositiveVoltage.tgr().whileTrue(flipper.gripperVoltage(0.50));
-		TGR.NegativeVoltage.tgr().whileTrue(flipper.gripperVoltage(-0.5));
+		TGR.PositiveVoltage.tgr().whileTrue(flipper.gripperVoltage(0.20));
+		TGR.NegativeVoltage.tgr().whileTrue(flipper.gripperVoltage(-0.20));
 
 		new Trigger(() -> DriverStation.getMatchTime() < 2.0 && Robot.isTeleopEnabled).onTrue(swerveDrive.brake());
 

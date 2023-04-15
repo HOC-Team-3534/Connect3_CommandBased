@@ -16,5 +16,4 @@ public interface IntakeIO {
 
     }
 
-    public default void intakeIntoChassis() {}
 }

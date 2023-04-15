@@ -130,7 +130,7 @@ public final class Constants {
     public static final boolean CharacterizeEnabled = false;
     public static final boolean DTMEnabled = false;
     public static final boolean updatePoseWithVisionEnabled = false;
-    public static final boolean testingVoltageControl = false;
+    public static final boolean testingVoltageControl = true;
   }
 
   public static Mode getMode() { return Robot.isReal() ? Mode.REAL : replayMode ? Mode.REPLAY : Mode.SIM; }

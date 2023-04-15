@@ -10,7 +10,7 @@ import frc.robot.RobotContainer.TGR;
 public class Intake extends SubsystemBase {
     final IntakeIO io;
     final IntakeIOInputsAutoLogged inputs = new IntakeIOInputsAutoLogged();
-    boolean testing = true;
+    boolean testing = false;
 
     public Intake(IntakeIO io) {
         this.io = io;
@@ -39,7 +39,7 @@ public class Intake extends SubsystemBase {
                     setBothMotors(-0.8);
             else
                 setBothMotors(0);
-        }, () -> io.intakeIntoChassis());
+        }, () -> setBothMotors(0));
     }
 
     public Command runIntakeAuton() {
