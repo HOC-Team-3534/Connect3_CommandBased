@@ -36,7 +36,6 @@ public class SwerveDrive extends SwerveSubsystem {
     double timeCharacterizing;
     final ProfiledPIDController xController, yController, thetaController;
 
-
     Field2d field = new Field2d();
 
     public SwerveDrive(SwerveDriveIO io) {

@@ -60,34 +60,33 @@ public class Robot extends LoggedRobot {
     logger.recordMetadata("GitDate", BuildConstants.GIT_DATE);
     logger.recordMetadata("GitBranch", BuildConstants.GIT_BRANCH);
     switch (BuildConstants.DIRTY) {
-      case 0:
-        logger.recordMetadata("GitDirty", "All changes committed");
-        break;
-      case 1:
-        logger.recordMetadata("GitDirty", "Uncomitted changes");
-        break;
-      default:
-        logger.recordMetadata("GitDirty", "Unknown");
-        break;
+    case 0:
+      logger.recordMetadata("GitDirty", "All changes committed");
+      break;
+    case 1:
+      logger.recordMetadata("GitDirty", "Uncomitted changes");
+      break;
+    default:
+      logger.recordMetadata("GitDirty", "Unknown");
+      break;
     }
 
     switch (Constants.getMode()) {
-      case REAL:
-        logger.addDataReceiver(new WPILOGWriter(Constants.logFolder));
-        logger.addDataReceiver(new NT4Publisher());
-        LoggedPowerDistribution.getInstance();
-        break;
+    case REAL:
+      logger.addDataReceiver(new WPILOGWriter(Constants.logFolder));
+      logger.addDataReceiver(new NT4Publisher());
+      LoggedPowerDistribution.getInstance();
+      break;
 
-      case SIM:
-        logger.addDataReceiver(new NT4Publisher());
-        break;
+    case SIM:
+      logger.addDataReceiver(new NT4Publisher());
+      break;
 
-      case REPLAY:
-        String path = LogFileUtil.findReplayLog();
-        logger.setReplaySource(new WPILOGReader(path));
-        logger.addDataReceiver(
-            new WPILOGWriter(LogFileUtil.addPathSuffix(path, "_sim")));
-        break;
+    case REPLAY:
+      String path = LogFileUtil.findReplayLog();
+      logger.setReplaySource(new WPILOGReader(path));
+      logger.addDataReceiver(new WPILOGWriter(LogFileUtil.addPathSuffix(path, "_sim")));
+      break;
     }
     logger.start();
 
@@ -97,13 +96,13 @@ public class Robot extends LoggedRobot {
     // and put our
     // autonomous chooser on the dashboard.
     m_robotContainer = new RobotContainer();
-    CameraServer.startAutomaticCapture();
+    // CameraServer.startAutomaticCapture();
   }
 
   /**
    * This function is called every 20 ms, no matter the mode. Use this for items
-   * like diagnostics that you want ran during disabled, autonomous,
-   * teleoperated and test.
+   * like diagnostics that you want ran during disabled, autonomous, teleoperated
+   * and test.
    * <p>
    * This runs after the mode specific periodic functions, but before LiveWindow
    * and SmartDashboard integrated updating.
@@ -124,10 +123,8 @@ public class Robot extends LoggedRobot {
     CommandScheduler.getInstance().run();
 
     // Log scheduled commands
-    Logger.getInstance().recordOutput("ActiveCommands/Scheduler",
-        NetworkTableInstance.getDefault()
-            .getEntry("/LiveWindow/Ungrouped/Scheduler/Names")
-            .getStringArray(new String[] {}));
+    Logger.getInstance().recordOutput("ActiveCommands/Scheduler", NetworkTableInstance.getDefault()
+        .getEntry("/LiveWindow/Ungrouped/Scheduler/Names").getStringArray(new String[] {}));
 
     // Check logging fault
     logReceiverQueueAlert.set(Logger.getInstance().getReceiverQueueFault());
@@ -163,8 +160,7 @@ public class Robot extends LoggedRobot {
 
   /** This function is called periodically during autonomous. */
   @Override
-  public void autonomousPeriodic() {
-  }
+  public void autonomousPeriodic() {}
 
   @Override
   public void teleopInit() {
@@ -180,8 +176,7 @@ public class Robot extends LoggedRobot {
 
   /** This function is called periodically during operator control. */
   @Override
-  public void teleopPeriodic() {
-  }
+  public void teleopPeriodic() {}
 
   @Override
   public void testInit() {
@@ -191,16 +186,13 @@ public class Robot extends LoggedRobot {
 
   /** This function is called periodically during test mode. */
   @Override
-  public void testPeriodic() {
-  }
+  public void testPeriodic() {}
 
   /** This function is called once when the robot is first started up. */
   @Override
-  public void simulationInit() {
-  }
+  public void simulationInit() {}
 
   /** This function is called periodically whilst in simulation. */
   @Override
-  public void simulationPeriodic() {
-  }
+  public void simulationPeriodic() {}
 }

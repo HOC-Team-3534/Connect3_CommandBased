@@ -16,4 +16,6 @@ public interface IntakeIO {
 
     }
 
+    public default void goToUpRight() {}
+
 }

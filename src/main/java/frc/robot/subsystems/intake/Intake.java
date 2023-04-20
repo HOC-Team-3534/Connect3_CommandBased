@@ -11,6 +11,7 @@ public class Intake extends SubsystemBase {
     final IntakeIO io;
     final IntakeIOInputsAutoLogged inputs = new IntakeIOInputsAutoLogged();
     boolean testing = false;
+    boolean intakeHasRan = false;
 
     public Intake(IntakeIO io) {
         this.io = io;
@@ -27,18 +28,22 @@ public class Intake extends SubsystemBase {
             return Commands.none();
         return runEnd(() -> {
             // TODO determine power outputs for intake for best results
-            if (TGR.Intake.bool())
+            if (TGR.Intake.bool()) {
+                intakeHasRan = true;
                 if (TGR.CubeLights.bool())
                     setBothMotors(0.3);
                 else
                     setBothMotors(0.85);
-            else if (TGR.Extake.bool())
+            } else if (TGR.Extake.bool()) {
+                intakeHasRan = true;
                 if (TGR.CubeLights.bool())
                     setBothMotors(-0.20);
                 else
                     setBothMotors(-0.8);
-            else
-                setBothMotors(0);
+            } else if (intakeHasRan) {
+                io.goToUpRight();
+                intakeHasRan = false;
+            }
         }, () -> setBothMotors(0));
     }
 

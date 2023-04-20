@@ -113,17 +113,15 @@ public class Flipper extends SubsystemBase {
     }
 
     private Command grip() {
-        isGripped = true;
         if (testing)
             return Commands.none();
-        return runOnce(() -> setGripper(GripperPosition.Gripped.gripVoltage));
+        return runOnce(() -> setGripper(GripperPosition.Gripped.gripVoltage)).beforeStarting(() -> isGripped = true);
     }
 
     private Command ungrip() {
-        isGripped = false;
         if (testing)
             return Commands.none();
-        return runOnce(() -> setGripper(GripperPosition.UnGripped.gripVoltage));
+        return runOnce(() -> setGripper(GripperPosition.UnGripped.gripVoltage)).beforeStarting(() -> isGripped = false);
     }
 
     private void setGripper(double ungripped) {

@@ -1,5 +1,6 @@
 package frc.robot.subsystems.flipper;
 
+import com.ctre.phoenix.motorcontrol.SupplyCurrentLimitConfiguration;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 import frc.robot.Constants;
 
@@ -21,6 +22,8 @@ public class FlipperIOTalonSRX implements FlipperIO {
         final boolean isInverted = (Constants.ROBOTTYPE == RobotType.PBOT) ? false : false;
         flipper.setInverted(isInverted);
         gripper.setInverted(true);
+        gripper.enableCurrentLimit(true);
+        gripper.configSupplyCurrentLimit(new SupplyCurrentLimitConfiguration(true, 0.15, 0.20, 0.3));
     }
 
     @Override
